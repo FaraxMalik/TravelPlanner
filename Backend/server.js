@@ -53,10 +53,9 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Routes will be added here later
-// app.use('/api/auth', require('./Routes/auth'));
-// app.use('/api/users', require('./Routes/users'));
-// app.use('/api/itineraries', require('./Routes/itineraries'));
+// API Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/tours', require('./routes/tourRoutes'));
 
 // Global error handling middleware
 app.use((err, req, res, next) => {
@@ -75,21 +74,60 @@ app.use('*', (req, res) => {
   });
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 API URL: http://localhost:${PORT}`);
-});
-
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
-  console.log('Unhandled Rejection:', err.message);
-  // Close server & exit process
-  server.close(() => {
-    process.exit(1);
+// Function to find available port
+const findAvailablePort = async (startPort) => {
+  const net = require('net');
+  
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    
+    server.listen(startPort, () => {
+      const { port } = server.address();
+      server.close(() => resolve(port));
+    });
+    
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        // Try next port
+        findAvailablePort(startPort + 1).then(resolve).catch(reject);
+      } else {
+        reject(err);
+      }
+    });
   });
-});
+};
+
+// Start server with automatic port finding
+const startServer = async () => {
+  try {
+    const preferredPort = parseInt(process.env.PORT) || 5000;
+    const port = await findAvailablePort(preferredPort);
+    
+    const server = app.listen(port, () => {
+      console.log(`🚀 Server running on port ${port}`);
+      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🌐 API URL: http://localhost:${port}`);
+      
+      if (port !== preferredPort) {
+        console.log(`⚠️  Port ${preferredPort} was busy, using port ${port} instead`);
+      }
+    });
+
+    // Handle unhandled promise rejections
+    process.on('unhandledRejection', (err, promise) => {
+      console.log('Unhandled Rejection:', err.message);
+      // Close server & exit process
+      server.close(() => {
+        process.exit(1);
+      });
+    });
+
+  } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 module.exports = app; 
