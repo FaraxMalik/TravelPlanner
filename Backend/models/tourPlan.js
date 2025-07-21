@@ -32,8 +32,36 @@ const tourPlanSchema = new mongoose.Schema({
       min: 1
     },
     activities: [{
-      type: String,
-      trim: true
+      activityId: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto: true // Unique per activity
+      },
+      name: {
+        type: String,
+        required: true,
+        trim: true
+      },
+      description: {
+        type: String,
+        trim: true
+      },
+      category: {
+        type: String, // e.g., 'museum', 'hiking', 'food', etc.
+        trim: true
+      },
+      startTime: {
+        type: String // ISO time or custom format
+      },
+      endTime: {
+        type: String
+      },
+      location: {
+        type: String
+      },
+      metadata: {
+        type: Object,
+        default: {}
+      }
     }]
   }],
   weatherForecast: [{
@@ -49,7 +77,16 @@ const tourPlanSchema = new mongoose.Schema({
       type: String,
       required: true
     }
-  }]
+  }],
+  // Feedback summary for quick access
+  averageRating: {
+    type: Number,
+    default: 0
+  },
+  feedbackCount: {
+    type: Number,
+    default: 0
+  }
 }, {
   timestamps: true
 });

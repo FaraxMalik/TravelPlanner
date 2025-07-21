@@ -89,8 +89,66 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+// @desc    Get logged-in user's preferences
+// @route   GET /api/user/preferences
+// @access  Private
+const getUserPreferences = async (req, res) => {
+  try {
+    res.json({ preferences: req.user.preferences });
+  } catch (error) {
+    console.error('Get preferences error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// @desc    Update logged-in user's preferences
+// @route   PUT /api/user/preferences
+// @access  Private
+const updateUserPreferences = async (req, res) => {
+  try {
+    const allowedFields = [
+      'interests', 'budget', 'duration',
+      'perfectDayType', 'placePreference', 'travelPace', 'snackVibe', 'backupPlan'
+    ];
+    const updates = {};
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) updates[`preferences.${field}`] = req.body[field];
+    }
+    // Validation (basic)
+    if (updates['preferences.perfectDayType'] !== undefined && ![0,1,2,3].includes(updates['preferences.perfectDayType'])) {
+      return res.status(400).json({ message: 'Invalid perfectDayType' });
+    }
+    if (updates['preferences.placePreference'] !== undefined && ![0,1,2,3].includes(updates['preferences.placePreference'])) {
+      return res.status(400).json({ message: 'Invalid placePreference' });
+    }
+    if (updates['preferences.travelPace'] !== undefined && ![0,1,2,3].includes(updates['preferences.travelPace'])) {
+      return res.status(400).json({ message: 'Invalid travelPace' });
+    }
+    if (updates['preferences.snackVibe'] !== undefined && ![0,1,2,3].includes(updates['preferences.snackVibe'])) {
+      return res.status(400).json({ message: 'Invalid snackVibe' });
+    }
+    if (updates['preferences.backupPlan'] !== undefined && ![0,1,2,3].includes(updates['preferences.backupPlan'])) {
+      return res.status(400).json({ message: 'Invalid backupPlan' });
+    }
+    if (updates['preferences.budget'] !== undefined && (typeof updates['preferences.budget'] !== 'number' || updates['preferences.budget'] < 0)) {
+      return res.status(400).json({ message: 'Invalid budget' });
+    }
+    if (updates['preferences.duration'] !== undefined && (typeof updates['preferences.duration'] !== 'number' || updates['preferences.duration'] < 1)) {
+      return res.status(400).json({ message: 'Invalid duration' });
+    }
+    // Update user
+    const user = await User.findByIdAndUpdate(req.user._id, { $set: updates }, { new: true });
+    res.json({ preferences: user.preferences });
+  } catch (error) {
+    console.error('Update preferences error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
-  getUserProfile
+  getUserProfile,
+  getUserPreferences,
+  updateUserPreferences
 }; 

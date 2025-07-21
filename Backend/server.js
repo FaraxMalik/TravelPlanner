@@ -56,6 +56,8 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/tours', require('./routes/tourRoutes'));
+app.use('/api/feedback', require('./routes/feedbackRoutes'));
+app.use('/api/llm', require('./routes/llmRoutes'));
 
 // Global error handling middleware
 app.use((err, req, res, next) => {

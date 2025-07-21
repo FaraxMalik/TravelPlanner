@@ -31,6 +31,32 @@ const userSchema = new mongoose.Schema({
     duration: {
       type: Number,
       default: 1
+    },
+    // Preference questions (store as numeric codes: 0 = A, 1 = B, 2 = C, 3 = D)
+    perfectDayType: {
+      type: Number, // Q1: “What’s your perfect kind of day on vacation?”
+      enum: [0,1,2,3],
+      required: true
+    },
+    placePreference: {
+      type: Number, // Q2: “Would you rather…”
+      enum: [0,1,2,3],
+      required: true
+    },
+    travelPace: {
+      type: Number, // Q3: “What’s your travel pace?”
+      enum: [0,1,2,3],
+      required: true
+    },
+    snackVibe: {
+      type: Number, // Q4: “Which snack sounds like your vibe?”
+      enum: [0,1,2,3],
+      required: true
+    },
+    backupPlan: {
+      type: Number, // Q5: “If weather’s bad, what’s your backup?”
+      enum: [0,1,2,3],
+      required: true
     }
   },
   tours: [{
