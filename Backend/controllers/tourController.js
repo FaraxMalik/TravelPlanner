@@ -1,5 +1,6 @@
 const TourPlan = require('../models/tourPlan');
 const User = require('../models/user');
+const { analyzePreferences, generateRecommendations } = require('../config/preferenceQuestions');
 
 // @desc    Create a new tour plan
 // @route   POST /api/tours/create
@@ -22,15 +23,57 @@ const createTour = async (req, res) => {
       });
     }
 
-    // Create tour plan
+    // Get user preferences for personalized recommendations
+    const user = await User.findById(req.user._id);
+    let personalizedSuggestions = suggestedPlaces || [];
+    let personalizedItinerary = itinerary || [];
+
+          // If user has preferences, enhance the tour plan with personalized recommendations
+      if (user.preferences) {
+        const answers = {
+          morningRoutine: user.preferences.morningRoutine,
+          placePreference: user.preferences.placePreference,
+          travelPace: user.preferences.travelPace,
+          snackVibe: user.preferences.snackVibe,
+          backupPlan: user.preferences.backupPlan,
+          souvenirType: user.preferences.souvenirType,
+          photoStyle: user.preferences.photoStyle,
+          musicTaste: user.preferences.musicTaste,
+          spontaneity: user.preferences.spontaneity,
+          packingStyle: user.preferences.packingStyle,
+          groupRole: user.preferences.groupRole,
+          memorableElement: user.preferences.memorableElement
+        };
+
+      // Check if all preference questions are answered
+      const hasAllPreferences = Object.values(answers).every(answer => 
+        answer !== undefined && answer !== null
+      );
+
+      if (hasAllPreferences) {
+        const preferenceAnalysis = analyzePreferences(answers);
+        const recommendations = generateRecommendations(preferenceAnalysis);
+        
+        // Add personalized recommendations to the tour plan
+        personalizedSuggestions = [
+          ...personalizedSuggestions,
+          ...recommendations.activities,
+          ...recommendations.food,
+          ...recommendations.places
+        ];
+      }
+    }
+
+    // Create tour plan with personalized data
     const tourPlan = await TourPlan.create({
       userId: req.user._id,
       placeName,
       budget,
       numberOfDays,
-      suggestedPlaces: suggestedPlaces || [],
-      itinerary: itinerary || [],
-      weatherForecast: weatherForecast || []
+      suggestedPlaces: personalizedSuggestions,
+      itinerary: personalizedItinerary,
+      weatherForecast: weatherForecast || [],
+      personalizedRecommendations: user.preferences ? true : false
     });
 
     // Add tour to user's tours array
@@ -41,7 +84,8 @@ const createTour = async (req, res) => {
 
     res.status(201).json({
       message: 'Tour plan created successfully',
-      tourPlan
+      tourPlan,
+      personalized: user.preferences ? true : false
     });
   } catch (error) {
     console.error('Create tour error:', error);

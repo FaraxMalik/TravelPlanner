@@ -1,0 +1,326 @@
+[
+  {
+    "question": "Morning Magic",
+    "field": "morningRoutine",
+    "text": "How do you like to start your day on a trip?",
+    "options": [
+      {
+        "text": "Sunrise walk & journaling",
+        "value": 0,
+        "labels": ["introspective", "peaceful", "nature", "reflective"]
+      },
+      {
+        "text": "Coffee and plan the day",
+        "value": 1,
+        "labels": ["organized", "structured", "practical", "prepared"]
+      },
+      {
+        "text": "Sleep in, it's a vacation",
+        "value": 2,
+        "labels": ["relaxed", "comfort", "leisurely", "indulgent"]
+      },
+      {
+        "text": "Straight to adventure!",
+        "value": 3,
+        "labels": ["adventurous", "energetic", "spontaneous", "active"]
+      }
+    ]
+  },
+  {
+    "question": "Would You Rather: Hidden Gem Edition",
+    "field": "placePreference",
+    "text": "Would you rather…",
+    "options": [
+      {
+        "text": "Hike to a quiet waterfall",
+        "value": 0,
+        "labels": ["nature", "solitude", "peaceful", "adventure"]
+      },
+      {
+        "text": "Chill at a beach café",
+        "value": 1,
+        "labels": ["relaxed", "social", "scenic", "comfortable"]
+      },
+      {
+        "text": "Explore a buzzing local market",
+        "value": 2,
+        "labels": ["social", "cultural", "vibrant", "local"]
+      },
+      {
+        "text": "Take a history tour of old forts",
+        "value": 3,
+        "labels": ["cultural", "educational", "historical", "structured"]
+      }
+    ]
+  },
+  {
+    "question": "What's Your Travel Pace?",
+    "field": "travelPace",
+    "text": "Your trip starts now. What's your vibe?",
+    "options": [
+      {
+        "text": "Hour-by-hour plan",
+        "value": 0,
+        "labels": ["organized", "detailed", "structured", "planned"]
+      },
+      {
+        "text": "Light structure, with room to wander",
+        "value": 1,
+        "labels": ["balanced", "flexible", "moderate", "organized"]
+      },
+      {
+        "text": "Go with the flow",
+        "value": 2,
+        "labels": ["spontaneous", "flexible", "relaxed", "adaptive"]
+      },
+      {
+        "text": "Zero plan—surprise me!",
+        "value": 3,
+        "labels": ["spontaneous", "adventurous", "unpredictable", "free"]
+      }
+    ]
+  },
+  {
+    "question": "Snack Vibe Check",
+    "field": "snackVibe",
+    "text": "Which snack sounds like your vibe?",
+    "options": [
+      {
+        "text": "Energy bar",
+        "value": 0,
+        "labels": ["practical", "healthy", "prepared", "functional"]
+      },
+      {
+        "text": "Chai and biscuits",
+        "value": 1,
+        "labels": ["comfort", "traditional", "cozy", "cultural"]
+      },
+      {
+        "text": "Local street food",
+        "value": 2,
+        "labels": ["adventurous", "local", "authentic", "cultural"]
+      },
+      {
+        "text": "Something fancy from a bakery",
+        "value": 3,
+        "labels": ["luxury", "indulgent", "quality", "sophisticated"]
+      }
+    ]
+  },
+  {
+    "question": "Weather Flip",
+    "field": "backupPlan",
+    "text": "If it rains on your travel day…",
+    "options": [
+      {
+        "text": "Museum day",
+        "value": 0,
+        "labels": ["cultural", "educational", "indoor", "structured"]
+      },
+      {
+        "text": "Netflix & nap",
+        "value": 1,
+        "labels": ["relaxed", "comfort", "indoor", "leisurely"]
+      },
+      {
+        "text": "Hit a local indoor market",
+        "value": 2,
+        "labels": ["social", "local", "cultural", "adaptive"]
+      },
+      {
+        "text": "Embrace it—rain walk!",
+        "value": 3,
+        "labels": ["adventurous", "spontaneous", "nature", "bold"]
+      }
+    ]
+  },
+  {
+    "question": "Souvenir Hunt",
+    "field": "souvenirType",
+    "text": "Your ideal souvenir is…",
+    "options": [
+      {
+        "text": "A rare handcrafted item",
+        "value": 0,
+        "labels": ["unique", "artistic", "quality", "authentic"]
+      },
+      {
+        "text": "Local snacks or spices",
+        "value": 1,
+        "labels": ["culinary", "local", "practical", "cultural"]
+      },
+      {
+        "text": "A picture at a famous spot",
+        "value": 2,
+        "labels": ["social", "memorable", "popular", "photographic"]
+      },
+      {
+        "text": "Something funny & odd",
+        "value": 3,
+        "labels": ["humorous", "unique", "spontaneous", "quirky"]
+      }
+    ]
+  },
+  {
+    "question": "Photo Style",
+    "field": "photoStyle",
+    "text": "Your travel album mostly has…",
+    "options": [
+      {
+        "text": "Scenic landscapes",
+        "value": 0,
+        "labels": ["nature", "aesthetic", "peaceful", "scenic"]
+      },
+      {
+        "text": "Food and cafés",
+        "value": 1,
+        "labels": ["culinary", "social", "cultural", "lifestyle"]
+      },
+      {
+        "text": "Selfies with locals",
+        "value": 2,
+        "labels": ["social", "cultural", "interactive", "people"]
+      },
+      {
+        "text": "Spontaneous & chaotic moments",
+        "value": 3,
+        "labels": ["spontaneous", "adventurous", "dynamic", "unpredictable"]
+      }
+    ]
+  },
+  {
+    "question": "Travel Jam",
+    "field": "musicTaste",
+    "text": "Pick a song for your road trip playlist.",
+    "options": [
+      {
+        "text": "Acoustic indie or classical",
+        "value": 0,
+        "labels": ["introspective", "sophisticated", "calm", "artistic"]
+      },
+      {
+        "text": "Chill lofi or café vibes",
+        "value": 1,
+        "labels": ["relaxed", "ambient", "comfortable", "mellow"]
+      },
+      {
+        "text": "Energetic pop or EDM",
+        "value": 2,
+        "labels": ["energetic", "social", "upbeat", "modern"]
+      },
+      {
+        "text": "Rock, rap, or whatever's loud",
+        "value": 3,
+        "labels": ["intense", "bold", "energetic", "rebellious"]
+      }
+    ]
+  },
+  {
+    "question": "Spontaneity Level",
+    "field": "spontaneity",
+    "text": "You stumble across an unplanned detour…?",
+    "options": [
+      {
+        "text": "No, stick to the plan",
+        "value": 0,
+        "labels": ["organized", "structured", "disciplined", "planned"]
+      },
+      {
+        "text": "Maybe, if time allows",
+        "value": 1,
+        "labels": ["balanced", "flexible", "practical", "moderate"]
+      },
+      {
+        "text": "Sure! Let's see where it leads",
+        "value": 2,
+        "labels": ["spontaneous", "adventurous", "curious", "flexible"]
+      },
+      {
+        "text": "Best part of the trip!",
+        "value": 3,
+        "labels": ["spontaneous", "adventurous", "excited", "unpredictable"]
+      }
+    ]
+  },
+  {
+    "question": "Luggage Check",
+    "field": "packingStyle",
+    "text": "What does your luggage say about you?",
+    "options": [
+      {
+        "text": "Everything folded, labeled",
+        "value": 0,
+        "labels": ["organized", "detailed", "prepared", "perfectionist"]
+      },
+      {
+        "text": "Mostly organized with extras",
+        "value": 1,
+        "labels": ["balanced", "prepared", "flexible", "practical"]
+      },
+      {
+        "text": "Thrown in last minute",
+        "value": 2,
+        "labels": ["spontaneous", "relaxed", "last-minute", "casual"]
+      },
+      {
+        "text": "Wait—I packed something?",
+        "value": 3,
+        "labels": ["spontaneous", "carefree", "unpredictable", "free-spirited"]
+      }
+    ]
+  },
+  {
+    "question": "Group Travel Role",
+    "field": "groupRole",
+    "text": "Your friends say you are the…",
+    "options": [
+      {
+        "text": "The planner",
+        "value": 0,
+        "labels": ["organized", "responsible", "leader", "structured"]
+      },
+      {
+        "text": "The peacemaker",
+        "value": 1,
+        "labels": ["agreeable", "diplomatic", "harmonious", "caring"]
+      },
+      {
+        "text": "The mood maker",
+        "value": 2,
+        "labels": ["social", "energetic", "entertaining", "extroverted"]
+      },
+      {
+        "text": "The wild card",
+        "value": 3,
+        "labels": ["spontaneous", "unpredictable", "adventurous", "bold"]
+      }
+    ]
+  },
+  {
+    "question": "Post-Trip Memory",
+    "field": "memorableElement",
+    "text": "What makes a trip unforgettable?",
+    "options": [
+      {
+        "text": "The planning & flawless execution",
+        "value": 0,
+        "labels": ["organized", "achievement", "perfection", "control"]
+      },
+      {
+        "text": "The people you meet",
+        "value": 1,
+        "labels": ["social", "connections", "relationships", "human"]
+      },
+      {
+        "text": "The unpredictable moments",
+        "value": 2,
+        "labels": ["spontaneous", "surprise", "adventure", "unexpected"]
+      },
+      {
+        "text": "The personal transformation",
+        "value": 3,
+        "labels": ["growth", "introspective", "meaningful", "transformative"]
+      }
+    ]
+  }
+] 

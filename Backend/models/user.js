@@ -32,31 +32,66 @@ const userSchema = new mongoose.Schema({
       type: Number,
       default: 1
     },
-    // Preference questions (store as numeric codes: 0 = A, 1 = B, 2 = C, 3 = D)
-    perfectDayType: {
-      type: Number, // Q1: “What’s your perfect kind of day on vacation?”
-      enum: [0,1,2,3],
-      required: true
+    // 12 Finalized Preference Questions (0=A, 1=B, 2=C, 3=D) - Optional during registration
+    morningRoutine: {
+      type: Number, // Q1: "How do you like to start your day on a trip?"
+      enum: [0, 1, 2, 3],
+      required: false
     },
     placePreference: {
-      type: Number, // Q2: “Would you rather…”
-      enum: [0,1,2,3],
-      required: true
+      type: Number, // Q2: "Would you rather..." (Hidden Gem Edition)
+      enum: [0, 1, 2, 3],
+      required: false
     },
     travelPace: {
-      type: Number, // Q3: “What’s your travel pace?”
-      enum: [0,1,2,3],
-      required: true
+      type: Number, // Q3: "Your trip starts now. What's your vibe?"
+      enum: [0, 1, 2, 3],
+      required: false
     },
     snackVibe: {
-      type: Number, // Q4: “Which snack sounds like your vibe?”
-      enum: [0,1,2,3],
-      required: true
+      type: Number, // Q4: "Which snack sounds like your vibe?"
+      enum: [0, 1, 2, 3],
+      required: false
     },
     backupPlan: {
-      type: Number, // Q5: “If weather’s bad, what’s your backup?”
-      enum: [0,1,2,3],
-      required: true
+      type: Number, // Q5: "If it rains on your travel day..."
+      enum: [0, 1, 2, 3],
+      required: false
+    },
+    souvenirType: {
+      type: Number, // Q6: "Your ideal souvenir is..."
+      enum: [0, 1, 2, 3],
+      required: false
+    },
+    photoStyle: {
+      type: Number, // Q7: "Your travel album mostly has..."
+      enum: [0, 1, 2, 3],
+      required: false
+    },
+    musicTaste: {
+      type: Number, // Q8: "Pick a song for your road trip playlist."
+      enum: [0, 1, 2, 3],
+      required: false
+    },
+    spontaneity: {
+      type: Number, // Q9: "You stumble across an unplanned detour...?"
+      enum: [0, 1, 2, 3],
+      required: false
+    },
+    packingStyle: {
+      type: Number, // Q10: "What does your luggage say about you?"
+      enum: [0, 1, 2, 3],
+      required: false
+    },
+    groupRole: {
+      type: Number, // Q11: "Your friends say you are the..."
+      enum: [0, 1, 2, 3],
+      required: false
+    },
+    memorableElement: {
+      type: Number, // Q12: "What makes a trip unforgettable?"
+      enum: [0, 1, 2, 3],
+      required: false
     }
   },
   tours: [{

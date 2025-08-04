@@ -86,6 +86,15 @@ const tourPlanSchema = new mongoose.Schema({
   feedbackCount: {
     type: Number,
     default: 0
+  },
+  // Personalization tracking
+  personalizedRecommendations: {
+    type: Boolean,
+    default: false
+  },
+  preferenceAnalysis: {
+    type: Object,
+    default: {}
   }
 }, {
   timestamps: true

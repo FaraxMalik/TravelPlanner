@@ -58,6 +58,8 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/tours', require('./routes/tourRoutes'));
 app.use('/api/feedback', require('./routes/feedbackRoutes'));
 app.use('/api/llm', require('./routes/llmRoutes'));
+app.use('/api/preferences', require('./routes/preferenceRoutes'));
+app.use('/api/ai', require('./routes/aiTravelRoutes'));
 
 // Global error handling middleware
 app.use((err, req, res, next) => {

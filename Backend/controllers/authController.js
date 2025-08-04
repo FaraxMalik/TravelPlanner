@@ -108,34 +108,35 @@ const updateUserPreferences = async (req, res) => {
   try {
     const allowedFields = [
       'interests', 'budget', 'duration',
-      'perfectDayType', 'placePreference', 'travelPace', 'snackVibe', 'backupPlan'
+      'morningRoutine', 'placePreference', 'travelPace', 'snackVibe', 'backupPlan',
+      'souvenirType', 'photoStyle', 'musicTaste', 'spontaneity', 'packingStyle',
+      'groupRole', 'memorableElement'
     ];
     const updates = {};
     for (const field of allowedFields) {
       if (req.body[field] !== undefined) updates[`preferences.${field}`] = req.body[field];
     }
-    // Validation (basic)
-    if (updates['preferences.perfectDayType'] !== undefined && ![0,1,2,3].includes(updates['preferences.perfectDayType'])) {
-      return res.status(400).json({ message: 'Invalid perfectDayType' });
+    
+    // Validation for preference questions (all should be 0-3)
+    const preferenceFields = [
+      'morningRoutine', 'placePreference', 'travelPace', 'snackVibe', 'backupPlan',
+      'souvenirType', 'photoStyle', 'musicTaste', 'spontaneity', 'packingStyle',
+      'groupRole', 'memorableElement'
+    ];
+    
+    for (const field of preferenceFields) {
+      if (updates[`preferences.${field}`] !== undefined && ![0,1,2,3].includes(updates[`preferences.${field}`])) {
+        return res.status(400).json({ message: `Invalid ${field} value. Must be 0, 1, 2, or 3.` });
+      }
     }
-    if (updates['preferences.placePreference'] !== undefined && ![0,1,2,3].includes(updates['preferences.placePreference'])) {
-      return res.status(400).json({ message: 'Invalid placePreference' });
-    }
-    if (updates['preferences.travelPace'] !== undefined && ![0,1,2,3].includes(updates['preferences.travelPace'])) {
-      return res.status(400).json({ message: 'Invalid travelPace' });
-    }
-    if (updates['preferences.snackVibe'] !== undefined && ![0,1,2,3].includes(updates['preferences.snackVibe'])) {
-      return res.status(400).json({ message: 'Invalid snackVibe' });
-    }
-    if (updates['preferences.backupPlan'] !== undefined && ![0,1,2,3].includes(updates['preferences.backupPlan'])) {
-      return res.status(400).json({ message: 'Invalid backupPlan' });
-    }
+    
     if (updates['preferences.budget'] !== undefined && (typeof updates['preferences.budget'] !== 'number' || updates['preferences.budget'] < 0)) {
       return res.status(400).json({ message: 'Invalid budget' });
     }
     if (updates['preferences.duration'] !== undefined && (typeof updates['preferences.duration'] !== 'number' || updates['preferences.duration'] < 1)) {
       return res.status(400).json({ message: 'Invalid duration' });
     }
+    
     // Update user
     const user = await User.findByIdAndUpdate(req.user._id, { $set: updates }, { new: true });
     res.json({ preferences: user.preferences });
