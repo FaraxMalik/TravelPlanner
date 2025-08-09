@@ -14,7 +14,6 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
@@ -48,8 +47,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    setLoading(true);
-    setError(null);
     try {
       const response = await authAPI.login({ email, password });
       const { token, user: userData } = response.data;
@@ -61,34 +58,29 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true, user: userData };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Login failed';
-      setError(errorMessage);
       return { 
         success: false, 
-        error: errorMessage
+        error: error.response?.data?.message || 'Login failed' 
       };
-    } finally {
-      setLoading(false);
     }
   };
 
-  const register = async (userData) => {
-    setLoading(true);
-    setError(null);
+  const register = async (name, email, password) => {
     try {
-      const response = await authAPI.register(userData);
-      // Don't automatically log in after registration
-      // User needs to sign in separately
-      return { success: true, message: 'Registration successful' };
+      const response = await authAPI.register({ name, email, password });
+      const { token, user: userData } = response.data;
+      
+      setUser(userData);
+      setToken(token);
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      
+      return { success: true, user: userData };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Registration failed';
-      setError(errorMessage);
       return { 
         success: false, 
-        error: errorMessage
+        error: error.response?.data?.message || 'Registration failed' 
       };
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -101,24 +93,17 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setUser(null);
       setToken(null);
-      setError(null);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     }
   };
 
-  const clearError = () => {
-    setError(null);
-  };
-
   const value = {
     user,
     token,
-    error,
     login,
     register,
     logout,
-    clearError,
     loading,
     isAuthenticated: !!user,
   };

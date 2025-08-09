@@ -7,12 +7,25 @@ const { generateToken } = require('../utils/generateJWT');
 // @access  Public
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, preferences } = req.body;
+    const { name, firstName, lastName, email, password, preferences } = req.body;
+
+    // Handle both name formats (single name or firstName/lastName)
+    const fullName = name || `${firstName} ${lastName}`.trim();
+    
+    if (!fullName || !email || !password) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Please provide all required fields' 
+      });
+    }
 
     // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'User already exists' 
+      });
     }
 
     // Hash password
@@ -21,26 +34,39 @@ const registerUser = async (req, res) => {
 
     // Create user
     const user = await User.create({
-      name,
+      name: fullName,
       email,
       password: hashedPassword,
       preferences: preferences || {}
     });
 
     if (user) {
+      const token = generateToken(user._id);
       res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        preferences: user.preferences,
-        token: generateToken(user._id)
+        success: true,
+        message: 'User registered successfully',
+        token,
+        user: {
+          _id: user._id,
+          name: user.name,
+          firstName: user.name.split(' ')[0],
+          lastName: user.name.split(' ').slice(1).join(' '),
+          email: user.email,
+          preferences: user.preferences
+        }
       });
     } else {
-      res.status(400).json({ message: 'Invalid user data' });
+      res.status(400).json({ 
+        success: false,
+        message: 'Invalid user data' 
+      });
     }
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    });
   }
 };
 
@@ -51,28 +77,52 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Please provide email and password' 
+      });
+    }
+
     // Check for user
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid credentials' 
+      });
     }
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid credentials' 
+      });
     }
 
+    const token = generateToken(user._id);
     res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      preferences: user.preferences,
-      token: generateToken(user._id)
+      success: true,
+      message: 'Login successful',
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        firstName: user.name.split(' ')[0],
+        lastName: user.name.split(' ').slice(1).join(' '),
+        email: user.email,
+        preferences: user.preferences,
+        hasCompletedPreferences: Object.keys(user.preferences || {}).length > 3
+      }
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    });
   }
 };
 
@@ -146,10 +196,59 @@ const updateUserPreferences = async (req, res) => {
   }
 };
 
+// @desc    Logout user
+// @route   POST /api/auth/logout
+// @access  Public
+const logoutUser = async (req, res) => {
+  try {
+    // Since we're using JWT without server-side sessions,
+    // logout is handled client-side by removing the token
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    });
+  }
+};
+
+// @desc    Verify JWT token
+// @route   GET /api/auth/verify
+// @access  Private
+const verifyToken = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    res.json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        firstName: user.name.split(' ')[0],
+        lastName: user.name.split(' ').slice(1).join(' '),
+        email: user.email,
+        preferences: user.preferences,
+        hasCompletedPreferences: Object.keys(user.preferences || {}).length > 3
+      }
+    });
+  } catch (error) {
+    console.error('Token verification error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
   getUserPreferences,
-  updateUserPreferences
+  updateUserPreferences,
+  verifyToken,
+  logoutUser
 }; 

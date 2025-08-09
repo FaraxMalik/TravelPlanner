@@ -1,52 +1,112 @@
-# 🌍 AI-Powered Travel Itinerary Generator
+# 🌍 AI-Powered Travel Planner with Weather Integration
 
-An intelligent travel planning system that creates personalized itineraries based on user preferences and real-time data using AI/ML technologies.
+An intelligent travel planning system that creates personalized, weather-aware itineraries using advanced AI, machine learning, and real-time weather data.
 
-## 📋 Project Overview
+## � Features
 
-This system combines modern web development with artificial intelligence to generate customized travel plans. It uses large language models (LLMs) for natural language generation and machine learning for continuous personalization based on user feedback.
+### 🧠 **Smart Personality Analysis**
+- **12-Question Journey Interface**: Interactive questionnaire with animated travel path
+- **Big Five Personality Model**: Predicts travel personality from user preferences  
+- **Detailed Descriptions**: Rich, natural language personality profiles
+- **Travel Style Matching**: Activities and recommendations based on psychological profile
 
-### 🏗️ Architecture
+### �️ **Weather-Aware Planning**
+- **Real-time Weather Forecasts**: 7-day predictions using Open-Meteo API
+- **Smart Activity Adaptation**: Indoor alternatives for rainy days, outdoor activities for sunny weather
+- **Clothing & Packing Advice**: Weather-appropriate recommendations
+- **Location Intelligence**: Automatic coordinate lookup for any destination
 
-- **Backend**: Node.js + Express.js + MongoDB
-- **Frontend**: React.js (coming soon)
-- **Database**: MongoDB Atlas
-- **AI/ML**: LLM integration + TensorFlow/scikit-learn
-- **External APIs**: Google Places, WeatherAPI
+### 🤖 **Enhanced AI Itinerary Generation**  
+- **Gemini AI Integration**: Advanced prompt engineering for detailed itineraries
+- **Hour-by-Hour Scheduling**: Specific times for meals, activities, and transportation
+- **Budget Breakdowns**: Daily cost estimates with realistic pricing
+- **Restaurant Recommendations**: Specific dishes and estimated costs
+- **Weather Considerations**: Activities adapted to daily conditions
 
-### ✨ Key Features
+### 🎯 **Complete Integration**
+- **React + Framer Motion Frontend**: Smooth animations and modern UI
+- **Node.js + Express Backend**: RESTful API with enhanced endpoints  
+- **Python ML Pipeline**: Trained models with FastAPI integration
+- **MongoDB Database**: User preferences and travel history storage
 
-- 🤖 AI-generated personalized travel itineraries
-- 🌤️ Real-time weather and location data integration
-- 📊 Machine learning-based user preference analysis
-- 🔄 Continuous learning from user feedback
-- 🛡️ Secure authentication and data handling
-- 📱 Responsive user interface
+## 🏗️ Architecture
 
-## 🚀 Getting Started
+```
+Frontend (React + Framer Motion)
+├── 12-Question Travel Questionnaire
+├── Journey-Style UI with Dotted Paths  
+└── Animated Transitions
 
-### Prerequisites
+Backend (Node.js + Express + MongoDB)
+├── Authentication & User Management
+├── Enhanced AI Travel Controller
+├── Standard API: /api/ai/generate-plan
+└── Enhanced API: /api/ai/generate-enhanced-plan
 
-- Node.js (v16.0.0 or higher)
-- npm or yarn
-- MongoDB Atlas account
-- Git
+ML Pipeline (Python + scikit-learn)
+├── Big Five Personality Prediction  
+├── Weather Service Integration
+├── Gemini AI Prompt Engineering
+└── Complete Backend Integration
 
-### 📦 Installation
+External APIs
+├── Open-Meteo Weather API
+├── Google Gemini AI
+└── Geocoding Services
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd TravelPlanner
-   ```
+## ⚡ Quick Start
 
-2. **Backend Setup**
-   ```bash
-   cd Backend
-   npm install
-   ```
+### 1. Clone & Install
+```bash
+git clone https://github.com/FaraxMalik/TravelPlanner.git
+cd TravelPlanner
 
-3. **Environment Configuration**
+# Backend
+cd Backend
+npm install
+
+# Frontend  
+cd ../Frontend/travelPlanner
+npm install
+
+# ML Models
+cd ../../Backend/ml_models
+pip install -r requirements.txt
+```
+
+### 2. Environment Setup
+```bash
+# Backend/.env
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=5000
+
+# Backend/ml_models/.env  
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+### 3. Train ML Models
+```bash
+cd Backend/ml_models
+python detailed_personality_predictor.py
+# Creates: personality_model.pkl, travel_classifier.pkl, etc.
+```
+
+### 4. Start Services
+```bash
+# Backend (Terminal 1)
+cd Backend  
+npm start
+
+# Frontend (Terminal 2)
+cd Frontend/travelPlanner
+npm run dev
+
+# ML API Server (Terminal 3) - Optional
+cd Backend/ml_models
+python enhanced_api_server.py
+```
    
    Create `Backend/.env` file:
    ```env

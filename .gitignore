@@ -1,10 +1,20 @@
-# Dependencies
+# =====================================================
+# AI Travel Planner - Comprehensive .gitignore
+# =====================================================
+
+# =====================================================
+# Node.js & npm
+# =====================================================
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+
+# Package locks (keep package.json, ignore locks for flexibility)
+package-lock.json
+yarn.lock
 
 # Runtime data
 pids
@@ -19,22 +29,22 @@ coverage/
 # nyc test coverage
 .nyc_output
 
-# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+# Grunt intermediate storage
 .grunt
 
-# Bower dependency directory (https://bower.io/)
+# Bower dependency directory
 bower_components
 
 # node-waf configuration
 .lock-wscript
 
-# Compiled binary addons (https://nodejs.org/api/addons.html)
+# Compiled binary addons
 build/Release
 
 # Dependency directories
 jspm_packages/
 
-# Snowpack dependency directory (https://snowpack.dev/)
+# Snowpack dependency directory
 web_modules/
 
 # TypeScript cache
@@ -48,6 +58,270 @@ web_modules/
 
 # Optional stylelint cache
 .stylelintcache
+
+# =====================================================
+# Python & ML Models
+# =====================================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# =====================================================
+# ML Models & Data Files (Large Files)
+# =====================================================
+# Trained models (can be large)
+*.pkl
+*.joblib
+*.h5
+*.model
+
+# Large datasets
+big_five_*_dataset.json
+*_dataset.json
+
+# ML model outputs
+Backend/ml_models/models/
+trained_models/
+
+# =====================================================
+# API Keys & Sensitive Data
+# =====================================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config.json
+secrets.json
+
+# API keys
+**/api_keys.txt
+**/credentials.json
+**/.credentials
+
+# =====================================================
+# Development & IDE
+# =====================================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# =====================================================
+# Operating System
+# =====================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+
+# =====================================================
+# Build & Output
+# =====================================================
+# React build
+build/
+dist/
+
+# Production builds
+/build
+/dist
+
+# Static files
+public/build/
+
+# =====================================================
+# Logs & Temp Files
+# =====================================================
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# =====================================================
+# Project Specific - AI Travel Planner
+# =====================================================
+# Duplicate files (keep originals)
+*_copy.py
+*\ copy.py
+* copy.*
+
+# Test outputs
+test_output/
+test_results/
+
+# Documentation builds
+docs/_build/
+
+# =====================================================
+# IMPORTANT: What TO KEEP in Git
+# =====================================================
+# Keep these important files:
+# ✅ package.json (all locations)
+# ✅ requirements.txt
+# ✅ README.md files
+# ✅ Source code (.js, .jsx, .py files)
+# ✅ Config files (database.js, etc.)
+# ✅ Small JSON config files
+# ✅ Documentation (.md files)
+
+# Explicitly include important config files
+!package.json
+!requirements.txt
+!README.md
+!*.md
+!config/*.js
+!new_travel_questions.json
 
 # Microbundle cache
 .rpt2_cache/

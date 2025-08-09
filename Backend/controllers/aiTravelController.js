@@ -1,6 +1,8 @@
 const BigFiveService = require('../utils/bigFiveService');
 const GeminiTravelService = require('../utils/geminiTravelService');
 const User = require('../models/user');
+const { exec } = require('child_process');
+const path = require('path');
 
 class AITravelController {
     constructor() {
@@ -9,6 +11,7 @@ class AITravelController {
         
         // Bind methods to preserve 'this' context
         this.generatePersonalizedPlan = this.generatePersonalizedPlan.bind(this);
+        this.generateEnhancedPlan = this.generateEnhancedPlan.bind(this);
         this.getUserPersonality = this.getUserPersonality.bind(this);
         this.testPersonalityPrediction = this.testPersonalityPrediction.bind(this);
         this.testGeminiGeneration = this.testGeminiGeneration.bind(this);
@@ -102,6 +105,109 @@ class AITravelController {
             res.status(500).json({
                 success: false,
                 message: 'Failed to generate personalized travel plan',
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Generate enhanced personalized travel plan with weather data
+     * @route POST /api/ai/generate-enhanced-plan
+     * @access Private
+     */
+    async generateEnhancedPlan(req, res) {
+        try {
+            const {
+                destination,
+                startDate,
+                endDate,
+                dailyBudget,
+                additionalPreferences = ''
+            } = req.body;
+
+            // Validate required fields
+            if (!destination || !startDate || !endDate || !dailyBudget) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Missing required fields: destination, startDate, endDate, dailyBudget'
+                });
+            }
+
+            // Get user and their preferences
+            const user = await User.findById(req.user._id);
+            if (!user || !user.preferences) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'User preferences not found. Please complete the preference questionnaire first.'
+                });
+            }
+
+            // Calculate duration
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+
+            if (duration <= 0 || duration > 30) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid duration. Must be between 1 and 30 days.'
+                });
+            }
+
+            // Format travel dates
+            const travelDates = `${startDate} to ${endDate}`;
+
+            // Call the enhanced Python integration
+            const pythonScript = path.join(__dirname, '../ml_models/backend_integration_enhanced.py');
+            const command = `python "${pythonScript}" '${JSON.stringify(user.preferences)}' "${destination}" "${travelDates}" ${duration} ${dailyBudget} "${additionalPreferences}"`;
+
+            console.log('🚀 Calling enhanced Python integration...');
+            
+            const result = await new Promise((resolve, reject) => {
+                exec(command, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error('Python execution error:', error);
+                        reject(error);
+                        return;
+                    }
+                    
+                    if (stderr) {
+                        console.error('Python stderr:', stderr);
+                    }
+                    
+                    try {
+                        const output = JSON.parse(stdout);
+                        resolve(output);
+                    } catch (parseError) {
+                        console.error('Failed to parse Python output:', stdout);
+                        reject(new Error('Failed to parse Python response'));
+                    }
+                });
+            });
+
+            if (result.success) {
+                res.json({
+                    success: true,
+                    destination: result.destination,
+                    dates: { start: startDate, end: endDate },
+                    duration: result.duration,
+                    dailyBudget: result.daily_budget,
+                    totalBudget: result.total_budget,
+                    personalityAnalysis: result.personality_analysis,
+                    weatherForecast: result.weather_forecast,
+                    detailedItinerary: result.detailed_itinerary,
+                    generatedAt: result.generated_at,
+                    enhancedFeatures: ['personality_analysis', 'weather_integration', 'detailed_scheduling', 'budget_breakdown']
+                });
+            } else {
+                throw new Error(result.error || 'Failed to generate enhanced itinerary');
+            }
+
+        } catch (error) {
+            console.error('Enhanced AI travel plan generation error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to generate enhanced personalized travel plan',
                 error: error.message
             });
         }

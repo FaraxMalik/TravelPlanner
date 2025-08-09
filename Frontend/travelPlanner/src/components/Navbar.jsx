@@ -19,7 +19,7 @@ const Navbar = () => {
   };
 
   // Don't show navbar on auth pages
-  if (location.pathname === '/signin' || location.pathname === '/register') {
+  if (location.pathname === '/signin' || location.pathname === '/signup') {
     return null;
   }
 
@@ -104,7 +104,7 @@ const Navbar = () => {
                 <Link to="/signin" className="btn btn-secondary">
                   Sign In
                 </Link>
-                <Link to="/register" className="btn btn-primary">
+                <Link to="/signup" className="btn btn-primary">
                   Sign Up
                 </Link>
               </div>
@@ -169,7 +169,7 @@ const Navbar = () => {
                   <Link to="/signin" className="btn btn-secondary" onClick={() => setIsMenuOpen(false)}>
                     Sign In
                   </Link>
-                  <Link to="/register" className="btn btn-primary" onClick={() => setIsMenuOpen(false)}>
+                  <Link to="/signup" className="btn btn-primary" onClick={() => setIsMenuOpen(false)}>
                     Sign Up
                   </Link>
                 </div>

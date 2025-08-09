@@ -14,6 +14,7 @@ const SignUp = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState('');
   
   const { register, loading, error, isAuthenticated, clearError } = useAuth();
   const navigate = useNavigate();
@@ -111,7 +112,19 @@ const SignUp = () => {
     });
 
     if (result.success) {
-      navigate('/dashboard');
+      setSuccessMessage('Registration successful! Please sign in to continue.');
+      // Clear the form
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+      });
+      // Redirect to sign-in page after 2 seconds
+      setTimeout(() => {
+        navigate('/signin');
+      }, 2000);
     }
   };
 
@@ -172,6 +185,17 @@ const SignUp = () => {
                     <line x1="9" y1="9" x2="15" y2="15"/>
                   </svg>
                   {error}
+                </div>
+              )}
+
+              {/* Success Message */}
+              {successMessage && (
+                <div className="success-message animate-slide-up">
+                  <svg className="travel-icon" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="m9 12 2 2 4-4"/>
+                  </svg>
+                  {successMessage}
                 </div>
               )}
 
