@@ -1,6 +1,5 @@
 const BigFiveService = require('../utils/bigFiveService');
 const GeminiTravelService = require('../utils/geminiTravelService');
-const GroqTravelService = require('../utils/groqTravelService');
 const User = require('../models/user');
 const { exec } = require('child_process');
 const path = require('path');
@@ -9,11 +8,6 @@ class AITravelController {
     constructor() {
         this.bigFiveService = new BigFiveService();
         this.geminiService = new GeminiTravelService();
-        this.groqService = new GroqTravelService();
-        
-        // 🔄 EASY LLM SWITCHING - Comment/Uncomment the lines below:
-     //   this.activeService = this.geminiService;  // ✅ UNCOMMENT to use Gemini
-         this.activeService = this.groqService;     // ✅ UNCOMMENT to use Groq (comment Gemini line above)
         
         // Bind methods to preserve 'this' context
         this.generateComprehensivePlan = this.generateComprehensivePlan.bind(this);
@@ -93,8 +87,7 @@ class AITravelController {
 
                 // Stored Personality Analysis (from trained ML model)
                 travelerType: storedPersonality.travelerType,
-                placesTheyLove: storedPersonality.placesTheyLove,
-                travelStyle: storedPersonality.travelStyle,
+                personalityDescription: storedPersonality.placesTheyLove,
                 dominantTrait: storedPersonality.dominantTrait,
                 bigFiveScores: storedPersonality.bigFiveScores,
                 confidenceScores: storedPersonality.confidenceScores,
@@ -194,6 +187,94 @@ class AITravelController {
             res.status(500).json({
                 success: false,
                 message: 'Failed to generate comprehensive travel plan',
+                error: error.message
+            });
+        }
+    }
+                    message: 'User preferences not found. Please complete the preference questionnaire first.'
+                });
+            }
+
+            // Check if user has completed personality analysis
+            let personalityAnalysis = null;
+            let bigFiveResult = null;
+            
+            if (user.personalityAnalysis) {
+                console.log('� Using stored personality analysis...');
+                personalityAnalysis = user.personalityAnalysis;
+                
+                // Use stored personality for travel planning
+                bigFiveResult = {
+                    success: true,
+                    dominantTrait: personalityAnalysis.travel_style || 'Balanced Explorer',
+                    descriptions: personalityAnalysis.description,
+                    personalityType: personalityAnalysis.accommodation_style
+                };
+            } else {
+                console.log('🔮 Generating new personality analysis...');
+                bigFiveResult = await this.bigFiveService.predictBigFivePersonality(user.preferences);
+                
+                if (!bigFiveResult.success) {
+                    console.log('⚠️ Using fallback personality analysis');
+                }
+            }
+
+            // Step 2: Generate personality-based recommendations
+            const personalityRecommendations = personalityAnalysis ? 
+                personalityAnalysis.preferred_activities || [] :
+                this.bigFiveService.generatePersonalityRecommendations(
+                    bigFiveResult.success ? bigFiveResult : bigFiveResult.fallback
+                );
+
+            // Step 3: Generate AI-powered travel plan with stored personality data
+            console.log('🤖 Generating personalized travel plan with Gemini...');
+            const travelPlanParams = {
+                destination,
+                startDate,
+                endDate,
+                budget: parseInt(budget),
+                personalityAnalysis: personalityAnalysis,
+                bigFiveScores: bigFiveResult.bigFiveScores || null,
+                dominantTrait: bigFiveResult.dominantTrait,
+                personalityDescriptions: personalityAnalysis?.description || bigFiveResult.descriptions,
+                userPreferences: user.preferences,
+                interests: interests.length > 0 ? interests : user.preferences.interests || [],
+                accommodationStyle: personalityAnalysis?.accommodation_style,
+                travelStyle: personalityAnalysis?.travel_style,
+                motivations: personalityAnalysis?.motivations || []
+            };
+
+            const geminiResult = await this.geminiService.generatePersonalizedTravelPlan(travelPlanParams);
+
+            // Step 4: Prepare comprehensive response
+            const response = {
+                success: true,
+                destination,
+                dates: { start: startDate, end: endDate },
+                budget: parseInt(budget),
+                personality: personalityAnalysis || {
+                    dominantTrait: travelPlanParams.dominantTrait,
+                    bigFiveScores: travelPlanParams.bigFiveScores,
+                    confidence: bigFiveResult.success ? bigFiveResult.confidenceScores : null,
+                    analysis: bigFiveResult.success ? bigFiveResult.descriptions : bigFiveResult.fallback?.descriptions
+                },
+                personalityAnalysis: personalityAnalysis,
+                recommendations: personalityRecommendations,
+                travelPlan: geminiResult.success ? geminiResult.travelPlan : geminiResult.fallback,
+                aiStatus: {
+                    personalitySource: personalityAnalysis ? 'stored' : 'generated',
+                    bigFivePrediction: bigFiveResult?.success ? 'success' : 'fallback',
+                    geminiGeneration: geminiResult.success ? 'success' : 'fallback'
+                }
+            };
+
+            res.json(response);
+
+        } catch (error) {
+            console.error('AI travel plan generation error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to generate personalized travel plan',
                 error: error.message
             });
         }
@@ -605,48 +686,22 @@ class AITravelController {
                 userPreferences: user.preferences
             };
 
-            // Use active LLM service (Gemini or Groq) to generate personalized itinerary
-            const llmResult = await this.activeService.generatePersonalizedItinerary(tripData);
+            // Use Gemini service to generate personalized itinerary
+            const geminiResult = await this.geminiService.generatePersonalizedItinerary(tripData);
             
-            if (llmResult.success) {
+            if (geminiResult.success) {
                 // Save the generated itinerary to MongoDB
                 const TourPlan = require('../models/tourPlan');
-                // Extract required fields from LLM result
-                const itineraryData = llmResult.itinerary;
-                const dailyPlans = itineraryData?.daily_plans || [];
-                
-                // Convert LLM format to TourPlan schema format
-                const formattedItinerary = dailyPlans.map((day, index) => ({
-                    day: index + 1,
-                    activities: (day.activities || []).map(activity => ({
-                        name: activity.name || 'Activity',
-                        description: activity.description || '',
-                        category: activity.category || 'general',
-                        startTime: activity.time || activity.start_time || '',
-                        endTime: activity.end_time || '',
-                        location: activity.location || ''
-                    }))
-                }));
-                
-                const weatherForecast = (itineraryData?.weather_forecast || []).map(weather => ({
-                    date: weather.date || new Date().toISOString().split('T')[0],
-                    temperature: weather.temperature_high || weather.temperature || 'N/A',
-                    conditions: weather.conditions || 'Unknown'
-                }));
-                
                 const newItinerary = new TourPlan({
                     userId: req.user._id,
-                    placeName: destination, // Required field
+                    destination: destination,
+                    startDate: travel_dates.split(' to ')[0],
+                    endDate: travel_dates.split(' to ')[1],
+                    duration: duration,
                     budget: total_budget,
-                    numberOfDays: parseInt(duration), // Required field
-                    itinerary: formattedItinerary, // Required format
-                    weatherForecast: weatherForecast,
-                    personalizedRecommendations: true,
-                    preferenceAnalysis: {
-                        travelerType: user.personalityAnalysis?.travelerType,
-                        personalityDescription: user.personalityAnalysis?.description,
-                        generatedWith: 'gemini-1.5-flash'
-                    }
+                    itinerary: geminiResult.itinerary,
+                    personalityAnalysis: user.personalityAnalysis.description,
+                    createdAt: new Date()
                 });
                 
                 // Save to database
@@ -657,40 +712,15 @@ class AITravelController {
                     $push: { tours: newItinerary._id }
                 });
                 
-                // Format response for frontend consumption
-                const frontendItinerary = {
-                    ...llmResult.itinerary,
-                    // Add destination, duration, budget for basic component
-                    destination: destination,
-                    duration: parseInt(duration),
-                    budget: total_budget,
-                    // Add detailed text format for enhanced view
-                    detailed_itinerary: this.formatDetailedItinerary(llmResult.itinerary),
-                    // Fix weather forecast format
-                    weather_forecast: this.formatWeatherForFrontend(llmResult.itinerary.weather_forecast),
-                    // Add personality analysis for frontend
-                    personality_analysis: {
-                        description: user.personalityAnalysis.description,
-                        traveler_type: user.personalityAnalysis.travelerType,
-                        motivations: user.personalityAnalysis.motivations || []
-                    },
-                    // Add basic component format (dailyPlan)
-                    dailyPlan: this.formatDailyPlan(llmResult.itinerary),
-                    // Add personalized insights
-                    personalizedInsights: user.personalityAnalysis.description || "Based on your travel personality, this itinerary is customized for you.",
-                    // Add recommendations
-                    recommendations: this.extractRecommendations(llmResult.itinerary)
-                };
-
                 res.json({
                     success: true,
                     message: 'Personalized itinerary generated successfully',
-                    itinerary: frontendItinerary,
+                    itinerary: geminiResult.itinerary,
                     personalityUsed: user.personalityAnalysis.description,
                     itineraryId: newItinerary._id
                 });
             } else {
-                throw new Error(llmResult.error || 'Failed to generate itinerary');
+                throw new Error(geminiResult.error || 'Failed to generate itinerary');
             }
 
         } catch (error) {
@@ -743,19 +773,17 @@ class AITravelController {
                 console.log('✅ Trained ML model prediction successful!');
                 console.log(`🎯 Predicted Traveler Type: ${personalityResult.travelerType}`);
                 console.log(`🏆 Dominant Trait: ${personalityResult.dominantTrait}`);
-                console.log(`📍 Places They Love: ${personalityResult.placesTheyLove}`);
-                console.log(`🎭 Travel Style: ${personalityResult.travelStyle}`);
+                console.log(`📍 Places They Love: ${personalityResult.personalityDescription}`);
 
                 // Create detailed personality description
-                personalityDescription = `You are a **${personalityResult.travelerType}**! Based on our advanced ML analysis of over 1 million personality profiles, you love visiting: ${personalityResult.placesTheyLove}. Your travel style is: ${personalityResult.travelStyle}. Your dominant personality trait is ${personalityResult.dominantTrait}, which means you're drawn to experiences that align with your unique travel style.`;
+                personalityDescription = `You are a **${personalityResult.travelerType}**! Based on our advanced ML analysis of over 1 million personality profiles, you love visiting: ${personalityResult.personalityDescription}. Your dominant personality trait is ${personalityResult.dominantTrait}, which means you're drawn to experiences that align with your unique travel style.`;
 
                 // Prepare comprehensive personality data for storage
                 personalityAnalysisData = {
                     // Core ML predictions
                     travelerType: personalityResult.travelerType,
                     dominantTrait: personalityResult.dominantTrait,
-                    placesTheyLove: personalityResult.placesTheyLove,
-                    travelStyle: personalityResult.travelStyle,
+                    placesTheyLove: personalityResult.personalityDescription,
                     
                     // Big Five scores
                     bigFiveScores: personalityResult.bigFiveScores,
@@ -765,8 +793,8 @@ class AITravelController {
                     description: personalityDescription,
                     
                     // ML model info
-                    modelUsed: personalityResult.modelUsed || 'trained_ml_model',
-                    predictionConfidence: personalityResult.predictionConfidence || 0.8,
+                    modelUsed: 'trained_ml_model',
+                    predictionConfidence: Math.max(...Object.values(personalityResult.confidenceScores || {})) || 0.8,
                     analysisDate: new Date(),
                     
                     // Available traveler types for reference
@@ -933,57 +961,9 @@ class AITravelController {
                 doc.moveDown();
             }
 
-            // Daily itinerary in tabular format
-            if (req.body.dailyPlan && req.body.dailyPlan.length > 0) {
-                doc.fontSize(16).text('Daily Itinerary', { underline: true });
-                doc.moveDown();
-                
-                req.body.dailyPlan.forEach((day, index) => {
-                    // Day header
-                    doc.fontSize(14)
-                       .fillColor('#2c3e50')
-                       .text(`Day ${day.day}: ${day.title}`, { underline: true });
-                    doc.moveDown(0.5);
-                    
-                    // Activities
-                    if (day.activities && day.activities.length > 0) {
-                        day.activities.forEach((activity, actIndex) => {
-                            doc.fontSize(11)
-                               .fillColor('#000000')
-                               .text(`${activity.time || 'All day'} - ${activity.activity}`, {
-                                   indent: 20
-                               });
-                            if (activity.cost) {
-                                doc.text(`Cost: $${activity.cost}`, { indent: 40 });
-                            }
-                            doc.moveDown(0.3);
-                        });
-                    }
-                    
-                    // Day total
-                    doc.fontSize(12)
-                       .fillColor('#1976d2')
-                       .text(`Day ${day.day} Total: $${day.totalCost || 0}`, { 
-                           indent: 20, 
-                           underline: true 
-                       });
-                    doc.moveDown();
-                });
-                
-                // Trip total
-                const tripTotal = req.body.dailyPlan.reduce((sum, day) => sum + (day.totalCost || 0), 0);
-                doc.fontSize(14)
-                   .fillColor('#d32f2f')
-                   .text(`Total Trip Cost: $${tripTotal}`, { 
-                       align: 'right',
-                       underline: true 
-                   });
-                doc.moveDown();
-            }
-
-            // Detailed itinerary text
-            doc.fontSize(16).fillColor('#000000').text('Detailed Description', { underline: true });
-            doc.fontSize(10).text(detailed_itinerary || 'Detailed itinerary not available', {
+            // Detailed itinerary
+            doc.fontSize(16).text('Detailed Itinerary', { underline: true });
+            doc.fontSize(10).text(detailed_itinerary, {
                 width: 410,
                 align: 'left'
             });
@@ -991,69 +971,32 @@ class AITravelController {
             // Finalize PDF
             doc.end();
 
-            // Handle PDF completion properly
-            doc.on('end', () => {
-                // Wait a moment for file to be fully written
-                setTimeout(() => {
-                    try {
-                        // Check if file exists
-                        if (!fs.existsSync(filepath)) {
-                            throw new Error('PDF file was not created');
-                        }
-
-                        // Set response headers
-                        res.setHeader('Content-Type', 'application/pdf');
-                        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-                        res.setHeader('Content-Length', fs.statSync(filepath).size);
-                        
-                        // Send file
-                        const fileStream = fs.createReadStream(filepath);
-                        
-                        fileStream.on('error', (err) => {
-                            console.error('Error reading PDF file:', err);
-                            if (!res.headersSent) {
-                                res.status(500).json({
-                                    success: false,
-                                    message: 'Error reading PDF file'
-                                });
-                            }
+            // Wait for PDF to be written and send response
+            setTimeout(() => {
+                try {
+                    // Set response headers
+                    res.setHeader('Content-Type', 'application/pdf');
+                    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+                    
+                    // Send file
+                    const fileStream = fs.createReadStream(filepath);
+                    fileStream.pipe(res);
+                    
+                    // Clean up file after sending
+                    fileStream.on('end', () => {
+                        fs.unlink(filepath, (err) => {
+                            if (err) console.error('Error deleting temp PDF:', err);
                         });
-
-                        fileStream.on('end', () => {
-                            // Clean up file after sending
-                            setTimeout(() => {
-                                fs.unlink(filepath, (err) => {
-                                    if (err) console.error('Error deleting temp PDF:', err);
-                                    else console.log('✅ Temp PDF file cleaned up');
-                                });
-                            }, 1000);
-                        });
-
-                        fileStream.pipe(res);
-                        
-                    } catch (error) {
-                        console.error('Error sending PDF:', error);
-                        if (!res.headersSent) {
-                            res.status(500).json({
-                                success: false,
-                                message: 'Error generating PDF file',
-                                error: error.message
-                            });
-                        }
-                    }
-                }, 500);
-            });
-
-            doc.on('error', (err) => {
-                console.error('PDF document error:', err);
-                if (!res.headersSent) {
+                    });
+                    
+                } catch (error) {
+                    console.error('Error sending PDF:', error);
                     res.status(500).json({
                         success: false,
-                        message: 'Error creating PDF document',
-                        error: err.message
+                        message: 'Error generating PDF file'
                     });
                 }
-            });
+            }, 1000);
 
         } catch (error) {
             console.error('Generate PDF error:', error);
@@ -1064,158 +1007,6 @@ class AITravelController {
             });
         }
     }
-
-    // Helper function to format detailed itinerary text
-    formatDetailedItinerary(itineraryData) {
-        if (!itineraryData || !itineraryData.daily_plans) {
-            return "Detailed itinerary not available";
-        }
-
-        let text = `🎯 TRIP OVERVIEW\n`;
-        text += `Destination: ${itineraryData.trip_overview?.destination || 'Your chosen destination'}\n`;
-        text += `Duration: ${itineraryData.trip_overview?.duration || 'Multiple days'}\n`;
-        text += `Budget: $${itineraryData.trip_overview?.budget || 'As planned'}\n\n`;
-
-        text += `📋 DAILY ITINERARY\n\n`;
-
-        itineraryData.daily_plans.forEach((day, index) => {
-            text += `==== DAY ${day.day || index + 1} ====\n`;
-            text += `Theme: ${day.theme || 'Exploration Day'}\n\n`;
-            
-            if (day.activities && day.activities.length > 0) {
-                day.activities.forEach((activity, actIndex) => {
-                    text += `${actIndex + 1}. ${activity.name || 'Activity'}\n`;
-                    if (activity.time) text += `   ⏰ Time: ${activity.time}\n`;
-                    if (activity.description) text += `   📝 ${activity.description}\n`;
-                    if (activity.location) text += `   📍 Location: ${activity.location}\n`;
-                    text += `\n`;
-                });
-            } else {
-                text += `   • General exploration and sightseeing\n\n`;
-            }
-            text += `\n`;
-        });
-
-        if (itineraryData.personality_optimization) {
-            text += `🎭 PERSONALIZED FOR YOU\n`;
-            text += `${itineraryData.personality_optimization.traveler_type_benefits || 'This itinerary is customized based on your travel personality and preferences.'}\n\n`;
-        }
-
-        return text;
-    }
-
-    // Helper function to format weather forecast for frontend
-    formatWeatherForFrontend(weatherData) {
-        if (!weatherData || !Array.isArray(weatherData)) {
-            return {
-                overall_summary: "Weather information will be updated closer to your travel date.",
-                packing_recommendations: ["Pack according to season", "Check weather forecast before departure"]
-            };
-        }
-
-        // Convert array format to frontend expected format
-        const overall = weatherData.length > 0 
-            ? `Expected weather: ${weatherData.map(w => w.conditions).join(', ')}`
-            : "Weather information not available";
-
-        const packing = [
-            "Comfortable walking shoes",
-            "Weather-appropriate clothing",
-            "Sun protection",
-            "Light jacket for evenings"
-        ];
-
-        return {
-            overall_summary: overall,
-            packing_recommendations: packing,
-            daily_forecast: weatherData
-        };
-    }
-
-    // Helper function to format daily plan for basic frontend component
-    formatDailyPlan(itineraryData) {
-        if (!itineraryData || !itineraryData.daily_plans) {
-            return [
-                {
-                    day: 1,
-                    title: "Exploration Day",
-                    activities: [
-                        { time: "09:00", activity: "General sightseeing", cost: 50 }
-                    ],
-                    totalCost: 50
-                }
-            ];
-        }
-
-        return itineraryData.daily_plans.map((day, index) => {
-            const activities = [];
-            let totalCost = 0;
-            
-            // Handle new structured format: morning, noon, evening
-            if (day.morning) {
-                activities.push({
-                    time: day.morning.time || '8:00 AM - 12:00 PM',
-                    activity: `Morning: ${day.morning.activities}`,
-                    cost: day.morning.cost || 0
-                });
-                totalCost += day.morning.cost || 0;
-            }
-            
-            if (day.noon) {
-                activities.push({
-                    time: day.noon.time || '12:00 PM - 4:00 PM',
-                    activity: `Afternoon: ${day.noon.activities}`,
-                    cost: day.noon.cost || 0
-                });
-                totalCost += day.noon.cost || 0;
-            }
-            
-            if (day.evening) {
-                activities.push({
-                    time: day.evening.time || '4:00 PM - 10:00 PM',
-                    activity: `Evening: ${day.evening.activities}`,
-                    cost: day.evening.cost || 0
-                });
-                totalCost += day.evening.cost || 0;
-            }
-            
-            // Fallback for old format
-            if (activities.length === 0 && day.activities) {
-                day.activities.forEach((activity, actIndex) => {
-                    activities.push({
-                        time: activity.time || activity.startTime || `${9 + actIndex * 2}:00`,
-                        activity: activity.name || activity.description || 'Planned activity',
-                        cost: activity.cost || Math.floor(Math.random() * 50) + 20
-                    });
-                    totalCost += activity.cost || Math.floor(Math.random() * 50) + 20;
-                });
-            }
-            
-            return {
-                day: day.day || index + 1,
-                title: day.theme || `Day ${day.day || index + 1} Activities`,
-                activities,
-                totalCost: day.daily_total || totalCost
-            };
-        });
-    }
-
-    // Helper function to extract recommendations
-    extractRecommendations(itineraryData) {
-        const defaultRecommendations = [
-            "Pack comfortable walking shoes",
-            "Bring a portable charger for your devices",
-            "Download offline maps for navigation",
-            "Carry local currency for small vendors",
-            "Book popular attractions in advance"
-        ];
-
-        if (itineraryData?.personality_optimization?.recommendations) {
-            return itineraryData.personality_optimization.recommendations;
-        }
-
-        return defaultRecommendations;
-    }
 }
 
-module.exports = new AITravelController();
+module.exports = new AITravelController(); 

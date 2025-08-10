@@ -3,62 +3,62 @@ const path = require('path');
 
 class BigFiveService {
     constructor() {
-        this.pythonScriptPath = path.join(__dirname, '../ml_models/big_five_percentage_predictor.py');
-        this.modelPath = path.join(__dirname, '../ml_models/big_five_percentage_model.pkl');
+        this.pythonScriptPath = 'scripts/predict_personality.py'; // Relative to ml_models directory
+        this.modelPath = path.join(__dirname, '../ml_models/models/travel_personality_model.pkl');
     }
 
     async predictBigFivePersonality(userPreferences) {
         try {
-            const preferenceFields = [
-                'morningRoutine', 'placePreference', 'travelPace', 'foodPreferences',
-                'backupPlanning', 'memoryCapturing', 'photographyStyle', 'musicPreferences',
-                'spontaneityLevel', 'packingPhilosophy', 'groupDynamics', 'memorableElements'
-            ];
-
-            const userResponses = preferenceFields.map(field => {
-                const value = userPreferences[field];
-                if (value === undefined || value === null) {
-                    throw new Error(`Missing preference field: ${field}`);
-                }
-                return parseInt(value);
-            });
-
-            console.log('🔮 Calling Python ML model with responses:', userResponses);
-            const result = await this.callPythonModel(userResponses);
+            console.log('🔮 Calling trained ML model with user preferences:', userPreferences);
+            const result = await this.callTrainedModel(userPreferences);
             
             if (result.success) {
                 return {
                     success: true,
                     bigFiveScores: result.big_five_scores,
                     dominantTrait: result.dominant_trait,
-                    travelerType: result.traveler_type,
-                    personalityDescription: result.personality_description,
-                    confidenceScores: result.confidence_scores,
-                    descriptions: result.descriptions
+                    travelerType: result.travel_type,
+                    personalityDescription: result.travel_description,
+                    placesTheyLove: result.places_they_love,
+                    travelStyle: result.travel_style,
+                    confidenceScores: result.all_probabilities,
+                    predictionConfidence: result.confidence,
+                    modelUsed: result.model_used,
+                    descriptions: this.getTraverlerTypeDescriptions()
                 };
             } else {
-                console.log('⚠️ Python model failed, using fallback analysis');
-                return this.generateFallbackAnalysis(userResponses);
+                console.log('⚠️ Trained model failed, using fallback analysis');
+                const bigFiveScores = this.calculateBigFiveFromPreferences(userPreferences);
+                return this.generateFallbackAnalysis(bigFiveScores);
             }
 
         } catch (error) {
             console.error('BigFiveService prediction error:', error);
-            return this.generateFallbackAnalysis(this.extractResponses(userPreferences));
+            const fallbackScores = this.calculateBigFiveFromPreferences(userPreferences);
+            return this.generateFallbackAnalysis(fallbackScores);
         }
     }
 
-    async callPythonModel(userResponses) {
+    async callTrainedModel(userPreferences) {
         return new Promise((resolve, reject) => {
-            // Convert responses array to comma-separated string for the script
-            const responsesString = userResponses.join(',');
+            // Pass preferences as JSON string to Python script
+            const preferencesJson = JSON.stringify(userPreferences);
             
-            const pythonProcess = spawn('py', [
-                this.pythonScriptPath,
-                responsesString
-            ]);
+            // Use system Python (or virtual environment if available)
+            const pythonPath = 'python';
+            const pythonProcess = spawn(pythonPath, [this.pythonScriptPath, preferencesJson], {
+                cwd: path.join(__dirname, '../ml_models')
+            });
 
             let stdout = '';
             let stderr = '';
+
+            // Set timeout for Python process (30 seconds)
+            const timeout = setTimeout(() => {
+                console.error('Python process timeout (30s), killing process...');
+                pythonProcess.kill();
+                resolve({ success: false, error: 'Python process timeout' });
+            }, 30000);
 
             pythonProcess.stdout.on('data', (data) => {
                 stdout += data.toString();
@@ -69,72 +69,136 @@ class BigFiveService {
             });
 
             pythonProcess.on('close', (code) => {
+                clearTimeout(timeout);
                 if (code === 0) {
                     try {
                         const result = JSON.parse(stdout);
-                        resolve({ success: true, ...result });
+                        if (result.error) {
+                            resolve({ success: false, error: result.error });
+                        } else {
+                            resolve({ 
+                                success: true, 
+                                travel_type: result.travel_type,
+                                confidence: result.confidence,
+                                places_they_love: result.places_they_love,
+                                travel_description: result.travel_description,
+                                travel_style: result.travel_style,
+                                big_five_scores: result.big_five_scores,
+                                dominant_trait: result.dominant_trait,
+                                all_probabilities: result.all_probabilities,
+                                model_used: result.model_used
+                            });
+                        }
                     } catch (parseError) {
                         console.error('Failed to parse Python output:', parseError);
+                        console.error('Raw output:', stdout);
                         resolve({ success: false, error: 'Parse error' });
                     }
                 } else {
-                    console.error('Python process failed:', stderr);
+                    console.error('Python process failed with code:', code);
+                    console.error('stderr:', stderr);
                     resolve({ success: false, error: stderr });
                 }
             });
 
             pythonProcess.on('error', (error) => {
                 console.error('Failed to start Python process:', error);
+                clearTimeout(timeout);
                 resolve({ success: false, error: error.message });
             });
         });
     }
 
-    generateFallbackAnalysis(userResponses) {
-        console.log('🔄 Using fallback personality analysis');
+    bigFiveToResponses(bigFiveScores) {
+        // Convert Big Five scores (0-5) to 50 individual question responses
+        const responses = [];
         
-        const analysis = {
-            big_five_scores: {
-                Openness: this.calculateOpenness(userResponses),
-                Conscientiousness: this.calculateConscientiousness(userResponses),
-                Extraversion: this.calculateExtraversion(userResponses),
-                Agreeableness: this.calculateAgreeableness(userResponses),
-                Neuroticism: this.calculateNeuroticism(userResponses)
-            },
-            dominant_trait: '',
-            descriptions: {
-                Openness: {
-                    description: 'Cultural Explorers who love discovering unique and artistic places',
-                    places_they_love: 'Museums, art galleries, historical sites, cultural centers, local markets, traditional workshops, archaeological ruins, heritage villages, street art districts, cultural festivals',
-                    traveler_type: 'Cultural Explorer'
-                },
-                Conscientiousness: {
-                    description: 'Luxury Seekers who prefer high-end and well-organized destinations',
-                    places_they_love: 'Five-star hotels, fine dining restaurants, luxury spas, upscale shopping districts, premium resorts, exclusive clubs, high-end galleries, luxury cruise ships',
-                    traveler_type: 'Luxury Seeker'
-                },
-                Extraversion: {
-                    description: 'Social Party-Goers who thrive in vibrant and energetic environments',
-                    places_they_love: 'Nightclubs, bars, beach parties, music festivals, social events, group tours, crowded markets, vibrant neighborhoods, sports venues, rooftop lounges',
-                    traveler_type: 'Social Party-Goer'
-                },
-                Agreeableness: {
-                    description: 'Community Connectors who value authentic local experiences and peaceful places',
-                    places_they_love: 'Local communities, family restaurants, parks, gardens, temples, community centers, volunteer organizations, local homes, peaceful cafes, nature reserves',
-                    traveler_type: 'Community Connector'
-                },
-                Neuroticism: {
-                    description: 'Comfort Seekers who prefer safe, familiar, and relaxing destinations',
-                    places_they_love: 'All-inclusive resorts, familiar chain restaurants, hotel pools, spa centers, safe tourist areas, guided tour buses, shopping malls, comfortable lounges',
-                    traveler_type: 'Comfort Seeker'
-                }
+        // Order: EXT, AGR, CSN, EST, OPN (10 questions each)
+        const traits = ['extraversion', 'agreeableness', 'conscientiousness', 'neuroticism', 'openness'];
+        
+        for (const trait of traits) {
+            const score = Math.round(bigFiveScores[trait] || 3); // Default to 3 if missing
+            const clampedScore = Math.max(1, Math.min(5, score)); // Ensure 1-5 range
+            
+            // Repeat the score 10 times (representing 10 questions per trait)
+            for (let i = 0; i < 10; i++) {
+                responses.push(clampedScore);
             }
+        }
+        
+        return responses;
+    }
+
+    getDominantTrait(bigFiveScores) {
+        return Object.keys(bigFiveScores).reduce((a, b) => 
+            bigFiveScores[a] > bigFiveScores[b] ? a : b
+        );
+    }
+
+    calculateBigFiveFromPreferences(userPreferences) {
+        // Convert user travel preferences to Big Five personality scores (0-5 scale)
+        const preferences = {
+            morningRoutine: parseInt(userPreferences.morningRoutine) || 3,
+            placePreference: parseInt(userPreferences.placePreference) || 3,
+            travelPace: parseInt(userPreferences.travelPace) || 3,
+            foodPreferences: parseInt(userPreferences.foodPreferences) || 3,
+            backupPlanning: parseInt(userPreferences.backupPlanning) || 3,
+            memoryCapturing: parseInt(userPreferences.memoryCapturing) || 3,
+            photographyStyle: parseInt(userPreferences.photographyStyle) || 3,
+            musicPreferences: parseInt(userPreferences.musicPreferences) || 3,
+            spontaneityLevel: parseInt(userPreferences.spontaneityLevel) || 3,
+            packingPhilosophy: parseInt(userPreferences.packingPhilosophy) || 3,
+            groupDynamics: parseInt(userPreferences.groupDynamics) || 3,
+            memorableElements: parseInt(userPreferences.memorableElements) || 3
         };
 
-        const scores = analysis.big_five_scores;
-        analysis.dominant_trait = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+        return {
+            openness: this.calculateOpenness(Object.values(preferences)) / 20, // Scale to 0-5
+            conscientiousness: this.calculateConscientiousness(Object.values(preferences)) / 20,
+            extraversion: this.calculateExtraversion(Object.values(preferences)) / 20,
+            agreeableness: this.calculateAgreeableness(Object.values(preferences)) / 20,
+            neuroticism: this.calculateNeuroticism(Object.values(preferences)) / 20
+        };
+    }
 
-        return { success: false, fallback: analysis };
+    generateFallbackAnalysis(bigFiveScores) {
+        console.log('🔄 Using fallback personality analysis');
+        
+        // Determine traveler type based on dominant trait
+        const dominantTrait = Object.keys(bigFiveScores).reduce((a, b) => 
+            bigFiveScores[a] > bigFiveScores[b] ? a : b
+        );
+
+        const traitToTravelerType = {
+            'openness': 'Cultural_Explorer',
+            'conscientiousness': 'Luxury_Seeker',
+            'extraversion': 'Social_Party_Goer',
+            'agreeableness': 'Community_Connector',
+            'neuroticism': 'Comfort_Seeker'
+        };
+
+        const travelerType = traitToTravelerType[dominantTrait] || 'Cultural_Explorer';
+        
+        return {
+            success: true,
+            bigFiveScores: bigFiveScores,
+            dominantTrait: dominantTrait,
+            travelerType: travelerType,
+            personalityDescription: this.getTraverlerTypeDescriptions()[travelerType],
+            confidenceScores: { [travelerType]: 0.8 }, // Fallback confidence
+            descriptions: this.getTraverlerTypeDescriptions(),
+            fallback: true
+        };
+    }
+
+    getTraverlerTypeDescriptions() {
+        return {
+            'Cultural_Explorer': 'Museums, art galleries, historical sites, cultural centers, local markets, traditional workshops',
+            'Luxury_Seeker': 'Five-star hotels, fine dining restaurants, luxury spas, upscale shopping districts, premium resorts',
+            'Social_Party_Goer': 'Nightclubs, bars, beach parties, music festivals, social events, group tours, crowded markets',
+            'Community_Connector': 'Local communities, family restaurants, parks, gardens, temples, community centers, peaceful cafes',
+            'Comfort_Seeker': 'All-inclusive resorts, familiar chain restaurants, hotel pools, spa centers, safe tourist areas'
+        };
     }
 
     calculateOpenness(responses) {

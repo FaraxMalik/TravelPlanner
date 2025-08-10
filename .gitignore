@@ -564,6 +564,9 @@ coverage/
 config/keys.js
 config/prod.js
 
+# Script files containing API keys
+Backend/update_groq_key.js
+
 # Uploads directory
 uploads/
 public/uploads/

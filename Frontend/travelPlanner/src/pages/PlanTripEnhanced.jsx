@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { aiAPI, pdfAPI } from '../services/api';
+import ItineraryTable from '../components/ItineraryTable';
 import './PlanTripEnhanced.css';
 
 const PlanTrip = () => {
@@ -81,7 +82,7 @@ const PlanTrip = () => {
       const response = await aiAPI.generateItinerary(requestData);
       
       if (response.data.success) {
-        setItinerary(response.data);
+        setItinerary(response.data.itinerary); // Extract just the itinerary data
         setStep('results');
       } else {
         throw new Error(response.data.error || 'Failed to generate itinerary');
@@ -101,6 +102,10 @@ const PlanTrip = () => {
     try {
       const response = await pdfAPI.generateItineraryPDF({
         ...itinerary,
+        destination: tripData.destination,
+        travel_dates: `${tripData.startDate} to ${tripData.endDate}`,
+        duration: calculateDuration(),
+        total_budget: parseInt(tripData.budget),
         tripData
       });
 
@@ -382,6 +387,16 @@ const PlanTrip = () => {
         <div className="itinerary-content">
           <pre className="itinerary-text">{itinerary?.detailed_itinerary}</pre>
         </div>
+      </motion.div>
+
+      {/* Tabular Itinerary Display */}
+      <motion.div 
+        className="tabular-itinerary-section"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
+        <ItineraryTable itinerary={itinerary} tripData={tripData} />
       </motion.div>
 
       {/* Action Buttons */}

@@ -71,11 +71,13 @@ export const travelAPI = {
 
 // AI API calls
 export const aiAPI = {
-  generatePersonalizedPlan: (data) => api.post('/ai/personalized-plan', data),
-  getRecommendations: (preferences) => api.post('/ai/recommendations', preferences),
+  generateComprehensivePlan: (data) => api.post('/ai/generate-comprehensive-plan', data),
+  generateEnhancedPlan: (data) => api.post('/ai/generate-enhanced-plan', data),
   generateItinerary: (tripData) => api.post('/ai/generate-itinerary', tripData),
   analyzePersonality: (preferences) => api.post('/ai/analyze-personality', preferences),
-  getWeatherForecast: (destination, dates) => api.post('/ai/weather-forecast', { destination, dates }),
+  checkPersonalityStatus: () => api.get('/ai/personality-status'),
+  getUserPersonality: () => api.get('/ai/personality'),
+  generatePDF: (itineraryData) => api.post('/ai/generate-pdf', itineraryData),
 };
 
 // PDF API calls
