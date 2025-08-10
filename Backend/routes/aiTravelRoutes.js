@@ -6,6 +6,9 @@ const aiTravelController = require('../controllers/aiTravelController');
 // AI Travel Planning Routes
 router.post('/generate-plan', protect, aiTravelController.generatePersonalizedPlan);
 router.post('/generate-enhanced-plan', protect, aiTravelController.generateEnhancedPlan);
+router.post('/generate-itinerary', protect, aiTravelController.generateItinerary);
+router.post('/analyze-personality', protect, aiTravelController.analyzePersonality);
+router.post('/generate-pdf', protect, aiTravelController.generatePDF);
 router.get('/personality', protect, aiTravelController.getUserPersonality);
 
 // Testing Routes (for development)

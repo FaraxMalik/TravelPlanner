@@ -107,6 +107,22 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      if (!token) return;
+      
+      const response = await authAPI.verifyToken();
+      if (response.data.success && response.data.user) {
+        const updatedUser = response.data.user;
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        return updatedUser;
+      }
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    }
+  };
+
   const clearError = () => {
     setError(null);
   };
@@ -118,6 +134,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    refreshUser,
     clearError,
     loading,
     isAuthenticated: !!user,

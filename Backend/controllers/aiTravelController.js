@@ -15,6 +15,9 @@ class AITravelController {
         this.getUserPersonality = this.getUserPersonality.bind(this);
         this.testPersonalityPrediction = this.testPersonalityPrediction.bind(this);
         this.testGeminiGeneration = this.testGeminiGeneration.bind(this);
+        this.analyzePersonality = this.analyzePersonality.bind(this);
+        this.generateItinerary = this.generateItinerary.bind(this);
+        this.generatePDF = this.generatePDF.bind(this);
     }
 
     /**
@@ -49,31 +52,53 @@ class AITravelController {
                 });
             }
 
-            // Step 1: Predict Big Five personality
-            console.log('🔮 Predicting Big Five personality...');
-            const bigFiveResult = await this.bigFiveService.predictBigFivePersonality(user.preferences);
+            // Check if user has completed personality analysis
+            let personalityAnalysis = null;
+            let bigFiveResult = null;
             
-            if (!bigFiveResult.success) {
-                console.log('⚠️ Using fallback personality analysis');
+            if (user.personalityAnalysis) {
+                console.log('� Using stored personality analysis...');
+                personalityAnalysis = user.personalityAnalysis;
+                
+                // Use stored personality for travel planning
+                bigFiveResult = {
+                    success: true,
+                    dominantTrait: personalityAnalysis.travel_style || 'Balanced Explorer',
+                    descriptions: personalityAnalysis.description,
+                    personalityType: personalityAnalysis.accommodation_style
+                };
+            } else {
+                console.log('🔮 Generating new personality analysis...');
+                bigFiveResult = await this.bigFiveService.predictBigFivePersonality(user.preferences);
+                
+                if (!bigFiveResult.success) {
+                    console.log('⚠️ Using fallback personality analysis');
+                }
             }
 
             // Step 2: Generate personality-based recommendations
-            const personalityRecommendations = this.bigFiveService.generatePersonalityRecommendations(
-                bigFiveResult.success ? bigFiveResult : bigFiveResult.fallback
-            );
+            const personalityRecommendations = personalityAnalysis ? 
+                personalityAnalysis.preferred_activities || [] :
+                this.bigFiveService.generatePersonalityRecommendations(
+                    bigFiveResult.success ? bigFiveResult : bigFiveResult.fallback
+                );
 
-            // Step 3: Generate AI-powered travel plan
+            // Step 3: Generate AI-powered travel plan with stored personality data
             console.log('🤖 Generating personalized travel plan with Gemini...');
             const travelPlanParams = {
                 destination,
                 startDate,
                 endDate,
                 budget: parseInt(budget),
-                bigFiveScores: bigFiveResult.success ? bigFiveResult.bigFiveScores : bigFiveResult.fallback.big_five_scores,
-                dominantTrait: bigFiveResult.success ? bigFiveResult.dominantTrait : bigFiveResult.fallback.dominant_trait,
-                personalityDescriptions: bigFiveResult.success ? bigFiveResult.descriptions : bigFiveResult.fallback.descriptions,
+                personalityAnalysis: personalityAnalysis,
+                bigFiveScores: bigFiveResult.bigFiveScores || null,
+                dominantTrait: bigFiveResult.dominantTrait,
+                personalityDescriptions: personalityAnalysis?.description || bigFiveResult.descriptions,
                 userPreferences: user.preferences,
-                interests: interests.length > 0 ? interests : user.preferences.interests || []
+                interests: interests.length > 0 ? interests : user.preferences.interests || [],
+                accommodationStyle: personalityAnalysis?.accommodation_style,
+                travelStyle: personalityAnalysis?.travel_style,
+                motivations: personalityAnalysis?.motivations || []
             };
 
             const geminiResult = await this.geminiService.generatePersonalizedTravelPlan(travelPlanParams);
@@ -84,16 +109,18 @@ class AITravelController {
                 destination,
                 dates: { start: startDate, end: endDate },
                 budget: parseInt(budget),
-                personality: {
+                personality: personalityAnalysis || {
                     dominantTrait: travelPlanParams.dominantTrait,
                     bigFiveScores: travelPlanParams.bigFiveScores,
                     confidence: bigFiveResult.success ? bigFiveResult.confidenceScores : null,
-                    analysis: bigFiveResult.success ? bigFiveResult.descriptions : bigFiveResult.fallback.descriptions
+                    analysis: bigFiveResult.success ? bigFiveResult.descriptions : bigFiveResult.fallback?.descriptions
                 },
+                personalityAnalysis: personalityAnalysis,
                 recommendations: personalityRecommendations,
                 travelPlan: geminiResult.success ? geminiResult.travelPlan : geminiResult.fallback,
                 aiStatus: {
-                    bigFivePrediction: bigFiveResult.success ? 'success' : 'fallback',
+                    personalitySource: personalityAnalysis ? 'stored' : 'generated',
+                    bigFivePrediction: bigFiveResult?.success ? 'success' : 'fallback',
                     geminiGeneration: geminiResult.success ? 'success' : 'fallback'
                 }
             };
@@ -220,42 +247,34 @@ class AITravelController {
      */
     async getUserPersonality(req, res) {
         try {
-            const user = await User.findById(req.user._id);
-            if (!user || !user.preferences) {
-                return res.status(400).json({
+            const user = await User.findById(req.user._id).select('personalityAnalysis personalityAnalyzedAt preferencesCompleted preferences');
+            
+            if (!user) {
+                return res.status(404).json({
                     success: false,
-                    message: 'User preferences not found. Please complete the preference questionnaire first.'
+                    message: 'User not found'
                 });
             }
 
-            // Predict Big Five personality
-            const bigFiveResult = await this.bigFiveService.predictBigFivePersonality(user.preferences);
-            
-            // Generate personality-based recommendations
-            const personalityRecommendations = this.bigFiveService.generatePersonalityRecommendations(
-                bigFiveResult.success ? bigFiveResult : bigFiveResult.fallback
-            );
+            if (!user.preferencesCompleted || !user.personalityAnalysis) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Personality analysis not available. Please complete the questionnaire first.'
+                });
+            }
 
             res.json({
                 success: true,
-                personality: {
-                    dominantTrait: bigFiveResult.success ? bigFiveResult.dominantTrait : bigFiveResult.fallback.dominant_trait,
-                    bigFiveScores: bigFiveResult.success ? bigFiveResult.bigFiveScores : bigFiveResult.fallback.big_five_scores,
-                    confidence: bigFiveResult.success ? bigFiveResult.confidenceScores : null,
-                    analysis: bigFiveResult.success ? bigFiveResult.descriptions : bigFiveResult.fallback.descriptions
-                },
-                recommendations: personalityRecommendations,
-                userPreferences: user.preferences,
-                aiStatus: {
-                    prediction: bigFiveResult.success ? 'success' : 'fallback'
-                }
+                personality: user.personalityAnalysis,
+                analyzed_at: user.personalityAnalyzedAt,
+                preferences_completed: user.preferencesCompleted
             });
 
         } catch (error) {
-            console.error('Personality analysis error:', error);
+            console.error('Get user personality error:', error);
             res.status(500).json({
                 success: false,
-                message: 'Failed to analyze personality',
+                message: 'Failed to retrieve personality data',
                 error: error.message
             });
         }
@@ -420,6 +439,303 @@ class AITravelController {
             res.status(500).json({
                 success: false,
                 message: 'Failed to test Gemini generation',
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Generate itinerary using the enhanced ML pipeline
+     * @route POST /api/ai/generate-itinerary
+     * @access Private
+     */
+    async generateItinerary(req, res) {
+        try {
+            const {
+                destination,
+                travel_dates,
+                duration,
+                daily_budget,
+                total_budget,
+                additional_preferences,
+                travelers = 1
+            } = req.body;
+
+            // Validate required fields
+            if (!destination || !travel_dates || !duration || !daily_budget) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Missing required fields: destination, travel_dates, duration, daily_budget'
+                });
+            }
+
+            // Get user data including personality analysis from MongoDB
+            const user = await User.findById(req.user._id);
+            if (!user || !user.preferences) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'User preferences not found. Please complete the questionnaire first.'
+                });
+            }
+
+            // Check if user has personality analysis
+            if (!user.personalityAnalysis || !user.personalityAnalysis.description) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Personality analysis not found. Please complete the questionnaire first.'
+                });
+            }
+
+            // Prepare data for Gemini API with personality description
+            const tripData = {
+                destination: destination,
+                travel_dates: travel_dates,
+                duration: parseInt(duration),
+                daily_budget: parseInt(daily_budget),
+                total_budget: total_budget,
+                travelers: travelers,
+                additional_preferences: additional_preferences || '',
+                personalityDescription: user.personalityAnalysis.description, // This is the key addition!
+                userPreferences: user.preferences
+            };
+
+            // Use Gemini service to generate personalized itinerary
+            const geminiResult = await this.geminiService.generatePersonalizedItinerary(tripData);
+            
+            if (geminiResult.success) {
+                // Save the generated itinerary to MongoDB
+                const TourPlan = require('../models/tourPlan');
+                const newItinerary = new TourPlan({
+                    userId: req.user._id,
+                    destination: destination,
+                    startDate: travel_dates.split(' to ')[0],
+                    endDate: travel_dates.split(' to ')[1],
+                    duration: duration,
+                    budget: total_budget,
+                    itinerary: geminiResult.itinerary,
+                    personalityAnalysis: user.personalityAnalysis.description,
+                    createdAt: new Date()
+                });
+                
+                // Save to database
+                await newItinerary.save();
+                
+                // Add the itinerary ID to user's tours
+                await User.findByIdAndUpdate(req.user._id, {
+                    $push: { tours: newItinerary._id }
+                });
+                
+                res.json({
+                    success: true,
+                    message: 'Personalized itinerary generated successfully',
+                    itinerary: geminiResult.itinerary,
+                    personalityUsed: user.personalityAnalysis.description,
+                    itineraryId: newItinerary._id
+                });
+            } else {
+                throw new Error(geminiResult.error || 'Failed to generate itinerary');
+            }
+
+        } catch (error) {
+            console.error('Generate itinerary error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to generate itinerary',
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Analyze personality from preferences
+     * @route POST /api/ai/analyze-personality
+     * @access Private
+     */
+    async analyzePersonality(req, res) {
+        try {
+            const preferences = req.body;
+
+            // Validate preferences
+            if (!preferences || Object.keys(preferences).length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No preferences provided'
+                });
+            }
+
+            // Save preferences to MongoDB user document
+            await User.findByIdAndUpdate(req.user._id, {
+                preferences: preferences,
+                preferencesCompleted: true,
+                preferencesUpdatedAt: new Date()
+            });
+
+            // Use BigFive service for personality analysis (Node.js implementation)
+            const personalityData = await this.bigFiveService.predictBigFivePersonality(preferences);
+            
+            // Extract a meaningful description for the frontend and future trip planning
+            let personalityDescription = '';
+            if (personalityData.success && personalityData.travelerType) {
+                // Use the traveler type and detailed personality description
+                personalityDescription = `You are a **${personalityData.travelerType}**! ${personalityData.personalityDescription}`;
+                
+                // Add specific places they love for the dominant trait
+                if (personalityData.descriptions && personalityData.descriptions[personalityData.dominantTrait]) {
+                    const traitInfo = personalityData.descriptions[personalityData.dominantTrait];
+                    personalityDescription += ` Places you'll love visiting: ${traitInfo.places_they_love || traitInfo.travel_preferences}`;
+                }
+            } else if (personalityData.fallback && personalityData.fallback.descriptions) {
+                // Use fallback detailed descriptions
+                const dominantTrait = personalityData.fallback.dominant_trait;
+                const traitDescription = personalityData.fallback.descriptions[dominantTrait];
+                personalityDescription = `You are a **${traitDescription.traveler_type || 'Balanced Traveler'}**! ${traitDescription.description}. Places you'll love visiting: ${traitDescription.places_they_love || traitDescription.travel_preferences}`;
+            } else {
+                personalityDescription = "You are a **Balanced Traveler** who enjoys a mix of adventure and comfort in your travel experiences.";
+            }
+
+            // Save personality analysis to user document and mark preferences as completed
+            await User.findByIdAndUpdate(req.user._id, {
+                preferences: req.body, // Save the preferences that were submitted
+                preferencesCompleted: true, // Mark preferences as completed
+                preferencesUpdatedAt: new Date(),
+                personalityAnalysis: {
+                    description: personalityDescription,
+                    bigFiveScores: personalityData.bigFiveScores,
+                    dominantTrait: personalityData.dominantTrait,
+                    confidenceScores: personalityData.confidenceScores
+                },
+                personalityAnalyzedAt: new Date()
+            });
+
+            res.json({
+                success: true,
+                personalityAnalysis: personalityDescription,
+                personalityData: personalityData, // Include full data for future use
+                message: 'Personality analysis completed and saved'
+            });
+
+        } catch (error) {
+            console.error('Analyze personality error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to analyze personality',
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Generate PDF from itinerary data
+     * @route POST /api/ai/generate-pdf
+     * @access Private
+     */
+    async generatePDF(req, res) {
+        try {
+            const { 
+                detailed_itinerary, 
+                destination, 
+                travel_dates, 
+                personality_analysis, 
+                weather_forecast,
+                duration,
+                total_budget 
+            } = req.body;
+
+            if (!detailed_itinerary || !destination) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Missing required data for PDF generation'
+                });
+            }
+
+            // For now, we'll use a simple text-based PDF generation
+            // You can enhance this with libraries like PDFKit or puppeteer
+            const PDFDocument = require('pdfkit');
+            const fs = require('fs');
+            const path = require('path');
+
+            // Create a new PDF document
+            const doc = new PDFDocument();
+            const filename = `${destination.replace(/[^a-z0-9]/gi, '_')}_Itinerary_${Date.now()}.pdf`;
+            const filepath = path.join(__dirname, '../temp', filename);
+
+            // Ensure temp directory exists
+            const tempDir = path.join(__dirname, '../temp');
+            if (!fs.existsSync(tempDir)) {
+                fs.mkdirSync(tempDir, { recursive: true });
+            }
+
+            // Pipe PDF to file
+            doc.pipe(fs.createWriteStream(filepath));
+
+            // Add content to PDF
+            doc.fontSize(24).text('Travel Itinerary', { align: 'center' });
+            doc.fontSize(18).text(destination, { align: 'center' });
+            doc.moveDown();
+
+            // Trip details
+            doc.fontSize(14).text(`Travel Dates: ${travel_dates}`);
+            doc.text(`Duration: ${duration} days`);
+            doc.text(`Budget: $${total_budget}`);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`);
+            doc.moveDown();
+
+            // Personality section
+            if (personality_analysis) {
+                doc.fontSize(16).text('Your Travel Personality', { underline: true });
+                doc.fontSize(12).text(personality_analysis.description || '');
+                doc.moveDown();
+            }
+
+            // Weather section
+            if (weather_forecast && weather_forecast.overall_summary) {
+                doc.fontSize(16).text('Weather Forecast', { underline: true });
+                doc.fontSize(12).text(weather_forecast.overall_summary);
+                doc.moveDown();
+            }
+
+            // Detailed itinerary
+            doc.fontSize(16).text('Detailed Itinerary', { underline: true });
+            doc.fontSize(10).text(detailed_itinerary, {
+                width: 410,
+                align: 'left'
+            });
+
+            // Finalize PDF
+            doc.end();
+
+            // Wait for PDF to be written and send response
+            setTimeout(() => {
+                try {
+                    // Set response headers
+                    res.setHeader('Content-Type', 'application/pdf');
+                    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+                    
+                    // Send file
+                    const fileStream = fs.createReadStream(filepath);
+                    fileStream.pipe(res);
+                    
+                    // Clean up file after sending
+                    fileStream.on('end', () => {
+                        fs.unlink(filepath, (err) => {
+                            if (err) console.error('Error deleting temp PDF:', err);
+                        });
+                    });
+                    
+                } catch (error) {
+                    console.error('Error sending PDF:', error);
+                    res.status(500).json({
+                        success: false,
+                        message: 'Error generating PDF file'
+                    });
+                }
+            }, 1000);
+
+        } catch (error) {
+            console.error('Generate PDF error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to generate PDF',
                 error: error.message
             });
         }

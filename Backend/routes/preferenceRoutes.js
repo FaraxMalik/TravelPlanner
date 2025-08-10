@@ -4,8 +4,7 @@ const { protect } = require('../middlewares/authMiddleware');
 const {
   getPreferenceQuestions,
   submitPreferences,
-  getPreferenceAnalysis,
-  getTravelPersonality
+  getUserPreferences
 } = require('../controllers/preferenceController');
 
 // Public routes
@@ -13,7 +12,6 @@ router.get('/questions', getPreferenceQuestions);
 
 // Protected routes
 router.post('/submit', protect, submitPreferences);
-router.get('/analysis', protect, getPreferenceAnalysis);
-router.get('/personality', protect, getTravelPersonality);
+router.get('/user', protect, getUserPreferences);
 
 module.exports = router; 

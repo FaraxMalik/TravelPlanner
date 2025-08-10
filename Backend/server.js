@@ -4,6 +4,12 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
+// Validate required environment variables
+if (!process.env.JWT_SECRET) {
+  console.error('❌ JWT_SECRET is required but not found in environment variables');
+  process.exit(1);
+}
+
 // Import database connection
 const connectDB = require('./config/database');
 
@@ -60,7 +66,6 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/tours', require('./routes/tourRoutes'));
 app.use('/api/feedback', require('./routes/feedbackRoutes'));
-app.use('/api/llm', require('./routes/llmRoutes'));
 app.use('/api/preferences', require('./routes/preferenceRoutes'));
 app.use('/api/ai', require('./routes/aiTravelRoutes'));
 

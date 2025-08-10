@@ -6,6 +6,7 @@ const {
   getUserProfile,
   getUserPreferences,
   updateUserPreferences,
+  getUserPersonality,
   verifyToken,
   logoutUser
 } = require('../controllers/authController');
@@ -20,6 +21,7 @@ router.post('/logout', logoutUser);
 router.get('/verify', protect, verifyToken);
 router.get('/user/me', protect, getUserProfile);
 router.get('/user/preferences', protect, getUserPreferences);
+router.get('/user/personality', protect, getUserPersonality);
 router.put('/user/preferences', protect, updateUserPreferences);
 
 module.exports = router; 

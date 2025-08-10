@@ -48,10 +48,10 @@ export const authAPI = {
 
 // User API calls
 export const userAPI = {
-  getProfile: () => api.get('/user/profile'),
-  updateProfile: (userData) => api.put('/user/profile', userData),
-  updatePreferences: (preferences) => api.put('/user/preferences', preferences),
-  getPersonality: () => api.get('/user/personality'),
+  getProfile: () => api.get('/auth/user/me'),
+  updateProfile: (userData) => api.put('/auth/user/profile', userData),
+  updatePreferences: (preferences) => api.put('/auth/user/preferences', preferences),
+  getPersonality: () => api.get('/auth/user/personality'),
 };
 
 // Preferences API calls
@@ -73,6 +73,19 @@ export const travelAPI = {
 export const aiAPI = {
   generatePersonalizedPlan: (data) => api.post('/ai/personalized-plan', data),
   getRecommendations: (preferences) => api.post('/ai/recommendations', preferences),
+  generateItinerary: (tripData) => api.post('/ai/generate-itinerary', tripData),
+  analyzePersonality: (preferences) => api.post('/ai/analyze-personality', preferences),
+  getWeatherForecast: (destination, dates) => api.post('/ai/weather-forecast', { destination, dates }),
+};
+
+// PDF API calls
+export const pdfAPI = {
+  generateItineraryPDF: (itineraryData) => api.post('/ai/generate-pdf', itineraryData, {
+    responseType: 'blob',
+    headers: {
+      'Accept': 'application/pdf',
+    },
+  }),
 };
 
 export default api;

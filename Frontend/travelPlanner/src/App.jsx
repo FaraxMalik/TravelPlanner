@@ -5,9 +5,9 @@ import Navbar from './components/Navbar';
 import Homepage from './pages/Homepage';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
-import Dashboard from './pages/Dashboard';
-import PreferencesQuestionnaire from './components/PreferencesQuestionnaire';
-import PlanTrip from './pages/PlanTrip';
+import DashboardEnhanced from './pages/DashboardEnhanced';
+import PreferencesQuestionnaireEnhanced from './components/PreferencesQuestionnaireEnhanced';
+import PlanTripEnhanced from './pages/PlanTripEnhanced';
 
 // Import CSS files
 import './index.css';
@@ -33,9 +33,9 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/signin" replace />;
 };
 
-// Public Route Component (redirect if authenticated)
-const PublicRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+// Route that checks if user needs preferences
+const PreferenceAwareRoute = ({ children }) => {
+  const { user, isAuthenticated, loading } = useAuth();
   
   if (loading) {
     return (
@@ -46,7 +46,40 @@ const PublicRoute = ({ children }) => {
     );
   }
   
-  return isAuthenticated ? <Navigate to="/dashboard" replace /> : children;
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" replace />;
+  }
+  
+  // If user hasn't completed preferences, redirect to preferences
+  if (user && user.needsPreferences) {
+    return <Navigate to="/preferences" replace />;
+  }
+  
+  return children;
+};
+
+// Public Route Component (redirect if authenticated)
+const PublicRoute = ({ children }) => {
+  const { isAuthenticated, loading, user } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
+  
+  if (isAuthenticated) {
+    // If authenticated but needs preferences, go to preferences
+    if (user && user.needsPreferences) {
+      return <Navigate to="/preferences" replace />;
+    }
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return children;
 };
 
 function App() {
@@ -62,7 +95,7 @@ function App() {
 }
 
 const AppContent = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
 
   if (loading) {
     return (
@@ -107,29 +140,29 @@ const AppContent = () => {
             } 
           />
 
-          {/* Protected Routes */}
+          {/* Protected Routes with Preference Checking */}
           <Route 
             path="/dashboard" 
             element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
+              <PreferenceAwareRoute>
+                <DashboardEnhanced />
+              </PreferenceAwareRoute>
             } 
           />
           <Route 
             path="/preferences" 
             element={
               <ProtectedRoute>
-                <PreferencesQuestionnaire />
+                <PreferencesQuestionnaireEnhanced />
               </ProtectedRoute>
             } 
           />
           <Route 
             path="/plan-trip" 
             element={
-              <ProtectedRoute>
-                <PlanTrip />
-              </ProtectedRoute>
+              <PreferenceAwareRoute>
+                <PlanTripEnhanced />
+              </PreferenceAwareRoute>
             } 
           />
 
@@ -138,7 +171,7 @@ const AppContent = () => {
             path="*" 
             element={
               isAuthenticated ? 
-                <Navigate to="/dashboard" replace /> : 
+                (user?.needsPreferences ? <Navigate to="/preferences" replace /> : <Navigate to="/dashboard" replace />) : 
                 <Navigate to="/" replace />
             } 
           />

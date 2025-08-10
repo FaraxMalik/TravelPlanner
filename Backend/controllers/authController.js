@@ -52,7 +52,10 @@ const registerUser = async (req, res) => {
           firstName: user.name.split(' ')[0],
           lastName: user.name.split(' ').slice(1).join(' '),
           email: user.email,
-          preferences: user.preferences
+          preferences: user.preferences,
+          personalityAnalysis: user.personalityAnalysis,
+          hasCompletedPreferences: false,
+          preferencesCompleted: false
         }
       });
     } else {
@@ -103,6 +106,23 @@ const loginUser = async (req, res) => {
     }
 
     const token = generateToken(user._id);
+    
+    // Check if user has completed all 12 personality questions
+    const hasCompletedPreferences = user.preferencesCompleted && 
+      user.preferences &&
+      user.preferences.morningRoutine &&
+      user.preferences.placePreference &&
+      user.preferences.travelPace &&
+      user.preferences.foodPreferences &&
+      user.preferences.backupPlanning &&
+      user.preferences.memoryCapturing &&
+      user.preferences.photographyStyle &&
+      user.preferences.musicPreferences &&
+      user.preferences.spontaneityLevel &&
+      user.preferences.packingPhilosophy &&
+      user.preferences.groupDynamics &&
+      user.preferences.memorableElements;
+    
     res.json({
       success: true,
       message: 'Login successful',
@@ -114,7 +134,10 @@ const loginUser = async (req, res) => {
         lastName: user.name.split(' ').slice(1).join(' '),
         email: user.email,
         preferences: user.preferences,
-        hasCompletedPreferences: Object.keys(user.preferences || {}).length > 3
+        personalityAnalysis: user.personalityAnalysis,
+        hasCompletedPreferences,
+        preferencesCompleted: user.preferencesCompleted || false,
+        needsPreferences: !hasCompletedPreferences // Flag for frontend routing
       }
     });
   } catch (error) {
@@ -222,6 +245,16 @@ const logoutUser = async (req, res) => {
 const verifyToken = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
+    
+    // Check if user has completed all 12 preferences
+    // Check if user has completed all 12 personality questions
+    const hasAllPreferences = user.preferencesCompleted && 
+      user.preferences && 
+      ['morningRoutine', 'placePreference', 'travelPace', 'foodPreferences', 'backupPlanning', 
+       'memoryCapturing', 'photographyStyle', 'musicPreferences', 'spontaneityLevel', 
+       'packingPhilosophy', 'groupDynamics', 'memorableElements']
+       .every(key => user.preferences[key] !== undefined && user.preferences[key] !== null);
+    
     res.json({
       success: true,
       user: {
@@ -231,11 +264,42 @@ const verifyToken = async (req, res) => {
         lastName: user.name.split(' ').slice(1).join(' '),
         email: user.email,
         preferences: user.preferences,
-        hasCompletedPreferences: Object.keys(user.preferences || {}).length > 3
+        preferencesCompleted: user.preferencesCompleted || false,
+        hasCompletedPreferences: hasAllPreferences,
+        needsPreferences: !hasAllPreferences,
+        personalityAnalysis: user.personalityAnalysis
       }
     });
   } catch (error) {
     console.error('Token verification error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    });
+  }
+};
+
+// @desc    Get user's personality analysis
+// @route   GET /api/auth/user/personality
+// @access  Private
+const getUserPersonality = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('personalityAnalysis preferencesCompleted');
+    
+    if (!user.personalityAnalysis) {
+      return res.status(404).json({
+        success: false,
+        message: 'Personality analysis not found. Please complete the preferences questionnaire.'
+      });
+    }
+    
+    res.json({
+      success: true,
+      personality: user.personalityAnalysis,
+      completed: user.preferencesCompleted
+    });
+  } catch (error) {
+    console.error('Get personality error:', error);
     res.status(500).json({ 
       success: false,
       message: 'Server error' 
@@ -249,6 +313,7 @@ module.exports = {
   getUserProfile,
   getUserPreferences,
   updateUserPreferences,
+  getUserPersonality,
   verifyToken,
   logoutUser
 }; 

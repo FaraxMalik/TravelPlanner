@@ -61,6 +61,74 @@ class GeminiTravelService {
     }
 
     /**
+     * Generate personalized itinerary (alternative method for compatibility)
+     * @param {Object} params - Trip data parameters
+     * @returns {Object} Personalized itinerary
+     */
+    async generatePersonalizedItinerary(params) {
+        try {
+            const {
+                destination,
+                travel_dates,
+                duration,
+                daily_budget,
+                total_budget,
+                travelers,
+                additional_preferences,
+                personalityDescription,
+                userPreferences
+            } = params;
+
+            // Parse travel dates
+            const [startDate, endDate] = travel_dates.split(' to ');
+
+            const prompt = this.buildItineraryPrompt({
+                destination,
+                startDate,
+                endDate,
+                duration,
+                daily_budget,
+                total_budget,
+                travelers,
+                additional_preferences,
+                personalityDescription,
+                userPreferences
+            });
+
+            console.log('🔮 Generating itinerary with Gemini...');
+            console.log('📍 Destination:', destination);
+            console.log('📅 Dates:', travel_dates);
+            console.log('🧠 Personality Description:', personalityDescription);
+            console.log('📝 User Preferences:', userPreferences);
+            console.log('💰 Budget:', total_budget);
+            console.log('👤 Personality:', personalityDescription?.substring(0, 100) + '...');
+
+            const result = await this.model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text();
+
+            console.log('✅ Gemini response received, length:', text.length);
+
+            // Parse the structured response
+            const itinerary = this.parseItineraryResponse(text);
+
+            return {
+                success: true,
+                itinerary,
+                rawResponse: text
+            };
+
+        } catch (error) {
+            console.error('❌ Gemini itinerary generation error:', error);
+            return {
+                success: false,
+                error: error.message,
+                fallback: this.generateFallbackItinerary(params)
+            };
+        }
+    }
+
+    /**
      * Build comprehensive prompt for Gemini
      */
     buildTravelPlanPrompt(params) {
@@ -296,6 +364,137 @@ Make sure all recommendations are realistic, within budget, and perfectly aligne
         };
 
         return preferences[category][value] || 'Not specified';
+    }
+
+    /**
+     * Build itinerary prompt for Gemini
+     */
+    buildItineraryPrompt(params) {
+        const {
+            destination,
+            startDate,
+            endDate,
+            duration,
+            daily_budget,
+            total_budget,
+            travelers,
+            additional_preferences,
+            personalityDescription,
+            userPreferences
+        } = params;
+
+        return `You are an expert travel planner with deep knowledge of psychology and travel preferences. Create a highly personalized travel itinerary based on the user's detailed personality analysis.
+
+**TRAVEL REQUEST:**
+- Destination: ${destination}
+- Dates: ${startDate} to ${endDate}
+- Duration: ${duration} days
+- Daily Budget: $${daily_budget}
+- Total Budget: $${total_budget}
+- Number of Travelers: ${travelers}
+- Additional Preferences: ${additional_preferences}
+
+**DETAILED PERSONALITY ANALYSIS:**
+${personalityDescription}
+
+**USER PREFERENCES DATA:**
+${userPreferences ? Object.entries(userPreferences).map(([key, value]) => `${key}: ${value}`).join('\n') : 'Not specified'}
+
+**CRITICAL INSTRUCTIONS:**
+1. **PERSONALITY-DRIVEN**: Every recommendation must directly relate to their personality traits
+2. **DETAILED REASONING**: Include specific locations with addresses, names, and practical details
+3. **BUDGET CONSCIOUS**: Stay within their daily budget while maximizing value
+4. **AUTHENTIC EXPERIENCE**: Match activities to their psychological preferences
+
+**DETAILED REQUIREMENTS:**
+- Morning routines that match their energy patterns
+- Activity pacing that suits their personality type
+- Social interaction levels appropriate for their comfort zone
+- Food experiences that align with their openness/comfort preferences
+- Accommodation style that matches their conscientiousness level
+- Photography opportunities if they're visually inclined
+- Backup plans if they're planners, flexibility if they're spontaneous
+
+**RESPONSE FORMAT:**
+Provide a comprehensive JSON object with:
+- "overview": Trip summary with personality insights
+- "personality_match_explanation": Why this itinerary fits them perfectly
+- "daily_plans": Day-by-day detailed schedule with personality reasoning
+- "accommodation_recommendations": Hotels/stays that match their traits
+- "restaurant_guide": Dining that suits their food personality
+- "transportation_options": Travel methods fitting their style
+- "budget_breakdown": Detailed cost analysis
+- "personality_tips": How to maximize enjoyment based on their traits
+
+Make every recommendation deeply personal and psychologically informed!`;
+    }
+
+    /**
+     * Parse itinerary response
+     */
+    parseItineraryResponse(text) {
+        try {
+            // Try to extract JSON from the response
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+
+            // If no JSON found, create a basic structured response
+            return {
+                overview: "Your personalized itinerary",
+                highlights: text.substring(0, 500) + "...",
+                daily_plans: [
+                    {
+                        day: 1,
+                        activities: "Please see full response below",
+                        notes: "Itinerary generated based on your personality"
+                    }
+                ],
+                budget_breakdown: "Budget analysis included in full response",
+                raw_response: text
+            };
+
+        } catch (error) {
+            console.error('Error parsing itinerary response:', error);
+            return {
+                error: 'Failed to parse response',
+                raw_response: text
+            };
+        }
+    }
+
+    /**
+     * Generate fallback itinerary
+     */
+    generateFallbackItinerary(params) {
+        const { destination, startDate, endDate, duration, total_budget } = params;
+
+        return {
+            overview: `A wonderful ${duration}-day trip to ${destination}`,
+            highlights: [
+                "Explore local attractions",
+                "Experience local cuisine",
+                "Immerse in local culture"
+            ],
+            daily_plans: Array.from({ length: duration }, (_, i) => ({
+                day: i + 1,
+                date: startDate, // Should calculate actual dates
+                activities: [
+                    "Morning: Explore local area",
+                    "Afternoon: Visit main attractions", 
+                    "Evening: Enjoy local dining"
+                ],
+                estimated_cost: Math.round(total_budget / duration)
+            })),
+            budget_breakdown: {
+                accommodation: Math.round(total_budget * 0.4),
+                food: Math.round(total_budget * 0.3),
+                activities: Math.round(total_budget * 0.2),
+                transportation: Math.round(total_budget * 0.1)
+            },
+            personality_notes: "This itinerary has been tailored to your preferences"
+        };
     }
 
     /**

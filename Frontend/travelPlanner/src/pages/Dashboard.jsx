@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, 
   MapPin, 
@@ -30,22 +30,38 @@ const Dashboard = () => {
     {
       text: "The world is a book and those who do not travel read only one page.",
       author: "Augustine of Hippo",
-      bg: "linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)"
+      bg: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      icon: "📚"
     },
     {
       text: "Travel makes one modest. You see what a tiny place you occupy in the world.",
-      author: "Francis Bacon",
-      bg: "linear-gradient(135deg, #e63946 0%, #f1627c 100%)"
+      author: "Francis Bacon", 
+      bg: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+      icon: "🌍"
     },
     {
       text: "Not all those who wander are lost.",
       author: "J.R.R. Tolkien",
-      bg: "linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%)"
+      bg: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+      icon: "🧭"
     },
     {
       text: "Travel is the only thing you buy that makes you richer.",
       author: "Anonymous",
-      bg: "linear-gradient(135deg, #f1627c 0%, #e63946 100%)"
+      bg: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+      icon: "💎"
+    },
+    {
+      text: "Adventure awaits those who seek it.",
+      author: "Unknown Explorer",
+      bg: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+      icon: "⛰️"
+    },
+    {
+      text: "Collect moments, not things.",
+      author: "Travel Wisdom",
+      bg: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+      icon: "📸"
     }
   ];
 
@@ -74,13 +90,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchUserData();
-    
-    // Rotate quotes every 5 seconds
-    const quoteInterval = setInterval(() => {
-      setCurrentQuote(prev => (prev + 1) % travelQuotes.length);
-    }, 5000);
-
-    return () => clearInterval(quoteInterval);
+    // Removed auto-rotating quotes as requested
   }, []);
 
   const fetchUserData = async () => {
@@ -172,9 +182,9 @@ const Dashboard = () => {
         </div>
       </motion.div>
 
-      {/* Quote Section */}
+      {/* Inspirational Quote Carousel */}
       <motion.div 
-        className="quote-section"
+        className="quote-carousel"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
@@ -183,13 +193,36 @@ const Dashboard = () => {
           className="quote-card"
           style={{ background: travelQuotes[currentQuote].bg }}
         >
-          <Quote className="quote-icon" />
+          <div className="quote-icon-large">{travelQuotes[currentQuote].icon}</div>
           <blockquote className="quote-text">
             "{travelQuotes[currentQuote].text}"
           </blockquote>
           <cite className="quote-author">
             — {travelQuotes[currentQuote].author}
           </cite>
+          <div className="quote-navigation">
+            <button 
+              className="quote-nav-btn"
+              onClick={() => setCurrentQuote(prev => prev === 0 ? travelQuotes.length - 1 : prev - 1)}
+            >
+              ←
+            </button>
+            <div className="quote-dots">
+              {travelQuotes.map((_, index) => (
+                <button
+                  key={index}
+                  className={`quote-dot ${index === currentQuote ? 'active' : ''}`}
+                  onClick={() => setCurrentQuote(index)}
+                />
+              ))}
+            </div>
+            <button 
+              className="quote-nav-btn"
+              onClick={() => setCurrentQuote(prev => (prev + 1) % travelQuotes.length)}
+            >
+              →
+            </button>
+          </div>
         </div>
       </motion.div>
 
@@ -204,72 +237,58 @@ const Dashboard = () => {
         >
           <div className="card-header">
             <BarChart3 className="card-icon" />
-            <h3>Your Travel Stats</h3>
+            <h3>Your Travel Journey</h3>
           </div>
           <div className="stats-grid">
             <div className="stat-item">
-              <div className="stat-number">12</div>
-              <div className="stat-label">Countries Visited</div>
+              <div className="stat-icon">🌍</div>
+              <div className="stat-number">0</div>
+              <div className="stat-label">Countries Explored</div>
             </div>
             <div className="stat-item">
-              <div className="stat-number">47</div>
-              <div className="stat-label">Cities Explored</div>
+              <div className="stat-icon">✈️</div>
+              <div className="stat-number">0</div>
+              <div className="stat-label">Trips Planned</div>
             </div>
             <div className="stat-item">
-              <div className="stat-number">156</div>
-              <div className="stat-label">Memories Made</div>
+              <div className="stat-icon">📷</div>
+              <div className="stat-number">0</div>
+              <div className="stat-label">Memories Created</div>
             </div>
             <div className="stat-item">
-              <div className="stat-number">8.2k</div>
-              <div className="stat-label">Miles Traveled</div>
+              <div className="stat-icon">⭐</div>
+              <div className="stat-number">0</div>
+              <div className="stat-label">Dream Destinations</div>
             </div>
           </div>
         </motion.div>
 
-        {/* Personality Insight */}
+        {/* Dream Destinations */}
         <motion.div 
-          className="personality-card"
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <div className="card-header">
-            <Compass className="card-icon" />
-            <h3>Your Travel Personality</h3>
-          </div>
-          <div className="personality-content">
-            <div className="personality-insight">
-              <p>{getPersonalityInsight(personalityProfile)}</p>
-            </div>
-            {personalityProfile?.dominantTrait && (
-              <div className="dominant-trait">
-                <Star className="trait-icon" />
-                <span>Dominant Trait: {personalityProfile.dominantTrait}</span>
-              </div>
-            )}
-          </div>
-        </motion.div>
-
-        {/* Nostalgic Memories */}
-        <motion.div 
-          className="memories-card"
+          className="destinations-card"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.5 }}
         >
           <div className="card-header">
             <Camera className="card-icon" />
-            <h3>Nostalgic Memories</h3>
+            <h3>Dream Destinations</h3>
           </div>
-          <div className="memories-grid">
+          <div className="destinations-grid">
             {nostalgicPlaces.map((place, index) => (
-              <div key={index} className="memory-item">
-                <div className="memory-image">{place.image}</div>
-                <div className="memory-content">
+              <motion.div 
+                key={index} 
+                className="destination-item"
+                whileHover={{ scale: 1.02, y: -2 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="destination-image">{place.image}</div>
+                <div className="destination-content">
                   <h4>{place.name}</h4>
                   <p>{place.memory}</p>
+                  <div className="destination-badge">Explore</div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>
@@ -283,29 +302,45 @@ const Dashboard = () => {
         >
           <div className="card-header">
             <Plane className="card-icon" />
-            <h3>Plan Your Next Adventure</h3>
+            <h3>Start Your Adventure</h3>
           </div>
           <div className="actions-content">
-            <button 
+            <motion.button 
               className="btn btn-primary btn-large action-btn"
               onClick={() => navigate('/plan-trip')}
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
               <Plus size={20} />
               Plan a New Trip
-            </button>
+              <span className="btn-sparkle">✨</span>
+            </motion.button>
             <div className="quick-links">
-              <button className="quick-link">
+              <motion.button 
+                className="quick-link"
+                whileHover={{ scale: 1.02, x: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <MapPin size={16} />
-                View Past Trips
-              </button>
-              <button className="quick-link">
+                Saved Places
+              </motion.button>
+              <motion.button 
+                className="quick-link"
+                whileHover={{ scale: 1.02, x: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <Heart size={16} />
-                Saved Destinations
-              </button>
-              <button className="quick-link">
+                Wishlist
+              </motion.button>
+              <motion.button 
+                className="quick-link"
+                whileHover={{ scale: 1.02, x: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <Calendar size={16} />
                 Travel Calendar
-              </button>
+              </motion.button>
             </div>
           </div>
         </motion.div>

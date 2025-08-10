@@ -21,7 +21,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const PreferencesQuestionnaire = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -217,6 +217,10 @@ const PreferencesQuestionnaire = () => {
       const response = await preferencesAPI.submitPreferences(answers);
       if (response.data.success) {
         setShowResult(true);
+        
+        // Refresh user data to update needsPreferences status
+        await refreshUser();
+        
         // Wait 3 seconds then navigate to dashboard
         setTimeout(() => {
           navigate('/dashboard');
@@ -224,7 +228,8 @@ const PreferencesQuestionnaire = () => {
       }
     } catch (error) {
       console.error('Error submitting preferences:', error);
-      // Still navigate to dashboard even if there's an error
+      // Refresh user data and navigate to dashboard even if there's an error
+      await refreshUser();
       setTimeout(() => {
         navigate('/dashboard');
       }, 2000);

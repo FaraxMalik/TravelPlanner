@@ -1,53 +1,149 @@
 [
   {
-    "question": "Morning Magic",
-    "field": "morningRoutine",
-    "text": "How do you like to start your day on a trip?",
+    "id": "budgetComfort",
+    "question": "Budget vs Comfort",
+    "text": "When traveling, I prefer to:",
     "options": [
-      {
-        "text": "Sunrise walk & journaling",
-        "value": 0,
-        "labels": ["introspective", "peaceful", "nature", "reflective"]
-      },
-      {
-        "text": "Coffee and plan the day",
-        "value": 1,
-        "labels": ["organized", "structured", "practical", "prepared"]
-      },
-      {
-        "text": "Sleep in, it's a vacation",
-        "value": 2,
-        "labels": ["relaxed", "comfort", "leisurely", "indulgent"]
-      },
-      {
-        "text": "Straight to adventure!",
-        "value": 3,
-        "labels": ["adventurous", "energetic", "spontaneous", "active"]
-      }
+      { "text": "Stay in budget hostels and save money", "value": 1 },
+      { "text": "Mix budget and mid-range options", "value": 2 },
+      { "text": "Choose comfort over cost savings", "value": 3 },
+      { "text": "Prefer luxury accommodations", "value": 4 },
+      { "text": "Only the finest, money is no object", "value": 5 }
     ]
   },
   {
-    "question": "Would You Rather: Hidden Gem Edition",
-    "field": "placePreference",
-    "text": "Would you rather…",
+    "id": "travelPace",
+    "question": "Travel Pace",
+    "text": "My ideal travel pace is:",
     "options": [
-      {
-        "text": "Hike to a quiet waterfall",
-        "value": 0,
-        "labels": ["nature", "solitude", "peaceful", "adventure"]
-      },
-      {
-        "text": "Chill at a beach café",
-        "value": 1,
-        "labels": ["relaxed", "social", "scenic", "comfortable"]
-      },
-      {
-        "text": "Explore a buzzing local market",
-        "value": 2,
-        "labels": ["social", "cultural", "vibrant", "local"]
-      },
-      {
-        "text": "Take a history tour of old forts",
+      { "text": "Very slow, stay in one place for weeks", "value": 1 },
+      { "text": "Relaxed, 3-4 days per destination", "value": 2 },
+      { "text": "Moderate, 2-3 destinations per week", "value": 3 },
+      { "text": "Fast-paced, see multiple places daily", "value": 4 },
+      { "text": "Extremely fast, maximum destinations", "value": 5 }
+    ]
+  },
+  {
+    "id": "spontaneityLevel",
+    "question": "Planning vs Spontaneity",
+    "text": "When it comes to planning my trips:",
+    "options": [
+      { "text": "I plan every detail months in advance", "value": 1 },
+      { "text": "I plan major things but leave room for spontaneity", "value": 2 },
+      { "text": "I have a rough plan and go with the flow", "value": 3 },
+      { "text": "I prefer minimal planning, mostly spontaneous", "value": 4 },
+      { "text": "I never plan, complete spontaneity", "value": 5 }
+    ]
+  },
+  {
+    "id": "placePreference",
+    "question": "Urban vs Nature",
+    "text": "I'm most excited by:",
+    "options": [
+      { "text": "Remote wilderness and untouched nature", "value": 1 },
+      { "text": "Small towns and rural landscapes", "value": 2 },
+      { "text": "Mix of nature and small cities", "value": 3 },
+      { "text": "Major cities with some nature nearby", "value": 4 },
+      { "text": "Big bustling metropolises", "value": 5 }
+    ]
+  },
+  {
+    "id": "groupDynamics",
+    "question": "Social vs Solo",
+    "text": "I prefer to travel:",
+    "options": [
+      { "text": "Completely solo, my own adventure", "value": 1 },
+      { "text": "Solo with occasional social interactions", "value": 2 },
+      { "text": "With one close companion", "value": 3 },
+      { "text": "In a small group of friends", "value": 4 },
+      { "text": "In large groups, the more the merrier", "value": 5 }
+    ]
+  },
+  {
+    "id": "memorableElements",
+    "question": "Memorable Experiences",
+    "text": "The most memorable part of travel for me is:",
+    "options": [
+      { "text": "Personal reflection and self-discovery", "value": 1 },
+      { "text": "Capturing beautiful photos and moments", "value": 2 },
+      { "text": "Learning about history and culture", "value": 3 },
+      { "text": "Meeting new people and making connections", "value": 4 },
+      { "text": "Adrenaline-pumping adventures", "value": 5 }
+    ]
+  },
+  {
+    "id": "challenges",
+    "question": "Comfort Zone",
+    "text": "When traveling, I:",
+    "options": [
+      { "text": "Stick to familiar and comfortable situations", "value": 1 },
+      { "text": "Slightly push my comfort zone occasionally", "value": 2 },
+      { "text": "Enjoy moderate challenges and new experiences", "value": 3 },
+      { "text": "Actively seek challenging and unfamiliar situations", "value": 4 },
+      { "text": "Constantly push boundaries and take big risks", "value": 5 }
+    ]
+  },
+  {
+    "id": "cultureLevel",
+    "question": "Cultural Immersion",
+    "text": "My approach to local culture is:",
+    "options": [
+      { "text": "I prefer familiar things from home", "value": 1 },
+      { "text": "I try some local things but keep to basics", "value": 2 },
+      { "text": "I enjoy experiencing local culture moderately", "value": 3 },
+      { "text": "I dive deep into local customs and traditions", "value": 4 },
+      { "text": "I completely immerse myself like a local", "value": 5 }
+    ]
+  },
+  {
+    "id": "restRelaxation",
+    "question": "Activity vs Rest",
+    "text": "On vacation, I need:",
+    "options": [
+      { "text": "Lots of rest and relaxation time", "value": 1 },
+      { "text": "A good balance of rest and activities", "value": 2 },
+      { "text": "Moderate activity with some downtime", "value": 3 },
+      { "text": "Constant activity with minimal rest", "value": 4 },
+      { "text": "Non-stop action, sleep is for home", "value": 5 }
+    ]
+  },
+  {
+    "id": "experienceDepth",
+    "question": "Breadth vs Depth",
+    "text": "I prefer to:",
+    "options": [
+      { "text": "Deeply explore one location thoroughly", "value": 1 },
+      { "text": "Spend quality time in few places", "value": 2 },
+      { "text": "Balance depth and breadth of experiences", "value": 3 },
+      { "text": "See many different places and experiences", "value": 4 },
+      { "text": "Experience as much variety as possible", "value": 5 }
+    ]
+  },
+  {
+    "id": "safetyAdventure",
+    "question": "Safety vs Adventure",
+    "text": "When choosing activities, I:",
+    "options": [
+      { "text": "Always prioritize safety and low risk", "value": 1 },
+      { "text": "Prefer safe activities with minimal risk", "value": 2 },
+      { "text": "Accept moderate risk for good experiences", "value": 3 },
+      { "text": "Seek thrilling experiences despite risks", "value": 4 },
+      { "text": "Love extreme adventures regardless of danger", "value": 5 }
+    ]
+  },
+  {
+    "id": "planningStyle",
+    "question": "Research & Planning",
+    "text": "Before traveling, I:",
+    "options": [
+      { "text": "Research everything extensively for months", "value": 1 },
+      { "text": "Do thorough research on key attractions", "value": 2 },
+      { "text": "Do basic research and plan essentials", "value": 3 },
+      { "text": "Do minimal research, prefer surprises", "value": 4 },
+      { "text": "Never research, I like complete surprises", "value": 5 }
+    ]
+  }
+]
         "value": 3,
         "labels": ["cultural", "educational", "historical", "structured"]
       }

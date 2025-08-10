@@ -10,9 +10,9 @@ class BigFiveService {
     async predictBigFivePersonality(userPreferences) {
         try {
             const preferenceFields = [
-                'morningRoutine', 'placePreference', 'travelPace', 'snackVibe',
-                'backupPlan', 'souvenirType', 'photoStyle', 'musicTaste',
-                'spontaneity', 'packingStyle', 'groupRole', 'memorableElement'
+                'morningRoutine', 'placePreference', 'travelPace', 'foodPreferences',
+                'backupPlanning', 'memoryCapturing', 'photographyStyle', 'musicPreferences',
+                'spontaneityLevel', 'packingPhilosophy', 'groupDynamics', 'memorableElements'
             ];
 
             const userResponses = preferenceFields.map(field => {
@@ -31,6 +31,8 @@ class BigFiveService {
                     success: true,
                     bigFiveScores: result.big_five_scores,
                     dominantTrait: result.dominant_trait,
+                    travelerType: result.traveler_type,
+                    personalityDescription: result.personality_description,
                     confidenceScores: result.confidence_scores,
                     descriptions: result.descriptions
                 };
@@ -47,11 +49,12 @@ class BigFiveService {
 
     async callPythonModel(userResponses) {
         return new Promise((resolve, reject) => {
-            const pythonProcess = spawn('python', [
+            // Convert responses array to comma-separated string for the script
+            const responsesString = userResponses.join(',');
+            
+            const pythonProcess = spawn('py', [
                 this.pythonScriptPath,
-                '--predict',
-                '--responses', JSON.stringify(userResponses),
-                '--model', this.modelPath
+                responsesString
             ]);
 
             let stdout = '';
@@ -101,24 +104,29 @@ class BigFiveService {
             dominant_trait: '',
             descriptions: {
                 Openness: {
-                    description: 'Creative, curious, adventurous travelers who seek novel experiences and cultural immersion',
-                    travel_preferences: 'Cultural sites, off-beaten-path adventures, artistic experiences, local traditions, museums, historical sites'
+                    description: 'Cultural Explorers who love discovering unique and artistic places',
+                    places_they_love: 'Museums, art galleries, historical sites, cultural centers, local markets, traditional workshops, archaeological ruins, heritage villages, street art districts, cultural festivals',
+                    traveler_type: 'Cultural Explorer'
                 },
                 Conscientiousness: {
-                    description: 'Organized, planned, detail-oriented travelers who prefer structured experiences',
-                    travel_preferences: 'Luxury accommodations, detailed itineraries, high-end dining, organized tours, well-reviewed places'
+                    description: 'Luxury Seekers who prefer high-end and well-organized destinations',
+                    places_they_love: 'Five-star hotels, fine dining restaurants, luxury spas, upscale shopping districts, premium resorts, exclusive clubs, high-end galleries, luxury cruise ships',
+                    traveler_type: 'Luxury Seeker'
                 },
                 Extraversion: {
-                    description: 'Social, energetic, outgoing travelers who thrive on interactions and excitement',
-                    travel_preferences: 'Group activities, nightlife, social experiences, vibrant destinations, party scenes, guided tours'
+                    description: 'Social Party-Goers who thrive in vibrant and energetic environments',
+                    places_they_love: 'Nightclubs, bars, beach parties, music festivals, social events, group tours, crowded markets, vibrant neighborhoods, sports venues, rooftop lounges',
+                    traveler_type: 'Social Party-Goer'
                 },
                 Agreeableness: {
-                    description: 'Cooperative, trusting, compassionate travelers who value peaceful experiences',
-                    travel_preferences: 'Peaceful destinations, local authenticity, community experiences, nature retreats, family-friendly places'
+                    description: 'Community Connectors who value authentic local experiences and peaceful places',
+                    places_they_love: 'Local communities, family restaurants, parks, gardens, temples, community centers, volunteer organizations, local homes, peaceful cafes, nature reserves',
+                    traveler_type: 'Community Connector'
                 },
                 Neuroticism: {
-                    description: 'Sensitive, comfort-seeking travelers who prefer familiar and relaxing experiences',
-                    travel_preferences: 'Comfortable accommodations, familiar food, relaxing activities, safe destinations, all-inclusive resorts'
+                    description: 'Comfort Seekers who prefer safe, familiar, and relaxing destinations',
+                    places_they_love: 'All-inclusive resorts, familiar chain restaurants, hotel pools, spa centers, safe tourist areas, guided tour buses, shopping malls, comfortable lounges',
+                    traveler_type: 'Comfort Seeker'
                 }
             }
         };
@@ -186,9 +194,9 @@ class BigFiveService {
 
     extractResponses(userPreferences) {
         const preferenceFields = [
-            'morningRoutine', 'placePreference', 'travelPace', 'snackVibe',
-            'backupPlan', 'souvenirType', 'photoStyle', 'musicTaste',
-            'spontaneity', 'packingStyle', 'groupRole', 'memorableElement'
+            'morningRoutine', 'placePreference', 'travelPace', 'foodPreferences',
+            'backupPlanning', 'memoryCapturing', 'photographyStyle', 'musicPreferences',
+            'spontaneityLevel', 'packingPhilosophy', 'groupDynamics', 'memorableElements'
         ];
         return preferenceFields.map(field => {
             const value = userPreferences[field];

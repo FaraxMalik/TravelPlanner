@@ -1,6 +1,5 @@
 const TourPlan = require('../models/tourPlan');
 const User = require('../models/user');
-const { analyzePreferences, generateRecommendations } = require('../config/preferenceQuestions');
 
 // @desc    Create a new tour plan
 // @route   POST /api/tours/create
