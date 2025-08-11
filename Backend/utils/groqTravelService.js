@@ -123,7 +123,7 @@ class GroqTravelService {
             userPreferences
         } = params;
 
-        return `You are an expert travel planner with deep knowledge of psychology and travel preferences. Create a highly personalized travel itinerary based on the user's detailed personality analysis.
+        return `You are an expert travel planner with deep knowledge of destinations and weather patterns. Create a comprehensive travel itinerary with detailed weather information for each day.
 
 **TRAVEL REQUEST:**
 - Destination: ${destination}
@@ -134,10 +134,10 @@ class GroqTravelService {
 - Number of Travelers: ${travelers}
 - Additional Preferences: ${additional_preferences}
 
-**DETAILED PERSONALITY ANALYSIS:**
+**PERSONALITY CONTEXT (FOR INTERNAL USE ONLY):**
 ${personalityDescription}
 
-**USER PREFERENCES DATA:**
+**USER PREFERENCES:**
 ${userPreferences ? Object.entries(userPreferences).map(([key, value]) => `${key}: ${value}`).join('\n') : 'Not specified'}
 
 **CRITICAL: EXACT JSON FORMAT REQUIRED**
@@ -156,20 +156,17 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
       "morning": {
         "time": "8:00 AM - 12:00 PM",
         "activities": "Detailed morning activities with specific places and costs",
-        "cost": 50,
-        "personality_reason": "Why this fits their personality"
+        "cost": 50
       },
       "noon": {
         "time": "12:00 PM - 4:00 PM", 
         "activities": "Detailed afternoon activities with specific places and costs",
-        "cost": 75,
-        "personality_reason": "Why this fits their personality"
+        "cost": 75
       },
       "evening": {
         "time": "4:00 PM - 10:00 PM",
         "activities": "Detailed evening activities with specific places and costs", 
-        "cost": 60,
-        "personality_reason": "Why this fits their personality"
+        "cost": 60
       },
       "daily_total": 185
     }
@@ -177,37 +174,46 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
   "weather_forecast": [
     {
       "day": 1,
-      "condition": "Sunny",
-      "temperature": "22°C - 28°C",
-      "precautions": "Wear sunscreen, carry water"
+      "date": "${startDate}",
+      "condition": "Sunny/Cloudy/Rainy/Snowy",
+      "temperature": "22°C - 28°C (or local temperature range)",
+      "humidity": "65%",
+      "wind_speed": "15 km/h",
+      "precipitation": "0%",
+      "precautions": "Wear sunscreen, carry water, umbrella if needed",
+      "clothing_suggestions": "Light clothing, comfortable shoes, hat"
     }
   ],
   "hotels_to_stay": [
     {
       "name": "Hotel Name",
-      "location": "Exact address",
+      "location": "Exact address with neighborhood",
       "price_per_night": 80,
-      "why_recommended": "Matches personality traits",
-      "amenities": ["WiFi", "Breakfast", "Pool"]
+      "rating": "4.5/5",
+      "amenities": ["WiFi", "Breakfast", "Pool", "Gym"],
+      "booking_tips": "Book in advance for better rates"
     }
   ],
   "transportation": {
     "to_destination": {
       "method": "Flight/Train/Bus",
       "cost": 200,
-      "details": "Specific recommendations"
+      "duration": "3 hours",
+      "details": "Specific recommendations and booking tips"
     },
     "local_transport": {
       "recommended": "Metro/Taxi/Walking",
       "daily_cost": 15,
-      "personality_fit": "Why this suits their style"
+      "tips": "Best transport options for this destination"
     }
   },
   "other_information": {
-    "packing_tips": ["Item 1", "Item 2"],
-    "cultural_notes": "Important cultural information",
-    "emergency_contacts": "Local emergency numbers",
-    "personality_optimization": "How to maximize enjoyment based on their traits"
+    "packing_tips": ["Essential items for the weather", "Comfortable walking shoes", "Local customs clothing"],
+    "cultural_notes": "Important cultural information and etiquette",
+    "emergency_contacts": "Local emergency numbers and important contacts",
+    "budget_tips": "Ways to save money and get the best value",
+    "local_cuisine": ["Must-try dishes", "Recommended restaurants", "Food safety tips"],
+    "safety_tips": ["General safety guidelines", "Areas to avoid", "Emergency procedures"]
   }
 }
 
@@ -215,10 +221,13 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
 1. Include ALL ${duration} days in daily_plans
 2. Each day MUST have morning, noon, and evening sections
 3. All costs must be realistic and add up correctly
-4. Every recommendation must explain the personality connection
-5. Use specific place names, addresses, and realistic pricing
-6. Weather should cover all days
-7. Response must be ONLY valid JSON - no extra text before or after`;
+4. Weather forecast must include daily information for ALL ${duration} days
+5. Use specific place names and realistic pricing
+6. Keep activity descriptions concise (max 100 characters each)
+7. Weather should account for seasonal patterns of ${destination}
+8. Response must be ONLY valid JSON - no extra text before or after
+9. Keep total response under 8000 characters to prevent truncation
+10. DO NOT include personality reasoning in activities - focus on practical travel information`;
     }
 
     /**
@@ -251,7 +260,17 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
                     return JSON.parse(jsonText);
                 } catch (parseError) {
                     console.error('JSON parse error at position:', parseError.message);
-                    console.error('Problematic JSON section:', jsonText.substring(Math.max(0, 12540), 12560));
+                    
+                    // If response is truncated, try to complete it
+                    if (jsonText.length > 8000 && !jsonText.endsWith('}')) {
+                        console.log('🔧 Attempting to repair truncated JSON response...');
+                        jsonText = this.repairTruncatedJSON(jsonText);
+                        try {
+                            return JSON.parse(jsonText);
+                        } catch (repairError) {
+                            console.error('Failed to repair JSON:', repairError.message);
+                        }
+                    }
                     
                     // Save the problematic response for debugging
                     const fs = require('fs');
@@ -260,85 +279,20 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
                     fs.writeFileSync(filename, jsonText, 'utf8');
                     console.log(`Saved problematic response to ${filename} for debugging`);
                     
-                    // Try to fix common issues around position 12548
-                    const problemArea = jsonText.substring(12540, 12560);
-                    console.log('Problem area:', problemArea);
-                    
-                    // If there's a truncated response, try to complete it
-                    if (jsonText.endsWith('...') || !jsonText.endsWith('}')) {
-                        console.log('Response appears truncated, attempting to complete JSON structure');
-                        jsonText = this.completeIncompleteJSON(jsonText);
-                        return JSON.parse(jsonText);
-                    }
-                    
-                    throw parseError;
+                    // Return a valid fallback structure
+                    return this.createFallbackResponse(text);
                 }
             }
 
             // If no JSON found, create a basic structured response
-            return {
-                trip_overview: {
-                    destination: "Generated Trip",
-                    duration: "3 days",
-                    budget: 1000,
-                    traveler_type: "Cultural_Explorer"
-                },
-                daily_plans: [
-                    {
-                        day: 1,
-                        theme: "Arrival and Exploration",
-                        activities: [
-                            {
-                                name: "City Overview",
-                                description: "General city exploration and orientation",
-                                time: "9:00 AM - 6:00 PM"
-                            }
-                        ]
-                    }
-                ],
-                weather_forecast: [],
-                personality_optimization: {
-                    traveler_type_benefits: "This itinerary is customized for your travel preferences"
-                },
-                budget_breakdown: "Budget analysis included in full response",
-                raw_response: text.substring(0, 1000) // Limit raw response size
-            };
+            return this.createFallbackResponse(text);
 
         } catch (error) {
             console.error('Error parsing Groq itinerary response:', error);
             console.error('Raw response text (first 1000 chars):', text.substring(0, 1000));
-            if (text.length > 12540) {
-                console.error('Response section around error position:', text.substring(12540, 12570));
-            }
             
             // Return a valid fallback structure that matches expected format
-            return {
-                trip_overview: {
-                    destination: "Fallback Trip",
-                    duration: "1 day",
-                    budget: 100,
-                    traveler_type: "Explorer"
-                },
-                daily_plans: [
-                    {
-                        day: 1,
-                        theme: "Basic Exploration",
-                        activities: [
-                            {
-                                name: "General Sightseeing",
-                                description: "Explore the destination at your own pace",
-                                time: "All day"
-                            }
-                        ]
-                    }
-                ],
-                weather_forecast: [],
-                personality_optimization: {
-                    traveler_type_benefits: "Basic itinerary with standard recommendations"
-                },
-                error: 'Parsed with fallback due to JSON issues: ' + error.message,
-                raw_response: text.substring(0, 500) + '...'
-            };
+            return this.createFallbackResponse(text);
         }
     }
 
@@ -429,6 +383,216 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
                     "Keep emergency contacts handy"
                 ]
             }
+        };
+    }
+
+    /**
+     * Repair truncated JSON by attempting to complete the structure
+     */
+    repairTruncatedJSON(jsonText) {
+        try {
+            // Remove any incomplete last property that might be causing issues
+            let repaired = jsonText;
+            
+            // Find the last complete comma
+            const lastCommaIndex = jsonText.lastIndexOf(',');
+            const lastBraceIndex = jsonText.lastIndexOf('{');
+            const lastBracketIndex = jsonText.lastIndexOf('[');
+            
+            // If we have incomplete content after the last comma, remove it
+            if (lastCommaIndex > lastBraceIndex && lastCommaIndex > lastBracketIndex) {
+                const afterComma = jsonText.substring(lastCommaIndex + 1).trim();
+                // If the content after comma doesn't look like a complete property, remove it
+                if (!afterComma.includes(':') || !afterComma.includes('"')) {
+                    repaired = jsonText.substring(0, lastCommaIndex);
+                }
+            }
+            
+            // Count unmatched braces and brackets
+            const openBraces = (repaired.match(/\{/g) || []).length;
+            const closeBraces = (repaired.match(/\}/g) || []).length;
+            const openBrackets = (repaired.match(/\[/g) || []).length;
+            const closeBrackets = (repaired.match(/\]/g) || []).length;
+            
+            // Close unmatched brackets first
+            for (let i = 0; i < (openBrackets - closeBrackets); i++) {
+                repaired += ']';
+            }
+            
+            // Close unmatched braces
+            for (let i = 0; i < (openBraces - closeBraces); i++) {
+                repaired += '}';
+            }
+            
+            return repaired;
+        } catch (error) {
+            console.error('Error repairing JSON:', error);
+            return jsonText;
+        }
+    }
+
+    /**
+     * Detect if JSON response appears to be truncated
+     */
+    detectTruncation(jsonText, errorPosition) {
+        // Check if response ends abruptly
+        const endsAbruptly = !jsonText.trim().endsWith('}') && !jsonText.trim().endsWith(']');
+        
+        // Check if error position is near the end of the text
+        const nearEnd = errorPosition > (jsonText.length - 100);
+        
+        // Check for incomplete strings at the end
+        const hasIncompleteString = jsonText.trim().endsWith('"') && 
+            jsonText.substring(jsonText.lastIndexOf('"', jsonText.length - 2)).includes(':');
+        
+        return endsAbruptly || nearEnd || hasIncompleteString;
+    }
+
+    /**
+     * Create a consistent fallback response structure
+     */
+    createFallbackResponse(originalText) {
+        return {
+            trip_overview: {
+                destination: "Generated Trip",
+                duration: 3,
+                total_budget: 1000,
+                traveler_type: "Explorer"
+            },
+            daily_plans: [
+                {
+                    day: 1,
+                    morning: {
+                        time: "8:00 AM - 12:00 PM",
+                        activities: "Arrival and local orientation, hotel check-in",
+                        cost: 50
+                    },
+                    noon: {
+                        time: "12:00 PM - 4:00 PM",
+                        activities: "City exploration and main attractions visit",
+                        cost: 75
+                    },
+                    evening: {
+                        time: "4:00 PM - 10:00 PM",
+                        activities: "Local dining and cultural experiences",
+                        cost: 60
+                    },
+                    daily_total: 185
+                }
+            ],
+            weather_forecast: [
+                {
+                    day: 1,
+                    date: new Date().toISOString().split('T')[0],
+                    condition: "Pleasant",
+                    temperature: "22°C - 28°C",
+                    humidity: "65%",
+                    wind_speed: "15 km/h",
+                    precipitation: "10%",
+                    precautions: "Carry light jacket and water",
+                    clothing_suggestions: "Comfortable walking attire"
+                }
+            ],
+            hotels_to_stay: [
+                {
+                    name: "Recommended Hotel",
+                    location: "City Center",
+                    price_per_night: 80,
+                    rating: "4.0/5",
+                    amenities: ["WiFi", "Breakfast", "AC"],
+                    booking_tips: "Book in advance for better rates"
+                }
+            ],
+            transportation: {
+                to_destination: {
+                    method: "Flight/Train/Bus",
+                    cost: 200,
+                    duration: "2-4 hours",
+                    details: "Multiple options available"
+                },
+                local_transport: {
+                    recommended: "Public transport/Walking",
+                    daily_cost: 15,
+                    tips: "Use local transport apps"
+                }
+            },
+            other_information: {
+                packing_tips: ["Comfortable shoes", "Weather-appropriate clothing", "Travel documents"],
+                cultural_notes: "Research local customs and etiquette",
+                emergency_contacts: "Save local emergency numbers",
+                budget_tips: "Look for local deals and free activities",
+                local_cuisine: ["Try local specialties", "Visit recommended restaurants"],
+                safety_tips: ["Stay aware of surroundings", "Keep valuables secure"]
+            },
+            error: `Fallback used due to parsing error. Original response length: ${originalText.length} characters`,
+            raw_response_preview: originalText.substring(0, 500) + '...'
+        };
+    }
+
+    /**
+     * Create a fallback response when JSON parsing completely fails
+     */
+    createFallbackResponse(originalText) {
+        // Try to extract some basic information from the failed response
+        const destinationMatch = originalText.match(/"destination":\s*"([^"]+)"/);
+        const durationMatch = originalText.match(/"duration":\s*(\d+)/);
+        const budgetMatch = originalText.match(/"total_budget":\s*(\d+)/);
+        
+        const destination = destinationMatch ? destinationMatch[1] : "Unknown Destination";
+        const duration = durationMatch ? parseInt(durationMatch[1]) : 3;
+        const budget = budgetMatch ? parseInt(budgetMatch[1]) : 500;
+        
+        return {
+            trip_overview: {
+                destination: destination,
+                duration: duration,
+                total_budget: budget,
+                traveler_type: "Explorer"
+            },
+            daily_plans: Array.from({ length: duration }, (_, i) => ({
+                day: i + 1,
+                morning: {
+                    time: "8:00 AM - 12:00 PM",
+                    activities: `Morning exploration of ${destination}`,
+                    cost: Math.floor(budget / duration / 3)
+                },
+                noon: {
+                    time: "12:00 PM - 4:00 PM", 
+                    activities: `Afternoon activities in ${destination}`,
+                    cost: Math.floor(budget / duration / 3)
+                },
+                evening: {
+                    time: "4:00 PM - 10:00 PM",
+                    activities: `Evening experiences in ${destination}`,
+                    cost: Math.floor(budget / duration / 3)
+                },
+                daily_total: Math.floor(budget / duration)
+            })),
+            weather_forecast: Array.from({ length: duration }, (_, i) => ({
+                day: i + 1,
+                condition: "Pleasant",
+                temperature: "20-25°C",
+                precautions: "Check local weather before traveling"
+            })),
+            hotels_to_stay: [{
+                name: `Hotel in ${destination}`,
+                location: "City Center",
+                price_per_night: Math.floor(budget / duration / 2),
+                rating: "4.0/5"
+            }],
+            transportation: {
+                to_destination: {
+                    method: "Flight/Train",
+                    cost: Math.floor(budget * 0.3),
+                    details: "Book in advance for better rates"
+                }
+            },
+            other_information: {
+                packing_tips: ["Comfortable shoes", "Weather-appropriate clothing"],
+                cultural_notes: "Respect local customs and traditions",
+                budget_tips: "Look for local restaurants and public transport"
+            },
+            error_note: "This is a fallback response due to API response parsing issues"
         };
     }
 }

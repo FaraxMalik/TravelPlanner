@@ -377,18 +377,6 @@ const PlanTrip = () => {
       )}
 
       {/* Detailed Itinerary */}
-      <motion.div 
-        className="itinerary-section"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <h3>📋 Your Detailed Plan</h3>
-        <div className="itinerary-content">
-          <pre className="itinerary-text">{itinerary?.detailed_itinerary}</pre>
-        </div>
-      </motion.div>
-
       {/* Tabular Itinerary Display */}
       <motion.div 
         className="tabular-itinerary-section"

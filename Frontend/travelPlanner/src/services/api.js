@@ -64,7 +64,7 @@ export const preferencesAPI = {
 // Travel API calls
 export const travelAPI = {
   generateItinerary: (tripData) => api.post('/travel/generate', tripData),
-  getItineraries: () => api.get('/travel/itineraries'),
+  getItineraries: () => api.get('/tours/myplans'),
   saveItinerary: (itinerary) => api.post('/travel/save', itinerary),
   deleteItinerary: (id) => api.delete(`/travel/itinerary/${id}`),
 };

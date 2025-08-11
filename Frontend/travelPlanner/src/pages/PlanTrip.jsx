@@ -161,7 +161,7 @@ const PlanTrip = () => {
           <div className="result-success">
             <CheckCircle className="success-icon" />
             <h1>Your Perfect Trip to {generatedItinerary.destination}!</h1>
-            <p>Personalized just for you based on your travel personality ✨</p>
+            <p>Your perfect trip itinerary tailored just for you ✨</p>
           </div>
         </motion.div>
 
@@ -184,11 +184,6 @@ const PlanTrip = () => {
               <Users className="stat-icon" />
               <span>{tripData.travelers} Traveler{tripData.travelers > 1 ? 's' : ''}</span>
             </div>
-          </div>
-          
-          <div className="personalized-insight">
-            <Star className="insight-icon" />
-            <p>{generatedItinerary.personalizedInsights}</p>
           </div>
         </motion.div>
 
@@ -230,7 +225,7 @@ const PlanTrip = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <h3>💡 Personalized Recommendations</h3>
+          <h3>💡 Travel Recommendations</h3>
           <div className="recommendations-list">
             {generatedItinerary.recommendations.map((rec, index) => (
               <div key={index} className="recommendation-item">
@@ -270,7 +265,7 @@ const PlanTrip = () => {
             <Plane size={60} />
           </motion.div>
           <h2>Creating Your Perfect Trip...</h2>
-          <p>Using your personality profile and preferences to craft the ideal itinerary ✨</p>
+          <p>Using your preferences to craft the ideal itinerary ✨</p>
           <div className="progress-dots">
             <span></span>
             <span></span>

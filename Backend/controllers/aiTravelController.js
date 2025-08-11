@@ -979,48 +979,87 @@ class AITravelController {
                 doc.moveDown();
             }
 
-            // Daily itinerary in tabular format
+            // Daily itinerary in simple format (avoiding table positioning issues)
             if (req.body.dailyPlan && req.body.dailyPlan.length > 0) {
                 doc.fontSize(16).text('Daily Itinerary', { underline: true });
                 doc.moveDown();
                 
                 req.body.dailyPlan.forEach((day, index) => {
-                    // Day header
+                    // Ensure we have valid data
+                    const dayNum = day.day || (index + 1);
+                    const dayTitle = day.title || `Day ${dayNum}`;
+                    const dayCost = parseFloat(day.totalCost) || 0;
+                    
+                    // Day header with cost
                     doc.fontSize(14)
                        .fillColor('#2c3e50')
-                       .text(`Day ${day.day}: ${day.title}`, { underline: true });
+                       .text(`Day ${dayNum}: ${dayTitle} - Total: $${dayCost.toFixed(2)}`, { underline: true });
                     doc.moveDown(0.5);
                     
-                    // Activities
-                    if (day.activities && day.activities.length > 0) {
+                    // Activities in simple list format
+                    if (day.activities && Array.isArray(day.activities) && day.activities.length > 0) {
                         day.activities.forEach((activity, actIndex) => {
+                            // Validate activity data
+                            const activityText = activity.activity || activity.name || 'Activity';
+                            const activityTime = activity.time || 'All day';
+                            const activityCost = parseFloat(activity.cost) || 0;
+                            
+                            // Determine period
+                            let period = 'All Day';
+                            let cleanActivity = activityText;
+                            
+                            if (activityText.includes('Morning:')) {
+                                period = '🌅 Morning';
+                                cleanActivity = activityText.replace(/^Morning:\s*/, '');
+                            } else if (activityText.includes('Afternoon:')) {
+                                period = '☀️ Afternoon';
+                                cleanActivity = activityText.replace(/^Afternoon:\s*/, '');
+                            } else if (activityText.includes('Evening:')) {
+                                period = '🌙 Evening';
+                                cleanActivity = activityText.replace(/^Evening:\s*/, '');
+                            }
+                            
+                            // Simple text layout instead of complex table
                             doc.fontSize(11)
                                .fillColor('#000000')
-                               .text(`${activity.time || 'All day'} - ${activity.activity}`, {
-                                   indent: 20
-                               });
-                            if (activity.cost) {
-                                doc.text(`Cost: $${activity.cost}`, { indent: 40 });
+                               .text(`${period} | ${activityTime}`, { indent: 20 });
+                            
+                            doc.fontSize(10)
+                               .text(`${cleanActivity}`, { indent: 40 });
+                            
+                            if (activityCost > 0) {
+                                doc.fontSize(9)
+                                   .fillColor('#1976d2')
+                                   .text(`Cost: $${activityCost.toFixed(2)}`, { indent: 60 });
                             }
+                            
+                            // Add location if available
+                            if (activity.location) {
+                                doc.fontSize(8)
+                                   .fillColor('#666666')
+                                   .text(`📍 ${activity.location}`, { indent: 60 });
+                            }
+                            
                             doc.moveDown(0.3);
                         });
+                    } else {
+                        doc.fontSize(10)
+                           .fillColor('#666666')
+                           .text('No activities planned for this day', { indent: 20 });
                     }
                     
-                    // Day total
-                    doc.fontSize(12)
-                       .fillColor('#1976d2')
-                       .text(`Day ${day.day} Total: $${day.totalCost || 0}`, { 
-                           indent: 20, 
-                           underline: true 
-                       });
                     doc.moveDown();
                 });
                 
                 // Trip total
-                const tripTotal = req.body.dailyPlan.reduce((sum, day) => sum + (day.totalCost || 0), 0);
+                const tripTotal = req.body.dailyPlan.reduce((sum, day) => {
+                    const dayTotal = parseFloat(day.totalCost) || 0;
+                    return sum + dayTotal;
+                }, 0);
+                
                 doc.fontSize(14)
                    .fillColor('#d32f2f')
-                   .text(`Total Trip Cost: $${tripTotal}`, { 
+                   .text(`Total Trip Cost: $${tripTotal.toFixed(2)}`, { 
                        align: 'right',
                        underline: true 
                    });
@@ -1153,29 +1192,21 @@ class AITravelController {
     // Helper function to format weather forecast for frontend
     formatWeatherForFrontend(weatherData) {
         if (!weatherData || !Array.isArray(weatherData)) {
-            return {
-                overall_summary: "Weather information will be updated closer to your travel date.",
-                packing_recommendations: ["Pack according to season", "Check weather forecast before departure"]
-            };
+            return [];
         }
 
-        // Convert array format to frontend expected format
-        const overall = weatherData.length > 0 
-            ? `Expected weather: ${weatherData.map(w => w.conditions).join(', ')}`
-            : "Weather information not available";
-
-        const packing = [
-            "Comfortable walking shoes",
-            "Weather-appropriate clothing",
-            "Sun protection",
-            "Light jacket for evenings"
-        ];
-
-        return {
-            overall_summary: overall,
-            packing_recommendations: packing,
-            daily_forecast: weatherData
-        };
+        // Normalize weather data from both Groq and Gemini APIs
+        return weatherData.map((weather, index) => ({
+            day: weather.day || (index + 1),
+            date: weather.date || new Date().toISOString().split('T')[0],
+            condition: weather.condition || weather.conditions || 'Sunny',
+            temperature: weather.temperature || weather.temperature_high || '25°C',
+            humidity: weather.humidity || '65%',
+            wind_speed: weather.wind_speed || '15 km/h',
+            precipitation: weather.precipitation || weather.precipitation_chance || '0%',
+            precautions: weather.precautions || weather.travel_tips || 'Enjoy your day!',
+            clothing_suggestions: weather.clothing_suggestions || weather.recommended_clothing || 'Comfortable attire'
+        }));
     }
 
     // Helper function to format daily plan for basic frontend component

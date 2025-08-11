@@ -5,346 +5,395 @@ import {
   MapPin, 
   Calendar, 
   TrendingUp, 
-  Quote, 
   Camera,
   Heart,
   Plane,
   Plus,
   BarChart3,
   Compass,
-  Star
+  Star,
+  Globe,
+  Mountain,
+  Sunset,
+  ArrowRight,
+  Sparkles,
+  Award,
+  Clock,
+  DollarSign,
+  Map,
+  Calendar as CalendarIcon,
+  Eye,
+  Navigation
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { userAPI, travelAPI } from '../services/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import './Dashboard.css';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [userStats, setUserStats] = useState(null);
-  const [personalityProfile, setPersonalityProfile] = useState(null);
+  const [pastTrips, setPastTrips] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentQuote, setCurrentQuote] = useState(0);
-
-  const travelQuotes = [
-    {
-      text: "The world is a book and those who do not travel read only one page.",
-      author: "Augustine of Hippo",
-      bg: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      icon: "📚"
-    },
-    {
-      text: "Travel makes one modest. You see what a tiny place you occupy in the world.",
-      author: "Francis Bacon", 
-      bg: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-      icon: "🌍"
-    },
-    {
-      text: "Not all those who wander are lost.",
-      author: "J.R.R. Tolkien",
-      bg: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-      icon: "🧭"
-    },
-    {
-      text: "Travel is the only thing you buy that makes you richer.",
-      author: "Anonymous",
-      bg: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
-      icon: "💎"
-    },
-    {
-      text: "Adventure awaits those who seek it.",
-      author: "Unknown Explorer",
-      bg: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-      icon: "⛰️"
-    },
-    {
-      text: "Collect moments, not things.",
-      author: "Travel Wisdom",
-      bg: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
-      icon: "📸"
-    }
-  ];
-
-  const nostalgicPlaces = [
-    {
-      name: "Santorini Sunset",
-      image: "🌅",
-      memory: "That magical moment when the sky painted itself in gold..."
-    },
-    {
-      name: "Tokyo Streets",
-      image: "🏮",
-      memory: "Lost in translation but found in wonder..."
-    },
-    {
-      name: "Swiss Alps",
-      image: "⛰️",
-      memory: "Where the mountains touched the clouds..."
-    },
-    {
-      name: "Bali Beach",
-      image: "🏖️",
-      memory: "Waves whispered secrets of distant lands..."
-    }
-  ];
 
   useEffect(() => {
-    fetchUserData();
-    // Removed auto-rotating quotes as requested
-  }, []);
+    loadDashboardData();
+  }, [user]);
 
-  const fetchUserData = async () => {
+  // Auto-redirect first-time users to preferences
+  useEffect(() => {
+    if (user && !loading && !user.preferencesCompleted && !user.hasCompletedPreferences) {
+      console.log('🔄 Redirecting new user to preferences questionnaire...');
+      navigate('/preferences');
+    }
+  }, [user, loading, navigate]);
+
+  const loadDashboardData = async () => {
     try {
-      const [profileResponse, personalityResponse] = await Promise.all([
-        userAPI.getProfile(),
-        userAPI.getPersonality()
-      ]);
+      setLoading(true);
+      
+      // Initialize with zero stats for new users
+      setUserStats({
+        totalTrips: 0,
+        countriesVisited: 0,
+        totalDays: 0,
+        totalSpent: 0
+      });
 
-      if (profileResponse.data.success) {
-        setUserStats(profileResponse.data.user);
-        
-        // Check if user has completed preferences
-        if (!profileResponse.data.user.hasCompletedPreferences) {
-          navigate('/preferences');
-          return;
-        }
-      }
-
-      if (personalityResponse.data.success) {
-        setPersonalityProfile(personalityResponse.data.personality);
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      // If preferences API fails, might indicate user hasn't completed them
-      if (error.response?.status === 404) {
-        navigate('/preferences');
+      // Check if user has completed preferences
+      if (!user?.preferencesCompleted && !user?.hasCompletedPreferences) {
+        console.log('📋 User has not completed preferences - showing zero stats');
+        setLoading(false);
         return;
       }
+
+      // Load past trips and calculate real stats
+      try {
+        const tripsResponse = await travelAPI.getItineraries();
+        if (tripsResponse.data.success && tripsResponse.data.itineraries) {
+          const trips = tripsResponse.data.itineraries;
+          setPastTrips(trips);
+          
+          // Calculate real user stats from trips
+          const stats = trips.reduce((acc, trip) => {
+            acc.totalTrips += 1;
+            acc.totalDays += trip.numberOfDays || trip.duration || 0;
+            acc.totalSpent += trip.budget || 0;
+            // Count unique countries/destinations
+            const destination = trip.placeName || trip.destination;
+            if (destination && !acc.countries.includes(destination)) {
+              acc.countries.push(destination);
+            }
+            return acc;
+          }, { totalTrips: 0, totalDays: 0, totalSpent: 0, countries: [] });
+          
+          setUserStats({
+            totalTrips: stats.totalTrips,
+            countriesVisited: stats.countries.length,
+            totalDays: stats.totalDays,
+            totalSpent: stats.totalSpent
+          });
+        }
+      } catch (error) {
+        console.log('No past trips found');
+        setPastTrips([]);
+      }
+
+    } catch (error) {
+      console.error('Dashboard loading error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const getPersonalityInsight = (profile) => {
-    if (!profile) return "Discovering your travel personality...";
-    
-    const traits = Object.entries(profile.bigFiveScores || {});
-    const dominantTrait = traits.reduce((max, current) => 
-      current[1] > max[1] ? current : max
-    );
+  const planNewTrip = () => {
+    navigate('/plan-trip');
+  };
 
-    const insights = {
-      openness: "You're an adventure seeker who loves exploring new cultures! 🌍",
-      conscientiousness: "You're a meticulous planner who creates amazing itineraries! 📋",
-      extraversion: "You're a social butterfly who makes friends wherever you go! 🦋",
-      agreeableness: "You're a harmonious traveler who brings people together! 🤝",
-      neuroticism: "You prefer peaceful, relaxing destinations for rejuvenation! 🧘"
-    };
-
-    return insights[dominantTrait[0]] || "Your unique travel style makes every journey special! ✨";
+  const viewPastTrip = (trip) => {
+    navigate('/trip-details', { state: { trip } });
   };
 
   if (loading) {
     return (
-      <div className="dashboard-container">
-        <div className="loading-state">
-          <div className="loading-spinner"></div>
-          <p>Loading your travel world...</p>
-        </div>
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading your dashboard...</p>
       </div>
     );
   }
 
   return (
-    <div className="dashboard-container bg-pattern">
-      {/* Header */}
+    <div className="modern-dashboard">
+      {/* Floating Header */}
       <motion.div 
-        className="dashboard-header"
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6 }}
+        className="floating-header"
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
       >
         <div className="header-content">
-          <div className="user-welcome">
-            <div className="user-avatar">
-              <User size={24} />
-            </div>
-            <div className="welcome-text">
-              <h1>Welcome back, {user?.name?.split(' ')[0]}! ✈️</h1>
-              <p>Ready for your next adventure?</p>
-            </div>
+          <div className="user-greeting">
+            <motion.div 
+              className="avatar-section"
+              whileHover={{ scale: 1.05 }}
+            >
+              <div className="avatar-circle">
+                <User size={24} />
+              </div>
+              <div className="greeting-text">
+                <h1>Welcome back, {user?.firstName || 'Explorer'}!</h1>
+                <p>Let's plan your next extraordinary journey</p>
+              </div>
+            </motion.div>
           </div>
           <div className="header-actions">
-            <button className="btn btn-secondary" onClick={logout}>
-              Logout
-            </button>
+            <motion.button
+              className="primary-cta"
+              onClick={planNewTrip}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Sparkles size={20} />
+              Create New Trip
+              <ArrowRight size={18} />
+            </motion.button>
           </div>
         </div>
       </motion.div>
 
-      {/* Inspirational Quote Carousel */}
-      <motion.div 
-        className="quote-carousel"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+      {/* Stats Dashboard */}
+      <motion.section 
+        className="stats-dashboard"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.8 }}
       >
-        <div 
-          className="quote-card"
-          style={{ background: travelQuotes[currentQuote].bg }}
-        >
-          <div className="quote-icon-large">{travelQuotes[currentQuote].icon}</div>
-          <blockquote className="quote-text">
-            "{travelQuotes[currentQuote].text}"
-          </blockquote>
-          <cite className="quote-author">
-            — {travelQuotes[currentQuote].author}
-          </cite>
-          <div className="quote-navigation">
-            <button 
-              className="quote-nav-btn"
-              onClick={() => setCurrentQuote(prev => prev === 0 ? travelQuotes.length - 1 : prev - 1)}
-            >
-              ←
-            </button>
-            <div className="quote-dots">
-              {travelQuotes.map((_, index) => (
-                <button
-                  key={index}
-                  className={`quote-dot ${index === currentQuote ? 'active' : ''}`}
-                  onClick={() => setCurrentQuote(index)}
-                />
-              ))}
+        <div className="stats-container">
+          <motion.div 
+            className="primary-stat-card"
+            whileHover={{ y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <div className="stat-header">
+              <div className="stat-icon-wrapper">
+                <Plane className="stat-icon" />
+              </div>
+              <div className="stat-badge">Active Traveler</div>
             </div>
-            <button 
-              className="quote-nav-btn"
-              onClick={() => setCurrentQuote(prev => (prev + 1) % travelQuotes.length)}
+            <div className="stat-content">
+              <h2>{userStats?.totalTrips || 0}</h2>
+              <p>Trips Planned</p>
+              <div className="stat-trend">
+                <TrendingUp size={16} />
+                <span>Ready for more</span>
+              </div>
+            </div>
+            <div className="stat-decoration">
+              <div className="decoration-circle"></div>
+              <div className="decoration-line"></div>
+            </div>
+          </motion.div>
+
+          <div className="secondary-stats">
+            <motion.div 
+              className="stat-card compact"
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
-              →
-            </button>
+              <Globe className="mini-icon" />
+              <div className="mini-stat">
+                <h3>{userStats?.countriesVisited || 0}</h3>
+                <p>Countries</p>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="stat-card compact"
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <CalendarIcon className="mini-icon" />
+              <div className="mini-stat">
+                <h3>{userStats?.totalDays || 0}</h3>
+                <p>Days Traveled</p>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="stat-card compact"
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Award className="mini-icon" />
+              <div className="mini-stat">
+                <h3>{user?.preferencesCompleted || user?.hasCompletedPreferences ? '100%' : '0%'}</h3>
+                <p>Profile</p>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="stat-card compact"
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <DollarSign className="mini-icon" />
+              <div className="mini-stat">
+                <h3>${userStats?.totalSpent || 0}</h3>
+                <p>Spent</p>
+              </div>
+            </motion.div>
           </div>
         </div>
-      </motion.div>
+      </motion.section>
 
-      {/* Stats Grid */}
-      <div className="dashboard-grid">
-        {/* Travel Stats */}
-        <motion.div 
-          className="stats-card"
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <div className="card-header">
-            <BarChart3 className="card-icon" />
-            <h3>Your Travel Journey</h3>
-          </div>
-          <div className="stats-grid">
-            <div className="stat-item">
-              <div className="stat-icon">🌍</div>
-              <div className="stat-number">0</div>
-              <div className="stat-label">Countries Explored</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-icon">✈️</div>
-              <div className="stat-number">0</div>
-              <div className="stat-label">Trips Planned</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-icon">📷</div>
-              <div className="stat-number">0</div>
-              <div className="stat-label">Memories Created</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-icon">⭐</div>
-              <div className="stat-number">0</div>
-              <div className="stat-label">Dream Destinations</div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Dream Destinations */}
-        <motion.div 
-          className="destinations-card"
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-        >
-          <div className="card-header">
-            <Camera className="card-icon" />
-            <h3>Dream Destinations</h3>
-          </div>
-          <div className="destinations-grid">
-            {nostalgicPlaces.map((place, index) => (
+      {/* Feature Highlight */}
+      <motion.section 
+        className="feature-highlight"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.4, duration: 0.8 }}
+      >
+        <div className="feature-card">
+          <div className="feature-visual">
+            <div className="floating-elements">
               <motion.div 
-                key={index} 
-                className="destination-item"
-                whileHover={{ scale: 1.02, y: -2 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                className="floating-icon"
+                animate={{ y: [-10, 10, -10] }}
+                transition={{ duration: 3, repeat: Infinity }}
               >
-                <div className="destination-image">{place.image}</div>
-                <div className="destination-content">
-                  <h4>{place.name}</h4>
-                  <p>{place.memory}</p>
-                  <div className="destination-badge">Explore</div>
+                <Map size={32} />
+              </motion.div>
+              <motion.div 
+                className="floating-icon"
+                animate={{ y: [10, -10, 10] }}
+                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+              >
+                <Compass size={28} />
+              </motion.div>
+              <motion.div 
+                className="floating-icon"
+                animate={{ y: [-5, 15, -5] }}
+                transition={{ duration: 3, repeat: Infinity, delay: 2 }}
+              >
+                <Mountain size={30} />
+              </motion.div>
+            </div>
+          </div>
+          <div className="feature-content">
+            <h2>AI-Powered Travel Planning</h2>
+            <p>Experience the future of travel with our intelligent itinerary generator. Get personalized recommendations, weather-optimized schedules, and hidden local gems.</p>
+            <div className="feature-tags">
+              <span className="tag">🤖 AI-Powered</span>
+              <span className="tag">🌍 Global Coverage</span>
+              <span className="tag">💰 Budget-Friendly</span>
+              <span className="tag">⚡ Instant Results</span>
+            </div>
+            <motion.button
+              className="feature-cta"
+              onClick={planNewTrip}
+              whileHover={{ x: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Start Planning
+              <Navigation size={18} />
+            </motion.button>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Travel Gallery */}
+      <motion.section 
+        className="travel-gallery"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.8 }}
+      >
+        <div className="gallery-header">
+          <h2>Your Travel Story</h2>
+          <p>Every journey begins with a single step</p>
+        </div>
+
+        {pastTrips.length > 0 ? (
+          <div className="trips-masonry">
+            {pastTrips.map((trip, index) => (
+              <motion.div
+                key={trip.id || index}
+                className={`trip-tile ${index % 3 === 0 ? 'large' : 'small'}`}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index, duration: 0.6 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                onClick={() => viewPastTrip(trip)}
+              >
+                <div className="trip-overlay">
+                  <div className="trip-header">
+                    <MapPin size={20} />
+                    <span className="trip-status">Completed</span>
+                  </div>
+                  <div className="trip-details">
+                    <h3>{trip.destination || 'Adventure Destination'}</h3>
+                    <div className="trip-meta">
+                      <div className="meta-item">
+                        <Clock size={14} />
+                        <span>{trip.duration || 'N/A'} days</span>
+                      </div>
+                      <div className="meta-item">
+                        <Calendar size={14} />
+                        <span>{trip.dates || 'Date TBD'}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="trip-action">
+                    <Eye size={16} />
+                    <span>View Details</span>
+                  </div>
+                </div>
+                <div className="trip-bg">
+                  <div className="gradient-overlay"></div>
                 </div>
               </motion.div>
             ))}
           </div>
-        </motion.div>
-
-        {/* Quick Actions */}
-        <motion.div 
-          className="actions-card"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-        >
-          <div className="card-header">
-            <Plane className="card-icon" />
-            <h3>Start Your Adventure</h3>
-          </div>
-          <div className="actions-content">
-            <motion.button 
-              className="btn btn-primary btn-large action-btn"
-              onClick={() => navigate('/plan-trip')}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <Plus size={20} />
-              Plan a New Trip
-              <span className="btn-sparkle">✨</span>
-            </motion.button>
-            <div className="quick-links">
-              <motion.button 
-                className="quick-link"
-                whileHover={{ scale: 1.02, x: 5 }}
-                transition={{ type: "spring", stiffness: 300 }}
+        ) : (
+          <motion.div 
+            className="empty-state"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+          >
+            <div className="empty-visual">
+              <motion.div
+                className="empty-icon-container"
+                animate={{ rotate: [0, 10, 0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity }}
               >
-                <MapPin size={16} />
-                Saved Places
-              </motion.button>
-              <motion.button 
-                className="quick-link"
-                whileHover={{ scale: 1.02, x: 5 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                <Sunset size={48} />
+              </motion.div>
+              <div className="empty-particles">
+                <motion.div className="particle" animate={{ y: [-20, 20, -20] }} transition={{ duration: 2, repeat: Infinity }} />
+                <motion.div className="particle" animate={{ y: [20, -20, 20] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }} />
+                <motion.div className="particle" animate={{ y: [-10, 30, -10] }} transition={{ duration: 2, repeat: Infinity, delay: 1 }} />
+              </div>
+            </div>
+            <div className="empty-content">
+              <h3>Your Adventure Awaits</h3>
+              <p>Ready to create some incredible memories? Let's plan your first unforgettable journey.</p>
+              <motion.button
+                className="empty-cta"
+                onClick={planNewTrip}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Heart size={16} />
-                Wishlist
-              </motion.button>
-              <motion.button 
-                className="quick-link"
-                whileHover={{ scale: 1.02, x: 5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <Calendar size={16} />
-                Travel Calendar
+                <Sparkles size={20} />
+                Begin Your Journey
               </motion.button>
             </div>
-          </div>
-        </motion.div>
-      </div>
+          </motion.div>
+        )}
+      </motion.section>
     </div>
   );
 };

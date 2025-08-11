@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import Homepage from './pages/Homepage';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
-import DashboardEnhanced from './pages/DashboardEnhanced';
+import DashboardEnhanced from './pages/Dashboard';
 import PreferencesQuestionnaireEnhanced from './components/PreferencesQuestionnaireEnhanced';
 import PlanTripEnhanced from './pages/PlanTripEnhanced';
 

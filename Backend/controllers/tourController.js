@@ -101,12 +101,17 @@ const getUserTours = async (req, res) => {
       .sort({ createdAt: -1 });
 
     res.json({
+      success: true,
       count: tours.length,
-      tours
+      itineraries: tours,
+      tours // Keep backward compatibility
     });
   } catch (error) {
     console.error('Get user tours error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    });
   }
 };
 

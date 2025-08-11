@@ -154,11 +154,31 @@ const loginUser = async (req, res) => {
 // @access  Private
 const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
-    res.json(user);
+    const user = await User.findById(req.user._id).select('-password').populate('tours');
+    
+    // Calculate trip statistics
+    const totalTrips = user.tours?.length || 0;
+    const totalDays = user.tours?.reduce((total, tour) => total + (tour.numberOfDays || 0), 0) || 0;
+    const totalBudget = user.tours?.reduce((total, tour) => total + (tour.budget || 0), 0) || 0;
+    
+    const userProfile = {
+      ...user.toObject(),
+      totalTrips,
+      totalDays,
+      totalBudget,
+      hasCompletedPreferences: user.preferencesCompleted || false
+    };
+    
+    res.json({
+      success: true,
+      user: userProfile
+    });
   } catch (error) {
     console.error('Get profile error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    });
   }
 };
 
