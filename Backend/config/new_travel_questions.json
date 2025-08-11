@@ -1,0 +1,422 @@
+[
+  {
+    "id": "budgetComfort",
+    "question": "Budget vs Comfort",
+    "text": "When traveling, I prefer to:",
+    "options": [
+      { "text": "Stay in budget hostels and save money", "value": 1 },
+      { "text": "Mix budget and mid-range options", "value": 2 },
+      { "text": "Choose comfort over cost savings", "value": 3 },
+      { "text": "Prefer luxury accommodations", "value": 4 },
+      { "text": "Only the finest, money is no object", "value": 5 }
+    ]
+  },
+  {
+    "id": "travelPace",
+    "question": "Travel Pace",
+    "text": "My ideal travel pace is:",
+    "options": [
+      { "text": "Very slow, stay in one place for weeks", "value": 1 },
+      { "text": "Relaxed, 3-4 days per destination", "value": 2 },
+      { "text": "Moderate, 2-3 destinations per week", "value": 3 },
+      { "text": "Fast-paced, see multiple places daily", "value": 4 },
+      { "text": "Extremely fast, maximum destinations", "value": 5 }
+    ]
+  },
+  {
+    "id": "spontaneityLevel",
+    "question": "Planning vs Spontaneity",
+    "text": "When it comes to planning my trips:",
+    "options": [
+      { "text": "I plan every detail months in advance", "value": 1 },
+      { "text": "I plan major things but leave room for spontaneity", "value": 2 },
+      { "text": "I have a rough plan and go with the flow", "value": 3 },
+      { "text": "I prefer minimal planning, mostly spontaneous", "value": 4 },
+      { "text": "I never plan, complete spontaneity", "value": 5 }
+    ]
+  },
+  {
+    "id": "placePreference",
+    "question": "Urban vs Nature",
+    "text": "I'm most excited by:",
+    "options": [
+      { "text": "Remote wilderness and untouched nature", "value": 1 },
+      { "text": "Small towns and rural landscapes", "value": 2 },
+      { "text": "Mix of nature and small cities", "value": 3 },
+      { "text": "Major cities with some nature nearby", "value": 4 },
+      { "text": "Big bustling metropolises", "value": 5 }
+    ]
+  },
+  {
+    "id": "groupDynamics",
+    "question": "Social vs Solo",
+    "text": "I prefer to travel:",
+    "options": [
+      { "text": "Completely solo, my own adventure", "value": 1 },
+      { "text": "Solo with occasional social interactions", "value": 2 },
+      { "text": "With one close companion", "value": 3 },
+      { "text": "In a small group of friends", "value": 4 },
+      { "text": "In large groups, the more the merrier", "value": 5 }
+    ]
+  },
+  {
+    "id": "memorableElements",
+    "question": "Memorable Experiences",
+    "text": "The most memorable part of travel for me is:",
+    "options": [
+      { "text": "Personal reflection and self-discovery", "value": 1 },
+      { "text": "Capturing beautiful photos and moments", "value": 2 },
+      { "text": "Learning about history and culture", "value": 3 },
+      { "text": "Meeting new people and making connections", "value": 4 },
+      { "text": "Adrenaline-pumping adventures", "value": 5 }
+    ]
+  },
+  {
+    "id": "challenges",
+    "question": "Comfort Zone",
+    "text": "When traveling, I:",
+    "options": [
+      { "text": "Stick to familiar and comfortable situations", "value": 1 },
+      { "text": "Slightly push my comfort zone occasionally", "value": 2 },
+      { "text": "Enjoy moderate challenges and new experiences", "value": 3 },
+      { "text": "Actively seek challenging and unfamiliar situations", "value": 4 },
+      { "text": "Constantly push boundaries and take big risks", "value": 5 }
+    ]
+  },
+  {
+    "id": "cultureLevel",
+    "question": "Cultural Immersion",
+    "text": "My approach to local culture is:",
+    "options": [
+      { "text": "I prefer familiar things from home", "value": 1 },
+      { "text": "I try some local things but keep to basics", "value": 2 },
+      { "text": "I enjoy experiencing local culture moderately", "value": 3 },
+      { "text": "I dive deep into local customs and traditions", "value": 4 },
+      { "text": "I completely immerse myself like a local", "value": 5 }
+    ]
+  },
+  {
+    "id": "restRelaxation",
+    "question": "Activity vs Rest",
+    "text": "On vacation, I need:",
+    "options": [
+      { "text": "Lots of rest and relaxation time", "value": 1 },
+      { "text": "A good balance of rest and activities", "value": 2 },
+      { "text": "Moderate activity with some downtime", "value": 3 },
+      { "text": "Constant activity with minimal rest", "value": 4 },
+      { "text": "Non-stop action, sleep is for home", "value": 5 }
+    ]
+  },
+  {
+    "id": "experienceDepth",
+    "question": "Breadth vs Depth",
+    "text": "I prefer to:",
+    "options": [
+      { "text": "Deeply explore one location thoroughly", "value": 1 },
+      { "text": "Spend quality time in few places", "value": 2 },
+      { "text": "Balance depth and breadth of experiences", "value": 3 },
+      { "text": "See many different places and experiences", "value": 4 },
+      { "text": "Experience as much variety as possible", "value": 5 }
+    ]
+  },
+  {
+    "id": "safetyAdventure",
+    "question": "Safety vs Adventure",
+    "text": "When choosing activities, I:",
+    "options": [
+      { "text": "Always prioritize safety and low risk", "value": 1 },
+      { "text": "Prefer safe activities with minimal risk", "value": 2 },
+      { "text": "Accept moderate risk for good experiences", "value": 3 },
+      { "text": "Seek thrilling experiences despite risks", "value": 4 },
+      { "text": "Love extreme adventures regardless of danger", "value": 5 }
+    ]
+  },
+  {
+    "id": "planningStyle",
+    "question": "Research & Planning",
+    "text": "Before traveling, I:",
+    "options": [
+      { "text": "Research everything extensively for months", "value": 1 },
+      { "text": "Do thorough research on key attractions", "value": 2 },
+      { "text": "Do basic research and plan essentials", "value": 3 },
+      { "text": "Do minimal research, prefer surprises", "value": 4 },
+      { "text": "Never research, I like complete surprises", "value": 5 }
+    ]
+  }
+]
+        "value": 3,
+        "labels": ["cultural", "educational", "historical", "structured"]
+      }
+    ]
+  },
+  {
+    "question": "What's Your Travel Pace?",
+    "field": "travelPace",
+    "text": "Your trip starts now. What's your vibe?",
+    "options": [
+      {
+        "text": "Hour-by-hour plan",
+        "value": 0,
+        "labels": ["organized", "detailed", "structured", "planned"]
+      },
+      {
+        "text": "Light structure, with room to wander",
+        "value": 1,
+        "labels": ["balanced", "flexible", "moderate", "organized"]
+      },
+      {
+        "text": "Go with the flow",
+        "value": 2,
+        "labels": ["spontaneous", "flexible", "relaxed", "adaptive"]
+      },
+      {
+        "text": "Zero plan—surprise me!",
+        "value": 3,
+        "labels": ["spontaneous", "adventurous", "unpredictable", "free"]
+      }
+    ]
+  },
+  {
+    "question": "Snack Vibe Check",
+    "field": "snackVibe",
+    "text": "Which snack sounds like your vibe?",
+    "options": [
+      {
+        "text": "Energy bar",
+        "value": 0,
+        "labels": ["practical", "healthy", "prepared", "functional"]
+      },
+      {
+        "text": "Chai and biscuits",
+        "value": 1,
+        "labels": ["comfort", "traditional", "cozy", "cultural"]
+      },
+      {
+        "text": "Local street food",
+        "value": 2,
+        "labels": ["adventurous", "local", "authentic", "cultural"]
+      },
+      {
+        "text": "Something fancy from a bakery",
+        "value": 3,
+        "labels": ["luxury", "indulgent", "quality", "sophisticated"]
+      }
+    ]
+  },
+  {
+    "question": "Weather Flip",
+    "field": "backupPlan",
+    "text": "If it rains on your travel day…",
+    "options": [
+      {
+        "text": "Museum day",
+        "value": 0,
+        "labels": ["cultural", "educational", "indoor", "structured"]
+      },
+      {
+        "text": "Netflix & nap",
+        "value": 1,
+        "labels": ["relaxed", "comfort", "indoor", "leisurely"]
+      },
+      {
+        "text": "Hit a local indoor market",
+        "value": 2,
+        "labels": ["social", "local", "cultural", "adaptive"]
+      },
+      {
+        "text": "Embrace it—rain walk!",
+        "value": 3,
+        "labels": ["adventurous", "spontaneous", "nature", "bold"]
+      }
+    ]
+  },
+  {
+    "question": "Souvenir Hunt",
+    "field": "souvenirType",
+    "text": "Your ideal souvenir is…",
+    "options": [
+      {
+        "text": "A rare handcrafted item",
+        "value": 0,
+        "labels": ["unique", "artistic", "quality", "authentic"]
+      },
+      {
+        "text": "Local snacks or spices",
+        "value": 1,
+        "labels": ["culinary", "local", "practical", "cultural"]
+      },
+      {
+        "text": "A picture at a famous spot",
+        "value": 2,
+        "labels": ["social", "memorable", "popular", "photographic"]
+      },
+      {
+        "text": "Something funny & odd",
+        "value": 3,
+        "labels": ["humorous", "unique", "spontaneous", "quirky"]
+      }
+    ]
+  },
+  {
+    "question": "Photo Style",
+    "field": "photoStyle",
+    "text": "Your travel album mostly has…",
+    "options": [
+      {
+        "text": "Scenic landscapes",
+        "value": 0,
+        "labels": ["nature", "aesthetic", "peaceful", "scenic"]
+      },
+      {
+        "text": "Food and cafés",
+        "value": 1,
+        "labels": ["culinary", "social", "cultural", "lifestyle"]
+      },
+      {
+        "text": "Selfies with locals",
+        "value": 2,
+        "labels": ["social", "cultural", "interactive", "people"]
+      },
+      {
+        "text": "Spontaneous & chaotic moments",
+        "value": 3,
+        "labels": ["spontaneous", "adventurous", "dynamic", "unpredictable"]
+      }
+    ]
+  },
+  {
+    "question": "Travel Jam",
+    "field": "musicTaste",
+    "text": "Pick a song for your road trip playlist.",
+    "options": [
+      {
+        "text": "Acoustic indie or classical",
+        "value": 0,
+        "labels": ["introspective", "sophisticated", "calm", "artistic"]
+      },
+      {
+        "text": "Chill lofi or café vibes",
+        "value": 1,
+        "labels": ["relaxed", "ambient", "comfortable", "mellow"]
+      },
+      {
+        "text": "Energetic pop or EDM",
+        "value": 2,
+        "labels": ["energetic", "social", "upbeat", "modern"]
+      },
+      {
+        "text": "Rock, rap, or whatever's loud",
+        "value": 3,
+        "labels": ["intense", "bold", "energetic", "rebellious"]
+      }
+    ]
+  },
+  {
+    "question": "Spontaneity Level",
+    "field": "spontaneity",
+    "text": "You stumble across an unplanned detour…?",
+    "options": [
+      {
+        "text": "No, stick to the plan",
+        "value": 0,
+        "labels": ["organized", "structured", "disciplined", "planned"]
+      },
+      {
+        "text": "Maybe, if time allows",
+        "value": 1,
+        "labels": ["balanced", "flexible", "practical", "moderate"]
+      },
+      {
+        "text": "Sure! Let's see where it leads",
+        "value": 2,
+        "labels": ["spontaneous", "adventurous", "curious", "flexible"]
+      },
+      {
+        "text": "Best part of the trip!",
+        "value": 3,
+        "labels": ["spontaneous", "adventurous", "excited", "unpredictable"]
+      }
+    ]
+  },
+  {
+    "question": "Luggage Check",
+    "field": "packingStyle",
+    "text": "What does your luggage say about you?",
+    "options": [
+      {
+        "text": "Everything folded, labeled",
+        "value": 0,
+        "labels": ["organized", "detailed", "prepared", "perfectionist"]
+      },
+      {
+        "text": "Mostly organized with extras",
+        "value": 1,
+        "labels": ["balanced", "prepared", "flexible", "practical"]
+      },
+      {
+        "text": "Thrown in last minute",
+        "value": 2,
+        "labels": ["spontaneous", "relaxed", "last-minute", "casual"]
+      },
+      {
+        "text": "Wait—I packed something?",
+        "value": 3,
+        "labels": ["spontaneous", "carefree", "unpredictable", "free-spirited"]
+      }
+    ]
+  },
+  {
+    "question": "Group Travel Role",
+    "field": "groupRole",
+    "text": "Your friends say you are the…",
+    "options": [
+      {
+        "text": "The planner",
+        "value": 0,
+        "labels": ["organized", "responsible", "leader", "structured"]
+      },
+      {
+        "text": "The peacemaker",
+        "value": 1,
+        "labels": ["agreeable", "diplomatic", "harmonious", "caring"]
+      },
+      {
+        "text": "The mood maker",
+        "value": 2,
+        "labels": ["social", "energetic", "entertaining", "extroverted"]
+      },
+      {
+        "text": "The wild card",
+        "value": 3,
+        "labels": ["spontaneous", "unpredictable", "adventurous", "bold"]
+      }
+    ]
+  },
+  {
+    "question": "Post-Trip Memory",
+    "field": "memorableElement",
+    "text": "What makes a trip unforgettable?",
+    "options": [
+      {
+        "text": "The planning & flawless execution",
+        "value": 0,
+        "labels": ["organized", "achievement", "perfection", "control"]
+      },
+      {
+        "text": "The people you meet",
+        "value": 1,
+        "labels": ["social", "connections", "relationships", "human"]
+      },
+      {
+        "text": "The unpredictable moments",
+        "value": 2,
+        "labels": ["spontaneous", "surprise", "adventure", "unexpected"]
+      },
+      {
+        "text": "The personal transformation",
+        "value": 3,
+        "labels": ["growth", "introspective", "meaningful", "transformative"]
+      }
+    ]
+  }
+] 
