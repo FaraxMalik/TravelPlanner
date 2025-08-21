@@ -576,4 +576,8 @@ public/uploads/
 .tmp/
 
 # PM2
-.pm2/ 
+.pm2/ #   L a r g e   M L   d a t a   f i l e s   -   t o o   b i g   f o r   G i t H u b 
+ B a c k e n d / m l _ m o d e l s / b i g f i v e _ p r o c e s s e d _ c o r r e c t . c s v 
+ B a c k e n d / m l _ m o d e l s / d a t a - f i n a l . c s v 
+ B a c k e n d / m l _ m o d e l s / * . c s v  
+ 
