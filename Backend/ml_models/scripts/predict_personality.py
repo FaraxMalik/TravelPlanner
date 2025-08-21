@@ -158,10 +158,64 @@ class TravelPersonalityPredictor:
             return result
             
         except Exception as e:
-            return {
-                'success': False,
-                'error': str(e)
+            # Enhanced fallback: Always return a valid travel type
+            print(f"❌ ML Model Error: {e}", file=sys.stderr)
+            print("🔄 Using enhanced fallback analysis", file=sys.stderr)
+            
+            # Calculate basic personality scores from preferences  
+            fallback_scores = self.calculate_fallback_personality(preferences)
+            dominant_trait = max(fallback_scores, key=fallback_scores.get)
+            
+            # Map to travel type with guaranteed fallback
+            trait_to_type = {
+                'EXT': 'Social_Party_Goer',
+                'CSN': 'Luxury_Seeker', 
+                'OPN': 'Cultural_Explorer',
+                'AGR': 'Community_Connector',
+                'EST': 'Nature_Lover'
             }
+            
+            predicted_type = trait_to_type.get(dominant_trait, 'Cultural_Explorer')
+            type_info = self.traveler_descriptions.get(predicted_type, {})
+            
+            return {
+                'success': True,
+                'travel_type': predicted_type,
+                'confidence': 0.75,  # Fallback confidence
+                'places_they_love': type_info.get('places_they_love', 'Various cultural and interesting destinations'),
+                'travel_description': type_info.get('description', f'You are a {predicted_type.replace("_", " ")}!'),
+                'travel_style': type_info.get('travel_style', 'Balanced and enjoyable travel experiences'),
+                'big_five_scores': fallback_scores,
+                'dominant_trait': dominant_trait,
+                'all_probabilities': {predicted_type: 0.75},
+                'model_used': 'enhanced_fallback',
+                'error_handled': str(e)
+            }
+
+    def calculate_fallback_personality(self, preferences):
+        """
+        Simple but reliable personality calculation that always works
+        """
+        try:
+            # Default scores
+            scores = {'EXT': 50, 'CSN': 50, 'OPN': 50, 'AGR': 50, 'EST': 50}
+            
+            # Simple mapping from common preference patterns
+            if preferences.get('travelPace', 2) >= 3:
+                scores['EXT'] += 15
+            if preferences.get('backupPlanning', 2) <= 2:
+                scores['CSN'] += 15
+            if preferences.get('placePreference', 2) >= 3:
+                scores['OPN'] += 15
+            if preferences.get('groupDynamics', 2) >= 3:
+                scores['AGR'] += 15
+            if preferences.get('spontaneityLevel', 2) <= 2:
+                scores['EST'] += 15
+                
+            return scores
+        except:
+            # Ultimate fallback - return balanced scores
+            return {'EXT': 60, 'CSN': 55, 'OPN': 65, 'AGR': 50, 'EST': 50}
 
     def calculate_big_five_scores(self, preferences):
         """

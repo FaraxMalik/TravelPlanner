@@ -12,8 +12,8 @@ class AITravelController {
         this.groqService = new GroqTravelService();
         
         // 🔄 EASY LLM SWITCHING - Comment/Uncomment the lines below:
-     //   this.activeService = this.geminiService;  // ✅ UNCOMMENT to use Gemini
-         this.activeService = this.groqService;     // ✅ UNCOMMENT to use Groq (comment Gemini line above)
+        this.activeService = this.geminiService;  // ✅ UNCOMMENT to use Gemini
+     //    this.activeService = this.groqService;     // ✅ UNCOMMENT to use Groq (comment Gemini line above)
         
         // Bind methods to preserve 'this' context
         this.generateComprehensivePlan = this.generateComprehensivePlan.bind(this);
@@ -668,16 +668,10 @@ class AITravelController {
                     detailed_itinerary: this.formatDetailedItinerary(llmResult.itinerary),
                     // Fix weather forecast format
                     weather_forecast: this.formatWeatherForFrontend(llmResult.itinerary.weather_forecast),
-                    // Add personality analysis for frontend
-                    personality_analysis: {
-                        description: user.personalityAnalysis.description,
-                        traveler_type: user.personalityAnalysis.travelerType,
-                        motivations: user.personalityAnalysis.motivations || []
-                    },
                     // Add basic component format (dailyPlan)
                     dailyPlan: this.formatDailyPlan(llmResult.itinerary),
-                    // Add personalized insights
-                    personalizedInsights: user.personalityAnalysis.description || "Based on your travel personality, this itinerary is customized for you.",
+                    // Add generic travel insights without personality details
+                    personalizedInsights: "This itinerary is customized based on your travel preferences and style.",
                     // Add recommendations
                     recommendations: this.extractRecommendations(llmResult.itinerary)
                 };
@@ -686,7 +680,6 @@ class AITravelController {
                     success: true,
                     message: 'Personalized itinerary generated successfully',
                     itinerary: frontendItinerary,
-                    personalityUsed: user.personalityAnalysis.description,
                     itineraryId: newItinerary._id
                 });
             } else {
@@ -718,14 +711,14 @@ class AITravelController {
                         destination,
                         duration: `${duration} days`,
                         budget: total_budget,
-                        traveler_type: user.personalityAnalysis?.travelerType || 'General_Traveler'
+                        traveler_type: 'General_Traveler'
                     },
                     daily_plans: fallbackItinerary.daily_plans || [],
                     weather_forecast: fallbackItinerary.weather_forecast || [],
                     hotels_to_stay: fallbackItinerary.hotels_to_stay || [],
                     transportation: fallbackItinerary.transportation || {},
                     other_information: fallbackItinerary.other_information || {},
-                    personalizedInsights: "This is a basic travel plan. For fully personalized recommendations, please configure AI API keys.",
+                    personalizedInsights: "This is a basic travel plan customized for your preferences.",
                     note: "Fallback itinerary - AI services unavailable"
                 };
 
@@ -733,7 +726,6 @@ class AITravelController {
                     success: true,
                     message: 'Basic itinerary generated (AI services unavailable)',
                     itinerary: frontendItinerary,
-                    personalityUsed: user.personalityAnalysis.description,
                     itineraryId: newItinerary._id,
                     fallback: true
                 });
@@ -786,16 +778,12 @@ class AITravelController {
             let personalityDescription = '';
 
             if (personalityResult.success) {
-                console.log('✅ Trained ML model prediction successful!');
-                console.log(`🎯 Predicted Traveler Type: ${personalityResult.travelerType}`);
-                console.log(`🏆 Dominant Trait: ${personalityResult.dominantTrait}`);
-                console.log(`📍 Places They Love: ${personalityResult.placesTheyLove}`);
-                console.log(`🎭 Travel Style: ${personalityResult.travelStyle}`);
+                console.log('✅ ML model prediction successful!');
 
-                // Create detailed personality description
-                personalityDescription = `You are a **${personalityResult.travelerType}**! Based on our advanced ML analysis of over 1 million personality profiles, you love visiting: ${personalityResult.placesTheyLove}. Your travel style is: ${personalityResult.travelStyle}. Your dominant personality trait is ${personalityResult.dominantTrait}, which means you're drawn to experiences that align with your unique travel style.`;
+                // Create user-friendly description without internal ML details
+                personalityDescription = `You are a **${personalityResult.travelerType.replace('_', ' ')}**! Based on your travel preferences, you love visiting: ${personalityResult.placesTheyLove}. Your travel style is: ${personalityResult.travelStyle}.`;
 
-                // Prepare comprehensive personality data for storage
+                // Prepare personality data for storage (internal use only)
                 personalityAnalysisData = {
                     // Core ML predictions
                     travelerType: personalityResult.travelerType,
@@ -803,14 +791,14 @@ class AITravelController {
                     placesTheyLove: personalityResult.placesTheyLove,
                     travelStyle: personalityResult.travelStyle,
                     
-                    // Big Five scores
+                    // Big Five scores (internal)
                     bigFiveScores: personalityResult.bigFiveScores,
                     confidenceScores: personalityResult.confidenceScores,
                     
-                    // Descriptive text for UI
+                    // User-friendly description
                     description: personalityDescription,
                     
-                    // ML model info
+                    // ML model info (internal)
                     modelUsed: personalityResult.modelUsed || 'trained_ml_model',
                     predictionConfidence: personalityResult.predictionConfidence || 0.8,
                     analysisDate: new Date(),
@@ -820,7 +808,7 @@ class AITravelController {
                 };
 
             } else {
-                console.log('⚠️ ML model failed, using enhanced fallback analysis');
+                console.log('⚠️ Using fallback analysis');
                 
                 // Enhanced fallback with better personality mapping
                 const fallbackResult = personalityResult.fallback || personalityResult;
@@ -839,12 +827,13 @@ class AITravelController {
                 const travelerTypeDescriptions = personalityResult.descriptions || {};
                 const placeDescription = travelerTypeDescriptions[travelerType] || 'Museums, art galleries, cultural sites, and unique local experiences';
 
-                personalityDescription = `You are a **${travelerType.replace('_', ' ')}**! Based on your preferences, you love visiting: ${placeDescription}. Your dominant personality trait is ${dominantTrait}, which influences your travel choices.`;
+                personalityDescription = `You are a **${travelerType.replace('_', ' ')}**! Based on your preferences, you love visiting: ${placeDescription}. Your travel style focuses on ${travelerType.replace('_', ' ').toLowerCase()} experiences.`;
 
                 personalityAnalysisData = {
                     travelerType: travelerType,
                     dominantTrait: dominantTrait,
                     placesTheyLove: placeDescription,
+                    travelStyle: `${travelerType.replace('_', ' ').toLowerCase()} experiences`,
                     bigFiveScores: fallbackResult.bigFiveScores || {},
                     confidenceScores: { [travelerType]: 0.75 },
                     description: personalityDescription,
@@ -965,15 +954,20 @@ class AITravelController {
             doc.text(`Generated: ${new Date().toLocaleDateString()}`);
             doc.moveDown();
 
-            // Personality section
-            if (personality_analysis) {
-                doc.fontSize(16).text('Your Travel Personality', { underline: true });
-                doc.fontSize(12).text(personality_analysis.description || '');
-                doc.moveDown();
-            }
-
             // Weather section
-            if (weather_forecast && weather_forecast.overall_summary) {
+            if (weather_forecast && weather_forecast.length > 0) {
+                doc.fontSize(16).text('Weather Information', { underline: true });
+                
+                // Add weather forecast for each day
+                weather_forecast.forEach((dayWeather, index) => {
+                    doc.fontSize(12)
+                       .text(`Day ${dayWeather.day || index + 1}: ${dayWeather.condition || 'Pleasant'} - ${dayWeather.temperature || '20-25°C'}`);
+                    if (dayWeather.precautions) {
+                        doc.fontSize(10).text(`   Tips: ${dayWeather.precautions}`);
+                    }
+                });
+                doc.moveDown();
+            } else if (weather_forecast && weather_forecast.overall_summary) {
                 doc.fontSize(16).text('Weather Forecast', { underline: true });
                 doc.fontSize(12).text(weather_forecast.overall_summary);
                 doc.moveDown();

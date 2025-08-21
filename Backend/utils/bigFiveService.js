@@ -3,8 +3,8 @@ const path = require('path');
 
 class BigFiveService {
     constructor() {
-        this.pythonScriptPath = 'scripts/predict_personality.py'; // Relative to ml_models directory
-        this.modelPath = path.join(__dirname, '../ml_models/models/travel_personality_model.pkl');
+        this.pythonScriptPath = 'scripts/predict_personality_trained.py'; // Updated to use trained model
+        this.modelPath = path.join(__dirname, '../ml_models/models/travel_personality_classifier.pkl');
     }
 
     async predictBigFivePersonality(userPreferences) {
@@ -164,9 +164,18 @@ class BigFiveService {
     generateFallbackAnalysis(bigFiveScores) {
         console.log('🔄 Using fallback personality analysis');
         
+        // Ensure we have valid scores
+        const validScores = bigFiveScores || {
+            'openness': 60,
+            'conscientiousness': 55, 
+            'extraversion': 65,
+            'agreeableness': 50,
+            'neuroticism': 40
+        };
+        
         // Determine traveler type based on dominant trait
-        const dominantTrait = Object.keys(bigFiveScores).reduce((a, b) => 
-            bigFiveScores[a] > bigFiveScores[b] ? a : b
+        const dominantTrait = Object.keys(validScores).reduce((a, b) => 
+            validScores[a] > validScores[b] ? a : b
         );
 
         const traitToTravelerType = {
@@ -178,15 +187,21 @@ class BigFiveService {
         };
 
         const travelerType = traitToTravelerType[dominantTrait] || 'Cultural_Explorer';
+        const descriptions = this.getTraverlerTypeDescriptions();
         
+        // Always return a valid result
         return {
             success: true,
-            bigFiveScores: bigFiveScores,
+            bigFiveScores: validScores,
             dominantTrait: dominantTrait,
             travelerType: travelerType,
-            personalityDescription: this.getTraverlerTypeDescriptions()[travelerType],
-            confidenceScores: { [travelerType]: 0.8 }, // Fallback confidence
-            descriptions: this.getTraverlerTypeDescriptions(),
+            personalityDescription: descriptions[travelerType] || 'Diverse travel experiences tailored to your preferences',
+            placesTheyLove: descriptions[travelerType] || 'Various interesting destinations',
+            travelStyle: `${travelerType.replace('_', ' ').toLowerCase()} experiences`,
+            confidenceScores: { [travelerType]: 0.8 },
+            predictionConfidence: 0.8,
+            modelUsed: 'enhanced_fallback',
+            descriptions: descriptions,
             fallback: true
         };
     }
