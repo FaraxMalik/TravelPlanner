@@ -1,0 +1,73 @@
+{
+  "model_type": "travel_personality_prediction",
+  "training_date": "2025-08-22T02:16:53.367048",
+  "personality_types": [
+    "Cultural_Explorer",
+    "Adventure_Seeker",
+    "Luxury_Seeker",
+    "Social_Party_Goer",
+    "Nature_Lover",
+    "Budget_Backpacker",
+    "Family_Oriented",
+    "Solo_Adventurer",
+    "Relaxation_Seeker",
+    "History_Buff"
+  ],
+  "personality_descriptions": {
+    "Cultural_Explorer": {
+      "description": "You are a **Cultural Explorer**! You love immersing yourself in local cultures, visiting museums, art galleries, and historical sites. You appreciate authentic experiences and learning about different traditions.",
+      "places_they_love": "Museums, art galleries, historical sites, cultural festivals, local markets, traditional restaurants, heritage sites, cultural workshops",
+      "travel_style": "Cultural immersion, educational experiences, authentic local interactions"
+    },
+    "Adventure_Seeker": {
+      "description": "You are an **Adventure Seeker**! You thrive on excitement and new experiences. You love outdoor activities, adrenaline-pumping adventures, and exploring off-the-beaten-path destinations.",
+      "places_they_love": "Hiking trails, adventure parks, extreme sports venues, national parks, mountain climbing, water sports, zip-lining, rock climbing",
+      "travel_style": "High-energy activities, outdoor adventures, thrill-seeking experiences"
+    },
+    "Luxury_Seeker": {
+      "description": "You are a **Luxury Seeker**! You appreciate the finer things in life and prefer comfort and elegance in your travels. You enjoy premium experiences, fine dining, and luxurious accommodations.",
+      "places_they_love": "Luxury hotels, fine dining restaurants, spas, premium shopping districts, exclusive venues, high-end cultural experiences",
+      "travel_style": "Comfort-focused, premium experiences, luxury accommodations"
+    },
+    "Social_Party_Goer": {
+      "description": "You are a **Social Party Goer**! You love meeting new people, experiencing vibrant nightlife, and being part of social gatherings. You seek destinations with great entertainment and social scenes.",
+      "places_they_love": "Nightclubs, bars, festivals, social events, beach parties, live music venues, bustling social districts",
+      "travel_style": "Social experiences, nightlife, group activities, entertainment-focused"
+    },
+    "Nature_Lover": {
+      "description": "You are a **Nature Lover**! You find peace and inspiration in natural environments. You prefer destinations with beautiful landscapes, wildlife, and opportunities to connect with nature.",
+      "places_they_love": "National parks, wildlife reserves, hiking trails, beaches, mountains, forests, botanical gardens, scenic viewpoints",
+      "travel_style": "Nature-focused, peaceful environments, outdoor activities, wildlife experiences"
+    },
+    "Budget_Backpacker": {
+      "description": "You are a **Budget Backpacker**! You love authentic, affordable travel experiences. You prefer local transportation, street food, and staying in budget accommodations while maximizing cultural immersion.",
+      "places_they_love": "Local markets, street food vendors, hostels, public transportation, local neighborhoods, free attractions, walking tours",
+      "travel_style": "Budget-conscious, authentic experiences, local immersion, independent travel"
+    },
+    "Family_Oriented": {
+      "description": "You are **Family Oriented**! You prioritize safe, family-friendly destinations with activities suitable for all ages. You value educational and bonding experiences that everyone can enjoy.",
+      "places_they_love": "Theme parks, family resorts, educational museums, zoos, aquariums, family-friendly beaches, cultural sites with guided tours",
+      "travel_style": "Family-friendly, safe environments, educational experiences, group bonding activities"
+    },
+    "Solo_Adventurer": {
+      "description": "You are a **Solo Adventurer**! You enjoy independent travel and self-discovery. You prefer flexible itineraries and unique experiences that allow for personal reflection and growth.",
+      "places_they_love": "Quiet cafes, solo hiking trails, photography spots, meditation retreats, local workshops, independent bookstores, peaceful locations",
+      "travel_style": "Independent travel, flexible schedules, self-discovery, unique personal experiences"
+    },
+    "Relaxation_Seeker": {
+      "description": "You are a **Relaxation Seeker**! You travel to unwind and recharge. You prefer peaceful destinations with spa services, comfortable accommodations, and stress-free activities.",
+      "places_they_love": "Spas, quiet beaches, wellness retreats, comfortable resorts, peaceful gardens, meditation centers, calm lakes",
+      "travel_style": "Relaxation-focused, wellness experiences, comfortable pace, stress-free environments"
+    },
+    "History_Buff": {
+      "description": "You are a **History Buff**! You are fascinated by historical sites, ancient civilizations, and cultural heritage. You love learning about the past through travel.",
+      "places_they_love": "Historical sites, ancient ruins, museums, archaeological sites, heritage tours, historical monuments, cultural heritage centers",
+      "travel_style": "Educational travel, historical exploration, cultural heritage, guided historical tours"
+    }
+  },
+  "model_files": {
+    "classifier": "travel_personality_classifier.pkl",
+    "scaler": "travel_personality_scaler.pkl",
+    "label_encoder": "label_encoder.pkl"
+  }
+}
