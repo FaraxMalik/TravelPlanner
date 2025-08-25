@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MapPin, 
@@ -149,6 +149,10 @@ const PlanTrip = () => {
     }
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   if (generatedItinerary) {
     return (
       <div className="trip-result-container bg-pattern">
@@ -178,7 +182,7 @@ const PlanTrip = () => {
             </div>
             <div className="stat-box">
               <DollarSign className="stat-icon" />
-              <span>${generatedItinerary.budget} Budget</span>
+              <span>€{generatedItinerary.budget} Budget</span>
             </div>
             <div className="stat-box">
               <Users className="stat-icon" />
@@ -386,10 +390,10 @@ const PlanTrip = () => {
                     onChange={(e) => handleInputChange('budget', e.target.value)}
                   >
                     <option value="">Select Budget Range</option>
-                    <option value="500-1000">$500 - $1,000</option>
-                    <option value="1000-2500">$1,000 - $2,500</option>
-                    <option value="2500-5000">$2,500 - $5,000</option>
-                    <option value="5000+">$5,000+</option>
+                    <option value="500-1000">€500 - €1,000</option>
+                    <option value="1000-2500">€1,000 - €2,500</option>
+                    <option value="2500-5000">€2,500 - €5,000</option>
+                    <option value="5000+">€5,000+</option>
                   </select>
                 </div>
                 <div className="input-group">

@@ -9,6 +9,7 @@ const {
   getUserPersonality,
   verifyToken,
   logoutUser
+  , googleAuth, facebookAuth
 } = require('../controllers/authController');
 const { protect } = require('../middlewares/authMiddleware');
 
@@ -16,6 +17,10 @@ const { protect } = require('../middlewares/authMiddleware');
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post('/logout', logoutUser);
+
+// Social OAuth routes
+router.get('/google', googleAuth);
+router.get('/facebook', facebookAuth);
 
 // Protected routes
 router.get('/verify', protect, verifyToken);

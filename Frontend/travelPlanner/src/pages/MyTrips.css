@@ -1,0 +1,89 @@
+.my-trips-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #7f53ac 0%, #647dee 100%);
+  padding: 3rem 0;
+}
+
+.my-trips-page h2 {
+  text-align: center;
+  color: #fff;
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+}
+
+.trips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.trip-card {
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px rgba(100, 125, 222, 0.15);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  position: relative;
+}
+
+.trip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.trip-destination {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #647dee;
+}
+
+.trip-status {
+  padding: 0.3rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: #e6fff6;
+  color: #06d6a0;
+}
+
+.trip-status.completed {
+  background: #e6fff6;
+  color: #06d6a0;
+}
+
+.trip-status.planned {
+  background: #ffeaea;
+  color: #ff5e62;
+}
+
+.trip-details {
+  font-size: 1rem;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.trip-view-btn {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+  color: #fff;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255, 94, 98, 0.10);
+  transition: background 0.2s;
+}
+
+.trip-view-btn:hover {
+  background: linear-gradient(135deg, #647dee 0%, #7f53ac 100%);
+}

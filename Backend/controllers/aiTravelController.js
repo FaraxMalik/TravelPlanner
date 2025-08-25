@@ -950,7 +950,7 @@ class AITravelController {
             // Trip details
             doc.fontSize(14).text(`Travel Dates: ${travel_dates}`);
             doc.text(`Duration: ${duration} days`);
-            doc.text(`Budget: $${total_budget}`);
+            doc.text(`Budget: €${total_budget}`);
             doc.text(`Generated: ${new Date().toLocaleDateString()}`);
             doc.moveDown();
 
@@ -973,90 +973,82 @@ class AITravelController {
                 doc.moveDown();
             }
 
-            // Daily itinerary in simple format (avoiding table positioning issues)
+            // Daily itinerary in table format
             if (req.body.dailyPlan && req.body.dailyPlan.length > 0) {
                 doc.fontSize(16).text('Daily Itinerary', { underline: true });
                 doc.moveDown();
-                
+
+                // Table column headers
+                const tableTop = doc.y;
+                const colWidths = [40, 70, 70, 180, 50, 70];
+                const startX = doc.page.margins.left;
+                const headers = ['Day', 'Period', 'Time', 'Activity', 'Cost', 'Location'];
+                let x = startX;
+                headers.forEach((header, i) => {
+                    doc.fontSize(11).fillColor('#333').text(header, x, tableTop, { width: colWidths[i], align: 'center', continued: i < headers.length - 1 });
+                    x += colWidths[i];
+                });
+                doc.moveDown(0.5);
+                doc.moveTo(startX, doc.y).lineTo(startX + colWidths.reduce((a,b)=>a+b,0), doc.y).stroke();
+
+                // Table rows
                 req.body.dailyPlan.forEach((day, index) => {
-                    // Ensure we have valid data
-                    const dayNum = day.day || (index + 1);
-                    const dayTitle = day.title || `Day ${dayNum}`;
-                    const dayCost = parseFloat(day.totalCost) || 0;
-                    
-                    // Day header with cost
-                    doc.fontSize(14)
-                       .fillColor('#2c3e50')
-                       .text(`Day ${dayNum}: ${dayTitle} - Total: $${dayCost.toFixed(2)}`, { underline: true });
-                    doc.moveDown(0.5);
-                    
-                    // Activities in simple list format
                     if (day.activities && Array.isArray(day.activities) && day.activities.length > 0) {
                         day.activities.forEach((activity, actIndex) => {
-                            // Validate activity data
-                            const activityText = activity.activity || activity.name || 'Activity';
-                            const activityTime = activity.time || 'All day';
-                            const activityCost = parseFloat(activity.cost) || 0;
-                            
-                            // Determine period
                             let period = 'All Day';
-                            let cleanActivity = activityText;
-                            
-                            if (activityText.includes('Morning:')) {
-                                period = '🌅 Morning';
-                                cleanActivity = activityText.replace(/^Morning:\s*/, '');
-                            } else if (activityText.includes('Afternoon:')) {
-                                period = '☀️ Afternoon';
-                                cleanActivity = activityText.replace(/^Afternoon:\s*/, '');
-                            } else if (activityText.includes('Evening:')) {
-                                period = '🌙 Evening';
-                                cleanActivity = activityText.replace(/^Evening:\s*/, '');
+                            let cleanActivity = activity.activity || activity.name || 'Activity';
+                            if (cleanActivity.includes('Morning:')) {
+                                period = 'Morning';
+                                cleanActivity = cleanActivity.replace(/^Morning:\s*/, '');
+                            } else if (cleanActivity.includes('Afternoon:')) {
+                                period = 'Afternoon';
+                                cleanActivity = cleanActivity.replace(/^Afternoon:\s*/, '');
+                            } else if (cleanActivity.includes('Evening:')) {
+                                period = 'Evening';
+                                cleanActivity = cleanActivity.replace(/^Evening:\s*/, '');
                             }
-                            
-                            // Simple text layout instead of complex table
-                            doc.fontSize(11)
-                               .fillColor('#000000')
-                               .text(`${period} | ${activityTime}`, { indent: 20 });
-                            
-                            doc.fontSize(10)
-                               .text(`${cleanActivity}`, { indent: 40 });
-                            
-                            if (activityCost > 0) {
-                                doc.fontSize(9)
-                                   .fillColor('#1976d2')
-                                   .text(`Cost: $${activityCost.toFixed(2)}`, { indent: 60 });
-                            }
-                            
-                            // Add location if available
-                            if (activity.location) {
-                                doc.fontSize(8)
-                                   .fillColor('#666666')
-                                   .text(`📍 ${activity.location}`, { indent: 60 });
-                            }
-                            
-                            doc.moveDown(0.3);
+                            const row = [
+                                day.day || (index + 1),
+                                period,
+                                activity.time || 'All day',
+                                cleanActivity,
+                                `€${parseFloat(activity.cost || 0).toFixed(2)}`,
+                                activity.location || ''
+                            ];
+                            x = startX;
+                            row.forEach((cell, i) => {
+                                let align = 'center';
+                                let cellOptions = { width: colWidths[i], align, continued: i < row.length - 1 };
+                                // For activity and location columns, use left alignment and increase width
+                                if (i === 3 || i === 5) {
+                                    cellOptions.align = 'left';
+                                    cellOptions.width = colWidths[i] + 40;
+                                }
+                                // For time column, use center and increase width a bit
+                                if (i === 2) {
+                                    cellOptions.width = colWidths[i] + 20;
+                                }
+                                doc.fontSize(10).fillColor('#222').text(cell, x, doc.y, cellOptions);
+                                x += colWidths[i];
+                            });
+                            doc.moveDown(0.2);
+                            doc.moveTo(startX, doc.y).lineTo(startX + colWidths.reduce((a,b)=>a+b,0), doc.y).strokeColor('#eee').stroke();
                         });
                     } else {
-                        doc.fontSize(10)
-                           .fillColor('#666666')
-                           .text('No activities planned for this day', { indent: 20 });
+                        x = startX;
+                        doc.fontSize(10).fillColor('#666').text(`Day ${day.day || (index + 1)}: No activities planned`, x, doc.y, { width: colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5], align: 'left' });
+                        doc.moveDown(0.2);
+                        doc.moveTo(startX, doc.y).lineTo(startX + colWidths.reduce((a,b)=>a+b,0), doc.y).strokeColor('#eee').stroke();
                     }
-                    
-                    doc.moveDown();
                 });
-                
+
                 // Trip total
                 const tripTotal = req.body.dailyPlan.reduce((sum, day) => {
                     const dayTotal = parseFloat(day.totalCost) || 0;
                     return sum + dayTotal;
                 }, 0);
-                
-                doc.fontSize(14)
-                   .fillColor('#d32f2f')
-                   .text(`Total Trip Cost: $${tripTotal.toFixed(2)}`, { 
-                       align: 'right',
-                       underline: true 
-                   });
+                doc.moveDown(1);
+                doc.fontSize(14).fillColor('#d32f2f').text(`Total Trip Cost: €${tripTotal.toFixed(2)}`, { align: 'right', underline: true });
                 doc.moveDown();
             }
 
@@ -1153,7 +1145,7 @@ class AITravelController {
         let text = `🎯 TRIP OVERVIEW\n`;
         text += `Destination: ${itineraryData.trip_overview?.destination || 'Your chosen destination'}\n`;
         text += `Duration: ${itineraryData.trip_overview?.duration || 'Multiple days'}\n`;
-        text += `Budget: $${itineraryData.trip_overview?.budget || 'As planned'}\n\n`;
+        text += `Budget: €${itineraryData.trip_overview?.budget || 'As planned'}\n\n`;
 
         text += `📋 DAILY ITINERARY\n\n`;
 

@@ -2,6 +2,18 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const { generateToken } = require('../utils/generateJWT');
 
+// Google OAuth controller stub
+// TODO: Implement with passport-google-oauth20 or similar
+const googleAuth = async (req, res) => {
+  res.status(501).json({ success: false, message: 'Google OAuth not implemented yet.' });
+};
+
+// Facebook OAuth controller stub
+// TODO: Implement with passport-facebook or similar
+const facebookAuth = async (req, res) => {
+  res.status(501).json({ success: false, message: 'Facebook OAuth not implemented yet.' });
+};
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -336,4 +348,5 @@ module.exports = {
   getUserPersonality,
   verifyToken,
   logoutUser
+  , googleAuth, facebookAuth
 }; 

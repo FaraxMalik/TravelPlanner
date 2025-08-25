@@ -18,6 +18,13 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleMenuBlur = (e) => {
+    // Only close if focus moves outside the menu and button
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsMenuOpen(false);
+    }
+  };
+
   // Don't show navbar on auth pages
   if (location.pathname === '/signin' || location.pathname === '/signup') {
     return null;
@@ -41,7 +48,6 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="nav-links desktop-only">
             <Link to="/" className="nav-link">Home</Link>
-            <Link to="/destinations" className="nav-link">Destinations</Link>
             <Link to="/about" className="nav-link">About</Link>
             <Link to="/contact" className="nav-link">Contact</Link>
           </div>
@@ -49,7 +55,7 @@ const Navbar = () => {
           {/* Auth Buttons */}
           <div className="nav-auth desktop-only">
             {isAuthenticated ? (
-              <div className="user-menu">
+              <div className="user-menu" tabIndex={0} onBlur={handleMenuBlur}>
                 <button className="user-button" onClick={toggleMenu}>
                   <div className="user-avatar">
                     {user?.firstName?.[0] || 'U'}
@@ -63,7 +69,7 @@ const Navbar = () => {
                 </button>
                 
                 {isMenuOpen && (
-                  <div className="dropdown-menu">
+                  <div className="dropdown-menu" tabIndex={0} onMouseLeave={() => setIsMenuOpen(false)}>
                     <Link to="/dashboard" className="dropdown-item">
                       <svg className="dropdown-icon" viewBox="0 0 24 24" fill="none">
                         <rect x="3" y="3" width="7" height="7"/>
@@ -80,7 +86,7 @@ const Navbar = () => {
                       </svg>
                       Profile
                     </Link>
-                    <Link to="/trips" className="dropdown-item">
+                    <Link to="/my-trips" className="dropdown-item">
                       <svg className="dropdown-icon" viewBox="0 0 24 24" fill="none">
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                         <circle cx="12" cy="10" r="3"/>
@@ -137,9 +143,6 @@ const Navbar = () => {
               <Link to="/" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
                 Home
               </Link>
-              <Link to="/destinations" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
-                Destinations
-              </Link>
               <Link to="/about" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
                 About
               </Link>
@@ -157,7 +160,7 @@ const Navbar = () => {
                   <Link to="/profile" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
                     Profile
                   </Link>
-                  <Link to="/trips" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
+                  <Link to="/my-trips" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
                     My Trips
                   </Link>
                   <button onClick={handleLogout} className="mobile-nav-link logout-btn">

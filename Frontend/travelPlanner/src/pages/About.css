@@ -1,0 +1,17 @@
+.about-page {
+  min-height: 60vh;
+  background: linear-gradient(135deg, #7f53ac 0%, #647dee 100%);
+  padding: 3rem 0;
+  color: #fff;
+  text-align: center;
+}
+
+.about-page h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.about-page p {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}

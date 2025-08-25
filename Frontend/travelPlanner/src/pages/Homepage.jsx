@@ -101,37 +101,55 @@ const Homepage = () => {
             <p>Experience the future of travel planning with our AI-powered platform</p>
           </div>
           
-          <div className="features-grid">
+          <div className="features-grid modern-features">
             <div className="feature-card card animate-fade-scale">
-              <div className="feature-icon">
-                <svg className="travel-icon" style={{width: '48px', height: '48px', color: 'var(--primary-orange)'}} viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              <div className="feature-icon gradient-bg">
+                <svg className="travel-icon" style={{width: '48px', height: '48px'}} viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="url(#orangeGradient)" strokeWidth="2" fill="none"/>
+                  <defs>
+                    <linearGradient id="orangeGradient" x1="0" y1="0" x2="24" y2="24">
+                      <stop stopColor="#ff9966"/>
+                      <stop offset="1" stopColor="#ff5e62"/>
+                    </linearGradient>
+                  </defs>
                 </svg>
               </div>
-              <h3>AI-Powered Recommendations</h3>
-              <p>Our advanced AI analyzes your preferences and personality to suggest perfect destinations and activities.</p>
+              <h3 className="feature-title">AI-Powered Recommendations</h3>
+              <p className="feature-desc">Our advanced AI analyzes your preferences and personality to suggest perfect destinations and activities.</p>
             </div>
 
             <div className="feature-card card animate-fade-scale" style={{animationDelay: '0.2s'}}>
-              <div className="feature-icon">
-                <svg className="travel-icon" style={{width: '48px', height: '48px', color: 'var(--primary-red)'}} viewBox="0 0 24 24" fill="none">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                  <circle cx="12" cy="10" r="3"/>
+              <div className="feature-icon gradient-bg">
+                <svg className="travel-icon" style={{width: '48px', height: '48px'}} viewBox="0 0 24 24" fill="none">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="url(#pinkGradient)" strokeWidth="2" fill="none"/>
+                  <circle cx="12" cy="10" r="3" stroke="url(#pinkGradient)" strokeWidth="2" fill="none"/>
+                  <defs>
+                    <linearGradient id="pinkGradient" x1="0" y1="0" x2="24" y2="24">
+                      <stop stopColor="#ff5e62"/>
+                      <stop offset="1" stopColor="#ff9966"/>
+                    </linearGradient>
+                  </defs>
                 </svg>
               </div>
-              <h3>Personalized Itineraries</h3>
-              <p>Get detailed day-by-day plans tailored to your travel style, budget, and interests.</p>
+              <h3 className="feature-title">Personalized Itineraries</h3>
+              <p className="feature-desc">Get detailed day-by-day plans tailored to your travel style, budget, and interests.</p>
             </div>
 
             <div className="feature-card card animate-fade-scale" style={{animationDelay: '0.4s'}}>
-              <div className="feature-icon">
-                <svg className="travel-icon" style={{width: '48px', height: '48px', color: 'var(--secondary-orange)'}} viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10"/>
-                  <polyline points="12,6 12,12 16,14"/>
+              <div className="feature-icon gradient-bg">
+                <svg className="travel-icon" style={{width: '48px', height: '48px'}} viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="url(#yellowGradient)" strokeWidth="2" fill="none"/>
+                  <polyline points="12,6 12,12 16,14" stroke="url(#yellowGradient)" strokeWidth="2" fill="none"/>
+                  <defs>
+                    <linearGradient id="yellowGradient" x1="0" y1="0" x2="24" y2="24">
+                      <stop stopColor="#ffd86a"/>
+                      <stop offset="1" stopColor="#ff9966"/>
+                    </linearGradient>
+                  </defs>
                 </svg>
               </div>
-              <h3>Real-time Updates</h3>
-              <p>Stay informed with live weather updates, local events, and travel advisories for your destinations.</p>
+              <h3 className="feature-title">Real-time Updates</h3>
+              <p className="feature-desc">Stay informed with live weather updates, local events, and travel advisories for your destinations.</p>
             </div>
           </div>
         </div>

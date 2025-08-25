@@ -129,8 +129,8 @@ class GroqTravelService {
 - Destination: ${destination}
 - Dates: ${startDate} to ${endDate}
 - Duration: ${duration} days
-- Daily Budget: $${daily_budget}
-- Total Budget: $${total_budget}
+- Daily Budget: €${daily_budget}
+- Total Budget: €${total_budget}
 - Number of Travelers: ${travelers}
 - Additional Preferences: ${additional_preferences}
 

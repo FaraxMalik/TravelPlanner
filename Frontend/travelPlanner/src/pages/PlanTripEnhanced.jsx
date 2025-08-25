@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { aiAPI, pdfAPI } from '../services/api';
-import ItineraryTable from '../components/ItineraryTable';
+import ItineraryTable from '../components/ItineraryTable_fixed';
 import './PlanTripEnhanced.css';
 
 const PlanTrip = () => {
@@ -36,6 +36,10 @@ const PlanTrip = () => {
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleInputChange = (field, value) => {
     setTripData(prev => ({
@@ -202,7 +206,7 @@ const PlanTrip = () => {
           <div className="form-group">
             <label>
               <DollarSign className="input-icon" />
-              Total Budget (USD)
+              Total Budget (EUR)
             </label>
             <input
               type="number"
@@ -256,7 +260,7 @@ const PlanTrip = () => {
             {tripData.budget && (
               <div className="summary-item">
                 <DollarSign className="summary-icon" />
-                <span>${Math.floor(tripData.budget / calculateDuration())}/day</span>
+                <span>€{Math.floor(tripData.budget / calculateDuration())}/day</span>
               </div>
             )}
           </div>
@@ -333,7 +337,7 @@ const PlanTrip = () => {
         <div className="trip-info">
           <span><MapPin className="info-icon" />{tripData.destination}</span>
           <span><Calendar className="info-icon" />{calculateDuration()} days</span>
-          <span><DollarSign className="info-icon" />${tripData.budget}</span>
+          <span><DollarSign className="info-icon" />€{tripData.budget}</span>
         </div>
       </div>
 

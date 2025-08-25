@@ -2,12 +2,15 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Homepage from './pages/Homepage';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import DashboardEnhanced from './pages/Dashboard';
 import PreferencesQuestionnaireEnhanced from './components/PreferencesQuestionnaireEnhanced';
 import PlanTripEnhanced from './pages/PlanTripEnhanced';
+import Profile from './pages/Profile';
+import MyTrips from './pages/MyTrips';
 
 // Import CSS files
 import './index.css';
@@ -165,6 +168,22 @@ const AppContent = () => {
               </PreferenceAwareRoute>
             } 
           />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/my-trips" 
+            element={
+              <ProtectedRoute>
+                <MyTrips />
+              </ProtectedRoute>
+            } 
+          />
 
           {/* Fallback route */}
           <Route 
@@ -177,6 +196,7 @@ const AppContent = () => {
           />
         </Routes>
       </main>
+      <Footer />
     </>
   );
 };

@@ -23,7 +23,7 @@ const ItineraryTable = ({ itinerary, tripData }) => {
           </div>
           <div className="stat-item">
             <DollarSign className="stat-icon" />
-            <span>${itinerary.budget} Budget</span>
+            <span>€{itinerary.budget} Budget</span>
           </div>
           <div className="stat-item">
             <Star className="stat-icon" />
@@ -74,7 +74,7 @@ const ItineraryTable = ({ itinerary, tripData }) => {
               </div>
               <div className="day-cost">
                 <DollarSign size={16} />
-                <span>${day.totalCost}</span>
+                <span>€{day.totalCost}</span>
               </div>
             </div>
 
@@ -137,7 +137,7 @@ const ItineraryTable = ({ itinerary, tripData }) => {
                           </div>
                         </td>
                         <td className="cost-cell">
-                          <span className="cost-amount">${activity.cost}</span>
+                          <span className="cost-amount">€{activity.cost}</span>
                         </td>
                       </tr>
                     );
@@ -147,7 +147,7 @@ const ItineraryTable = ({ itinerary, tripData }) => {
                   <tr className="day-total-row">
                     <td colSpan="3" className="total-label">Day {day.day} Total</td>
                     <td className="total-amount">
-                      <strong>${day.totalCost}</strong>
+                      <strong>€{day.totalCost}</strong>
                     </td>
                   </tr>
                 </tfoot>
@@ -171,7 +171,7 @@ const ItineraryTable = ({ itinerary, tripData }) => {
             </div>
             <div className="summary-item total-cost">
               <span className="summary-label">Estimated Total Cost:</span>
-              <span className="summary-value">${calculateTotalCost()}</span>
+              <span className="summary-value">€{calculateTotalCost()}</span>
             </div>
           </div>
         </div>

@@ -50,6 +50,11 @@ const Dashboard = () => {
     }
   }, [user, loading, navigate]);
 
+  // Scroll to top on component mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const loadDashboardData = async () => {
     try {
       setLoading(true);
@@ -241,7 +246,7 @@ const Dashboard = () => {
             >
               <DollarSign className="mini-icon" />
               <div className="mini-stat">
-                <h3>${userStats?.totalSpent || 0}</h3>
+                <h3>€{userStats?.totalSpent || 0}</h3>
                 <p>Spent</p>
               </div>
             </motion.div>
