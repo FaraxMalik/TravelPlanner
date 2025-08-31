@@ -14,7 +14,7 @@ const feedbackSchema = new mongoose.Schema({
   },
   activityId: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true // Refers to the activity's activityId in the tour plan
+    required: false // Allow null for trip-level feedback
   },
   rating: {
     type: Number,

@@ -6,8 +6,13 @@ const Feedback = require('../models/feedback');
 const createFeedback = async (req, res) => {
   try {
     const { tourPlanId, activityId, rating, comment } = req.body;
-    if (!tourPlanId || !activityId || typeof rating !== 'number' || rating < 1 || rating > 5) {
+    if (!tourPlanId || typeof rating !== 'number' || rating < 1 || rating > 5) {
       return res.status(400).json({ message: 'Invalid input' });
+    }
+    // Prevent duplicate feedback for the same user and trip
+    const existing = await Feedback.findOne({ userId: req.user._id, tourPlanId, activityId });
+    if (existing) {
+      return res.status(400).json({ message: 'You have already submitted feedback for this trip.' });
     }
     const feedback = await Feedback.create({
       userId: req.user._id,

@@ -326,39 +326,41 @@ const Dashboard = () => {
             {pastTrips.map((trip, index) => (
               <motion.div
                 key={trip.id || index}
-                className={`trip-tile ${index % 3 === 0 ? 'large' : 'small'}`}
-                initial={{ opacity: 0, y: 30 }}
+                className="trip-tile sleek-tile"
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index, duration: 0.6 }}
-                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ delay: 0.08 * index, duration: 0.5 }}
+                whileHover={{ y: -4, scale: 1.03, boxShadow: '0 4px 24px #F95F3933' }}
                 onClick={() => viewPastTrip(trip)}
+                style={{
+                  background: '#fff',
+                  borderRadius: '18px',
+                  boxShadow: '0 2px 12px #F95F3912',
+                  padding: '1.2rem 1.5rem',
+                  margin: '0.5rem',
+                  minWidth: '180px',
+                  minHeight: '60px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  border: '1.5px solid #F95F3933',
+                  transition: 'box-shadow 0.2s, transform 0.2s',
+                }}
               >
-                <div className="trip-overlay">
-                  <div className="trip-header">
-                    <MapPin size={20} />
-                    <span className="trip-status">Completed</span>
-                  </div>
-                  <div className="trip-details">
-                    <h3>{trip.destination || 'Adventure Destination'}</h3>
-                    <div className="trip-meta">
-                      <div className="meta-item">
-                        <Clock size={14} />
-                        <span>{trip.duration || 'N/A'} days</span>
-                      </div>
-                      <div className="meta-item">
-                        <Calendar size={14} />
-                        <span>{trip.dates || 'Date TBD'}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="trip-action">
-                    <Eye size={16} />
-                    <span>View Details</span>
-                  </div>
-                </div>
-                <div className="trip-bg">
-                  <div className="gradient-overlay"></div>
-                </div>
+                <span style={{
+                  color: '#F95F39',
+                  fontWeight: 700,
+                  fontSize: '1.15rem',
+                  letterSpacing: '0.02em',
+                  textAlign: 'center',
+                  width: '100%',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}>
+                  {trip.placeName || trip.destination || 'Adventure Destination'}
+                </span>
               </motion.div>
             ))}
           </div>

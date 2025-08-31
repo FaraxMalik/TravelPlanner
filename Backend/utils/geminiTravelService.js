@@ -65,7 +65,7 @@ class GeminiTravelService {
             console.log(`📍 Destination: ${destination}`);
             console.log(`📅 Duration: ${tripDuration} days`);
             console.log(`👥 People: ${numberOfPeople}`);
-            console.log(`💰 Budget: €${budget}`);
+            console.log(`💰 Budget: $${budget}`);
             console.log(`🧠 Traveler Type: ${travelerType}`);
             console.log(`🎭 Travel Style: ${travelStyle}`);
             console.log(`📍 Places They Love: ${placesTheyLove}`);
@@ -246,7 +246,7 @@ class GeminiTravelService {
 **TRAVEL REQUEST:**
 - Destination: ${destination}
 - Dates: ${startDate} to ${endDate}
-- Budget: €${budget}
+- Budget: $${budget}
 - Interests: ${interests.join(', ')}
 
 **USER'S PERSONALITY PROFILE:**
@@ -301,7 +301,7 @@ Please respond in the following JSON structure:
     {
       "name": "Hotel name",
       "type": "Luxury/Mid-range/Budget",
-      "price_range": "€XXX-XXX per night",
+      "price_range": "$XXX-XXX per night",
       "why_perfect": "Why this matches their personality",
       "location": "Area description",
       "amenities": ["amenity1", "amenity2"]
@@ -326,12 +326,12 @@ Please respond in the following JSON structure:
             "address": "Exact address",
             "description": "What to see/do here",
             "duration": "1-2 hours",
-            "cost": "€XX",
+            "cost": "$XX",
             "personality_fit": "Why this matches their ${dominantTrait} trait",
             "tips": "Best time to visit, photo spots, etc."
           }
         ],
-        "total_cost": "€XX",
+        "total_cost": "$XX",
         "transportation": "How to get there (walk/taxi/bus)"
       },
       "afternoon": {
@@ -343,12 +343,12 @@ Please respond in the following JSON structure:
             "address": "Exact address",
             "description": "What to see/do here",
             "duration": "2-3 hours",
-            "cost": "€XX",
+            "cost": "$XX",
             "personality_fit": "Why this matches their ${dominantTrait} trait",
             "tips": "Best time to visit, photo spots, etc."
           }
         ],
-        "total_cost": "€XX",
+        "total_cost": "$XX",
         "transportation": "How to get there (walk/taxi/bus)"
       },
       "evening": {
@@ -360,12 +360,12 @@ Please respond in the following JSON structure:
             "address": "Exact address",
             "description": "What to see/do here",
             "duration": "2-3 hours",
-            "cost": "€XX",
+            "cost": "$XX",
             "personality_fit": "Why this matches their ${dominantTrait} trait",
             "tips": "Best time to visit, photo spots, etc."
           }
         ],
-        "total_cost": "€XX",
+        "total_cost": "$XX",
         "transportation": "How to get there (walk/taxi/bus)"
       },
       "meals": {
@@ -373,7 +373,7 @@ Please respond in the following JSON structure:
           "restaurant": "Specific restaurant name",
           "address": "Exact address",
           "type": "Café/Fine dining/Local",
-          "cost": "€XX",
+          "cost": "$XX",
           "why_perfect": "Why this matches their food preferences",
           "must_try": "Signature dish to order"
         },
@@ -381,7 +381,7 @@ Please respond in the following JSON structure:
           "restaurant": "Specific restaurant name",
           "address": "Exact address",
           "type": "Café/Fine dining/Local", 
-          "cost": "€XX",
+          "cost": "$XX",
           "why_perfect": "Why this matches their food preferences",
           "must_try": "Signature dish to order"
         },
@@ -389,13 +389,13 @@ Please respond in the following JSON structure:
           "restaurant": "Specific restaurant name",
           "address": "Exact address",
           "type": "Café/Fine dining/Local",
-          "cost": "€XX", 
+          "cost": "$XX", 
           "why_perfect": "Why this matches their food preferences",
           "must_try": "Signature dish to order"
         }
       },
       "day_summary": {
-        "total_cost": "€XX",
+        "total_cost": "$XX",
         "total_distance": "XX km",
         "highlights": "Top 3 experiences of the day",
         "personality_alignment": "How this day matches their ${dominantTrait} trait"
@@ -407,7 +407,7 @@ Please respond in the following JSON structure:
       {
         "type": "Public transport/Rental car/Taxi",
         "description": "Why this works for their personality",
-        "cost": "€XX per day"
+        "cost": "$XX per day"
       }
     ]
   },
@@ -448,7 +448,7 @@ Make sure all recommendations are realistic, within budget, and perfectly aligne
 **🎯 TRIP OVERVIEW:**
 - Destination: ${destination}
 - Dates: ${startDate} to ${endDate} (${tripDuration} days)
-- Budget: €${budget} total
+- Budget: $${budget} USD total
 - Number of People: ${numberOfPeople}
 - Additional Info: ${additionalInfo || 'None provided'}
 
@@ -520,8 +520,8 @@ Travel Style: ${travelStyle}
       "phone": "+XX-XXX-XXX-XXXX",
       "website": "hotel-website.com",
       "rating": "X.X stars",
-      "price_per_night": "€XXX",
-      "total_cost": "€XXX for ${tripDuration} nights",
+      "price_per_night": "$XXX",
+      "total_cost": "$XXX for ${tripDuration} nights",
       "personality_match": "Why perfect for ${travelerType}",
       "key_amenities": ["WiFi", "Gym", "Pool", "Restaurant"],
       "nearby_attractions": "What's within walking distance",
@@ -548,7 +548,7 @@ Travel Style: ${travelStyle}
             "phone": "+XX-XXX-XXX-XXXX",
             "opening_hours": "9:00 AM - 6:00 PM",
             "duration": "2 hours",
-            "cost": "€XX per person",
+            "cost": "$XX per person",
             "description": "Detailed description of what to see/do",
             "why_perfect_for_personality": "Specific reason this matches ${travelerType}",
             "best_photo_spots": "Where to take pictures",
@@ -561,7 +561,7 @@ Travel Style: ${travelStyle}
           "address": "Complete street address", 
           "phone": "+XX-XXX-XXX-XXXX",
           "cuisine_type": "Italian/French/Local/International",
-          "price_range": "€XX-XX per person",
+          "price_range": "$XX-XX per person",
           "must_try_dishes": ["Dish 1", "Dish 2"],
           "why_chosen": "Matches ${travelerType} food preferences",
           "reservation_needed": "Yes/No",
@@ -577,7 +577,7 @@ Travel Style: ${travelStyle}
             "phone": "+XX-XXX-XXX-XXXX",
             "opening_hours": "10:00 AM - 8:00 PM",
             "duration": "3 hours",
-            "cost": "€XX per person",
+            "cost": "$XX per person",
             "description": "Detailed description of what to see/do",
             "why_perfect_for_personality": "Specific reason this matches ${travelerType}",
             "best_photo_spots": "Where to take pictures",
@@ -590,7 +590,7 @@ Travel Style: ${travelStyle}
           "address": "Complete street address",
           "phone": "+XX-XXX-XXX-XXXX", 
           "cuisine_type": "Italian/French/Local/International",
-          "price_range": "€XX-XX per person",
+          "price_range": "$XX-XX per person",
           "must_try_dishes": ["Dish 1", "Dish 2"],
           "why_chosen": "Matches ${travelerType} food preferences",
           "reservation_needed": "Yes/No",
@@ -605,8 +605,8 @@ Travel Style: ${travelStyle}
             "address": "Complete street address",
             "phone": "+XX-XXX-XXX-XXXX",
             "opening_hours": "6:00 PM - 11:00 PM",
-            "duration": "2 hours",
-            "cost": "€XX per person",
+            "duration": "2 hours", 
+            "cost": "$XX per person",
             "description": "Detailed description of what to see/do",
             "why_perfect_for_personality": "Specific reason this matches ${travelerType}",
             "best_photo_spots": "Where to take pictures",
@@ -618,7 +618,7 @@ Travel Style: ${travelStyle}
           "address": "Complete street address",
           "phone": "+XX-XXX-XXX-XXXX",
           "cuisine_type": "Italian/French/Local/International", 
-          "price_range": "€XX-XX per person",
+          "price_range": "$XX-XX per person",
           "must_try_dishes": ["Dish 1", "Dish 2"],
           "why_chosen": "Matches ${travelerType} food preferences",
           "reservation_needed": "Yes/No",
@@ -626,53 +626,56 @@ Travel Style: ${travelStyle}
         }
       },
       "daily_summary": {
-        "total_cost": "€XX",
-        "total_distance": "XX km",
+        "total_cost_per_person": "$XXX",
+        "total_distance_walked": "X km",
+        "transportation_costs": "$XX",
         "highlights": "Top 3 experiences of the day",
-        "personality_alignment": "How this day matches their ${dominantTrait} trait"
+        "personality_alignment": "How this day perfectly matches ${travelerType} preferences",
+        "energy_level": "High/Medium/Low - matches their preferences",
+        "backup_indoor_activities": "If weather is bad"
       }
     }
   ],
   "budget_breakdown": {
     "accommodation": {
-      "total": "€XXX",
-      "per_night": "€XX", 
-      "per_person": "€XX"
+      "total": "$XXX",
+      "per_night": "$XX", 
+      "per_person": "$XX"
     },
     "meals": {
-      "total": "€XXX",
-      "breakfast_total": "€XX",
-      "lunch_total": "€XX", 
-      "dinner_total": "€XX",
-      "per_person_per_day": "€XX"
+      "total": "$XXX",
+      "breakfast_total": "$XX",
+      "lunch_total": "$XX", 
+      "dinner_total": "$XX",
+      "per_person_per_day": "$XX"
     },
     "activities": {
-      "total": "€XXX",
-      "per_person": "€XX",
-      "most_expensive": "Activity name - €XX",
+      "total": "$XXX",
+      "per_person": "$XX",
+      "most_expensive": "Activity name - $XX",
       "free_activities": ["Free activity 1", "Free activity 2"]
     },
     "transportation": {
-      "total": "€XXX",
-      "local_transport": "€XX",
-      "between_cities": "€XX",
+      "total": "$XXX",
+      "local_transport": "$XX",
+      "between_cities": "$XX",
       "recommendations": "Best transport options for ${travelerType}"
     },
     "miscellaneous": {
-      "total": "€XXX",
-      "souvenirs": "€XX",
-      "tips": "€XX",
-      "emergency_fund": "€XX"
+      "total": "$XXX",
+      "souvenirs": "$XX",
+      "tips": "$XX",
+      "emergency_fund": "$XX"
     },
-    "daily_spending": "€XX per person per day",
-    "budget_remaining": "€XX",
+    "daily_spending": "$XX per person per day",
+    "budget_remaining": "$XX",
     "money_saving_tips": ["Tip 1", "Tip 2", "Tip 3"]
   },
   "transportation_guide": {
     "getting_around": [
       {
         "method": "Public Transport/Walking/Taxi/Rental Car",
-        "cost": "€XX per day",
+        "cost": "$XX per day",
         "why_perfect": "Matches ${travelerType} travel style",
         "booking_info": "How to book/buy tickets",
         "apps_to_download": ["App 1", "App 2"],
@@ -681,7 +684,7 @@ Travel Style: ${travelStyle}
     ],
     "airport_transfer": {
       "method": "Train/Bus/Taxi/Uber",
-      "cost": "€XX",
+      "cost": "$XX",
       "duration": "XX minutes",
       "booking_details": "How to book in advance"
     }
@@ -730,9 +733,9 @@ Travel Style: ${travelStyle}
 **🚨 CRITICAL REQUIREMENTS:**
 1. ALL information must be REAL and ACCURATE (real addresses, phone numbers, opening hours)
 2. EVERY recommendation must explain WHY it matches the ${travelerType} personality
-3. Include EXACT costs in Euro for everything
+3. Include EXACT costs in USD for everything
 4. Provide SPECIFIC weather forecasts for travel dates  
-5. Ensure the plan stays within the €${budget} budget
+5. Ensure the plan stays within the $${budget} budget
 6. Give DETAILED daily plans for all ${tripDuration} days
 7. Include PRACTICAL contact information and addresses
 8. Explain the PERSONALITY SCIENCE behind each choice
@@ -805,8 +808,8 @@ Create the most comprehensive, personalized travel plan ever generated, perfectl
 - Destination: ${destination}
 - Dates: ${startDate} to ${endDate}
 - Duration: ${duration} days
-- Daily Budget: €${daily_budget}
-- Total Budget: €${total_budget}
+- Daily Budget: $${daily_budget}
+- Total Budget: $${total_budget}
 - Number of Travelers: ${travelers}
 - Additional Preferences: ${additional_preferences}
 
@@ -1067,7 +1070,7 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
                 {
                     name: 'Standard Hotel',
                     type: 'Mid-range',
-                    price_range: '€100-200 per night',
+                    price_range: '$100-200 per night',
                     why_perfect: `Suitable for ${dominantTrait} personality`,
                     location: 'City center',
                     amenities: ['WiFi', 'Breakfast', '24/7 front desk']
@@ -1086,40 +1089,40 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
                         activity: 'Explore local area',
                         location: 'City center',
                         duration: '2-3 hours',
-                        cost: '€20',
+                        cost: '$20',
                         personality_fit: `Activity suitable for ${dominantTrait} personality`
                     },
                     afternoon: {
                         activity: 'Visit main attractions',
                         location: 'Tourist areas',
                         duration: '3-4 hours',
-                        cost: '€50',
+                        cost: '$50',
                         personality_fit: `Activity suitable for ${dominantTrait} personality`
                     },
                     evening: {
                         activity: 'Dinner and relaxation',
                         location: 'Local restaurant',
                         duration: '2-3 hours',
-                        cost: '€40',
+                        cost: '$40',
                         personality_fit: `Activity suitable for ${dominantTrait} personality`
                     },
                     meals: {
                         breakfast: {
                             restaurant: 'Hotel breakfast',
                             type: 'Standard',
-                            cost: '€15',
+                            cost: '$15',
                             why_perfect: 'Convenient and reliable'
                         },
                         lunch: {
                             restaurant: 'Local café',
                             type: 'Casual',
-                            cost: '€25',
+                            cost: '$25',
                             why_perfect: 'Good local option'
                         },
                         dinner: {
                             restaurant: 'Local restaurant',
                             type: 'Casual',
-                            cost: '€40',
+                            cost: '$40',
                             why_perfect: 'Authentic local experience'
                         }
                     }
@@ -1130,7 +1133,7 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
                     {
                         type: 'Public transport',
                         description: 'Cost-effective and convenient',
-                        cost: '€10 per day'
+                        cost: '$10 per day'
                     }
                 ]
             },
@@ -1211,7 +1214,7 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
             accommodation_recommendations: [
                 {
                     name: `${travelerType}-friendly accommodation in ${destination}`,
-                    price_per_night: `€${Math.round(budget * 0.3 / tripDuration)}`,
+                    price_per_night: `$${Math.round(budget * 0.3 / tripDuration)}`,
                     personality_match: `Perfect for ${travelerType} who loves: ${personalityDescription}`,
                     booking_tips: "Book through major travel sites for best rates"
                 }
@@ -1226,12 +1229,12 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
                         name: `${destination} highlights`,
                         description: `Explore places perfect for ${travelerType}`,
                         why_perfect_for_personality: `Matches your love for: ${personalityDescription}`,
-                        cost: `€${Math.round(budget * 0.2 / tripDuration)}`,
+                        cost: `$${Math.round(budget * 0.2 / tripDuration)}`,
                         insider_tips: "Start early to avoid crowds"
                     }],
                     breakfast: {
                         restaurant: "Local recommended café",
-                        price_range: `€${Math.round(budget * 0.1 / tripDuration)}`,
+                        price_range: `$${Math.round(budget * 0.1 / tripDuration)}`,
                         why_chosen: `Fits ${travelerType} preferences`
                     }
                 },
@@ -1241,11 +1244,11 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
                         name: `${destination} cultural sites`,
                         description: `Discover places that ${travelerType} travelers love`,
                         why_perfect_for_personality: personalityDescription,
-                        cost: `€${Math.round(budget * 0.15 / tripDuration)}`
+                        cost: `$${Math.round(budget * 0.15 / tripDuration)}`
                     }],
                     lunch: {
                         restaurant: "Local recommended restaurant",
-                        price_range: `€${Math.round(budget * 0.15 / tripDuration)}`
+                        price_range: `$${Math.round(budget * 0.15 / tripDuration)}`
                     }
                 },
                 evening: {
@@ -1253,33 +1256,33 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
                     activities: [{
                         name: `${destination} evening activities`,
                         description: `Evening experiences for ${travelerType}`,
-                        cost: `€${Math.round(budget * 0.1 / tripDuration)}`
+                        cost: `$${Math.round(budget * 0.1 / tripDuration)}`
                     }],
                     dinner: {
                         restaurant: "Local recommended dining",
-                        price_range: `€${Math.round(budget * 0.2 / tripDuration)}`
+                        price_range: `$${Math.round(budget * 0.2 / tripDuration)}`
                     }
                 },
                 daily_summary: {
-                    total_cost_per_person: `€${Math.round(budget / tripDuration / numberOfPeople)}`,
+                    total_cost_per_person: `$${Math.round(budget / tripDuration / numberOfPeople)}`,
                     personality_alignment: `Day designed for ${travelerType} preferences`
                 }
             })),
             budget_breakdown: {
                 accommodation: {
-                    total: `€${Math.round(budget * 0.4)}`,
-                    per_night: `€${Math.round(budget * 0.4 / tripDuration)}`
+                    total: `$${Math.round(budget * 0.4)}`,
+                    per_night: `$${Math.round(budget * 0.4 / tripDuration)}`
                 },
                 meals: {
-                    total: `€${Math.round(budget * 0.3)}`,
-                    per_person_per_day: `€${Math.round(budget * 0.3 / tripDuration / numberOfPeople)}`
+                    total: `$${Math.round(budget * 0.3)}`,
+                    per_person_per_day: `$${Math.round(budget * 0.3 / tripDuration / numberOfPeople)}`
                 },
                 activities: {
-                    total: `€${Math.round(budget * 0.25)}`,
-                    per_person: `€${Math.round(budget * 0.25 / numberOfPeople)}`
+                    total: `$${Math.round(budget * 0.25)}`,
+                    per_person: `$${Math.round(budget * 0.25 / numberOfPeople)}`
                 },
                 transportation: {
-                    total: `€${Math.round(budget * 0.05)}`,
+                    total: `$${Math.round(budget * 0.05)}`,
                     recommendations: `Best options for ${travelerType}`
                 }
             },
@@ -1297,4 +1300,4 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
     }
 }
 
-module.exports = GeminiTravelService;
+module.exports = GeminiTravelService; 

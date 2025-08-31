@@ -1,35 +1,33 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+
+import React, { useState } from 'react';
 import './Footer.css';
 
 const Footer = () => {
-  const location = useLocation();
-  const showFooterSection = location.pathname === '/about' || location.pathname === '/contact';
+  const [showPolicy, setShowPolicy] = useState(false);
 
   return (
-    <footer className="main-footer">
-      <div className="footer-content">
-        <div className="footer-section">
-          <Link to="/about" className="footer-link">About</Link>
-          <Link to="/contact" className="footer-link">Contact</Link>
+    <footer className="main-footer white-footer">
+      <div className="footer-content enhanced-footer">
+        <div className="footer-section footer-links">
+          <button className="footer-link policy-btn" onClick={() => setShowPolicy(true)}>
+            Privacy Policy
+          </button>
         </div>
-        <div className="footer-section">
-          <span>Made by <strong>Ahmer Nadeem</strong></span>
-          <span className="footer-semester">This was the semester project.</span>
+        {showPolicy && (
+          <div className="footer-policy-modal" onClick={() => setShowPolicy(false)}>
+            <div className="footer-policy-modal-content" onClick={e => e.stopPropagation()}>
+              <h3 className="footer-policy-title">Privacy Policy</h3>
+              <p className="footer-policy-text">
+                TravelPlanner is committed to protecting your privacy and ensuring a secure experience. We do not share your personal information with third parties except as required by law. By using our service, you consent to our data practices as described in this policy.
+              </p>
+              <button className="close-policy-btn" onClick={() => setShowPolicy(false)}>Close</button>
+            </div>
+          </div>
+        )}
+        <div className="footer-section footer-copyright">
+          <span>&copy; {new Date().getFullYear()} TravelPlanner. All rights reserved.</span>
         </div>
       </div>
-      {showFooterSection && location.pathname === '/about' && (
-        <div className="footer-popup">
-          <h3>About</h3>
-          <p>This was the semester project for the course.<br/>TravelPlanner is an AI-powered travel planning app designed to help users create personalized journeys.</p>
-        </div>
-      )}
-      {showFooterSection && location.pathname === '/contact' && (
-        <div className="footer-popup">
-          <h3>Contact</h3>
-          <p>This project was made by <strong>Ahmer Nadeem</strong>.<br/>For any queries, please reach out via email or the provided contact form.</p>
-        </div>
-      )}
     </footer>
   );
 };

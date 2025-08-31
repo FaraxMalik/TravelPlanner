@@ -11,6 +11,8 @@ import PreferencesQuestionnaireEnhanced from './components/PreferencesQuestionna
 import PlanTripEnhanced from './pages/PlanTripEnhanced';
 import Profile from './pages/Profile';
 import MyTrips from './pages/MyTrips';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 // Import CSS files
 import './index.css';
@@ -141,6 +143,14 @@ const AppContent = () => {
                 <SignUp />
               </PublicRoute>
             } 
+          />
+          <Route 
+            path="/about" 
+            element={<About />} 
+          />
+          <Route 
+            path="/contact" 
+            element={<Contact />} 
           />
 
           {/* Protected Routes with Preference Checking */}

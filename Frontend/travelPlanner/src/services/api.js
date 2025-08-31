@@ -90,4 +90,11 @@ export const pdfAPI = {
   }),
 };
 
+// Feedback API calls
+export const feedbackAPI = {
+  submitFeedback: (feedbackData) => api.post('/feedback', feedbackData),
+  getUserFeedback: () => api.get('/feedback/user'),
+  getTourFeedback: (tourPlanId) => api.get(`/feedback/tour/${tourPlanId}`),
+};
+
 export default api;

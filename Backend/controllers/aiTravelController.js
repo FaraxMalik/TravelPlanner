@@ -12,8 +12,8 @@ class AITravelController {
         this.groqService = new GroqTravelService();
         
         // 🔄 EASY LLM SWITCHING - Comment/Uncomment the lines below:
-        this.activeService = this.geminiService;  // ✅ UNCOMMENT to use Gemini
-     //    this.activeService = this.groqService;     // ✅ UNCOMMENT to use Groq (comment Gemini line above)
+     //   this.activeService = this.geminiService;  // ✅ UNCOMMENT to use Gemini
+       this.activeService = this.groqService;     // ✅ UNCOMMENT to use Groq (comment Gemini line above)
         
         // Bind methods to preserve 'this' context
         this.generateComprehensivePlan = this.generateComprehensivePlan.bind(this);
@@ -618,14 +618,38 @@ class AITravelController {
                 // Convert LLM format to TourPlan schema format
                 const formattedItinerary = dailyPlans.map((day, index) => ({
                     day: index + 1,
-                    activities: (day.activities || []).map(activity => ({
-                        name: activity.name || 'Activity',
-                        description: activity.description || '',
-                        category: activity.category || 'general',
-                        startTime: activity.time || activity.start_time || '',
-                        endTime: activity.end_time || '',
-                        location: activity.location || ''
-                    }))
+                    activities: (() => {
+                        // Collect from top-level activities array
+                        let acts = Array.isArray(day.activities) ? day.activities.slice() : [];
+                        // Also collect from morning, noon, evening if present
+                        ['morning', 'noon', 'evening'].forEach(period => {
+                            if (day[period]) {
+                                // If it's an array, add all; if object, add as single activity
+                                if (Array.isArray(day[period].activities)) {
+                                    acts = acts.concat(day[period].activities);
+                                } else if (day[period].activities || day[period].description || day[period].time) {
+                                    acts.push({
+                                        name: `${period.charAt(0).toUpperCase() + period.slice(1)}`,
+                                        description: day[period].description || day[period].activities || '',
+                                        category: period,
+                                        startTime: day[period].time || '',
+                                        endTime: '',
+                                        location: day[period].location || '',
+                                        personality_reason: day[period].personality_reason || ''
+                                    });
+                                }
+                            }
+                        });
+                        return acts.map((activity, aidx) => ({
+                            name: activity.name || 'Activity',
+                            description: activity.description || '',
+                            category: activity.category || 'general',
+                            startTime: activity.time || activity.startTime || '',
+                            endTime: activity.endTime || activity.end_time || '',
+                            location: activity.location || '',
+                            personality_reason: activity.personality_reason || ''
+                        }));
+                    })()
                 }));
                 
                 const weatherForecast = (itineraryData?.weather_forecast || []).map(weather => ({
