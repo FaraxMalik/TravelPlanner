@@ -12,8 +12,8 @@ class AITravelController {
         this.groqService = new GroqTravelService();
         
         // 🔄 EASY LLM SWITCHING - Comment/Uncomment the lines below:
-     //   this.activeService = this.geminiService;  // ✅ UNCOMMENT to use Gemini
-       this.activeService = this.groqService;     // ✅ UNCOMMENT to use Groq (comment Gemini line above)
+       this.activeService = this.geminiService;  // ✅ UNCOMMENT to use Gemini
+     //  this.activeService = this.groqService;     // ✅ UNCOMMENT to use Groq (comment Gemini line above)
         
         // Bind methods to preserve 'this' context
         this.generateComprehensivePlan = this.generateComprehensivePlan.bind(this);
@@ -975,39 +975,110 @@ class AITravelController {
             // Pipe PDF to file
             doc.pipe(fs.createWriteStream(filepath));
 
-            // Simple, clean header
-            doc.fontSize(20).fillColor('black').text('TRAVEL ITINERARY', { align: 'center' });
-            doc.fontSize(16).text(destination, { align: 'center' });
-            doc.moveDown();
+            // Beautiful header with gradient-like effect
+            doc.fillColor('#1e3a8a').fontSize(24).font('Helvetica-Bold');
+            doc.text('TRAVEL ITINERARY', { align: 'center' });
             
-            // Simple trip details
-            doc.fontSize(12);
-            doc.text(`Travel Dates: ${travel_dates || 'Not specified'}`);
-            doc.text(`Duration: ${duration || 'N/A'} days`);
-            doc.text(`Budget: €${total_budget || '0'}`);
-            doc.text(`Generated: ${new Date().toLocaleDateString()}`);
-            doc.moveDown();
+            doc.fillColor('#3b82f6').fontSize(18).font('Helvetica');
+            doc.text(destination.toUpperCase(), { align: 'center' });
+            
+            // Decorative line
+            doc.moveTo(100, doc.y + 10).lineTo(500, doc.y + 10).strokeColor('#3b82f6').lineWidth(2).stroke();
+            doc.moveDown(1.5);
+            
+            // Trip details in an elegant box
+            const detailsY = doc.y;
+            const detailsHeight = 85;
+            
+            // Light background box
+            doc.fillColor('#f8fafc').rect(80, detailsY, 440, detailsHeight).fill();
+            doc.strokeColor('#e2e8f0').lineWidth(1).rect(80, detailsY, 440, detailsHeight).stroke();
+            
+            // Trip details with clear text positioning
+            doc.fillColor('#1e40af').fontSize(11).font('Helvetica-Bold');
+            
+            // Left column - Travel Dates
+            doc.text('Travel Dates:', 100, detailsY + 15);
+            doc.fillColor('#475569').font('Helvetica');
+            doc.text(travel_dates || 'Not specified', 100, detailsY + 28);
+            
+            // Left column - Duration  
+            doc.fillColor('#1e40af').font('Helvetica-Bold');
+            doc.text('Duration:', 100, detailsY + 45);
+            doc.fillColor('#475569').font('Helvetica');
+            doc.text(`${duration || 'N/A'} days`, 100, detailsY + 58);
+            
+            // Right column - Budget
+            doc.fillColor('#1e40af').font('Helvetica-Bold');
+            doc.text('Budget:', 320, detailsY + 15);
+            doc.fillColor('#475569').font('Helvetica');
+            doc.text(`${total_budget || '0'} EUR`, 320, detailsY + 28);
+            
+            // Right column - Generated
+            doc.fillColor('#1e40af').font('Helvetica-Bold');
+            doc.text('Generated:', 320, detailsY + 45);
+            doc.fillColor('#475569').font('Helvetica');
+            doc.text(new Date().toLocaleDateString(), 320, detailsY + 58);
+            
+            doc.y = detailsY + detailsHeight + 20;
 
-            // Simple weather section
+            // Clean weather section
             if (weather_forecast && weather_forecast.length > 0) {
-                doc.fontSize(14).fillColor('black').text('Weather Forecast:');
+                doc.fillColor('#0f766e').fontSize(15).font('Helvetica-Bold');
+                doc.text('Weather Forecast', 80, doc.y);
+                doc.moveDown(1);
+                
+                // Weather box
+                const weatherY = doc.y;
+                const weatherHeight = (weather_forecast.length * 20) + 20;
+                doc.fillColor('#ecfdf5').rect(80, weatherY, 440, weatherHeight).fill();
+                doc.strokeColor('#10b981').lineWidth(1).rect(80, weatherY, 440, weatherHeight).stroke();
+                
                 weather_forecast.forEach((dayWeather, index) => {
-                    doc.fontSize(11).text(`Day ${dayWeather.day || index + 1}: ${dayWeather.condition || 'Pleasant'} - ${dayWeather.temperature || '20-25°C'}`);
+                    const itemY = weatherY + 15 + (index * 20);
+                    doc.fillColor('#065f46').fontSize(11).font('Helvetica-Bold');
+                    doc.text(`Day ${dayWeather.day || index + 1}:`, 100, itemY);
+                    doc.fillColor('#374151').fontSize(10).font('Helvetica');
+                    doc.text(`${dayWeather.condition || 'Pleasant'} - ${dayWeather.temperature || '20-25C'}`, 150, itemY);
                 });
-                doc.moveDown();
+                
+                doc.y = weatherY + weatherHeight + 20;
             } else if (weather_forecast && weather_forecast.overall_summary) {
-                doc.fontSize(14).text('Weather Forecast:');
-                doc.fontSize(11).text(weather_forecast.overall_summary, { width: 500 });
-                doc.moveDown();
+                doc.fillColor('#0f766e').fontSize(15).font('Helvetica-Bold');
+                doc.text('Weather Forecast', 80, doc.y);
+                doc.moveDown(1);
+                doc.fillColor('#374151').fontSize(11).font('Helvetica');
+                doc.text(weather_forecast.overall_summary, 80, doc.y, { width: 440 });
+                doc.moveDown(1);
             }
 
-            // Simple daily itinerary
+            // Compact daily itinerary with page management
             if (req.body.dailyPlan && req.body.dailyPlan.length > 0) {
-                doc.fontSize(14).fillColor('black').text('Daily Itinerary:');
+                doc.fillColor('#7c2d12').fontSize(15).font('Helvetica-Bold');
+                doc.text('Daily Itinerary', 80, doc.y);
                 doc.moveDown(0.5);
                 
                 req.body.dailyPlan.forEach((day, dayIndex) => {
-                    doc.fontSize(12).text(`Day ${day.day || (dayIndex + 1)}:`);
+                    // Check if we need a new page
+                    const estimatedDayHeight = 60 + (day.activities ? day.activities.length * 15 : 15);
+                    if (doc.y + estimatedDayHeight > doc.page.height - 100) {
+                        doc.addPage();
+                    }
+                    
+                    // Compact day header
+                    const dayY = doc.y;
+                    doc.fillColor('#fef3c7').rect(80, dayY, 440, 20).fill();
+                    doc.strokeColor('#f59e0b').lineWidth(1).rect(80, dayY, 440, 20).stroke();
+                    
+                    doc.fillColor('#92400e').fontSize(11).font('Helvetica-Bold');
+                    doc.text(`Day ${day.day || (dayIndex + 1)}`, 100, dayY + 6);
+                    
+                    // Day total cost on the right
+                    const dayTotal = parseFloat(day.totalCost) || 0;
+                    doc.fillColor('#059669').fontSize(10).font('Helvetica-Bold');
+                    doc.text(`${dayTotal.toFixed(2)} EUR`, 450, dayY + 6);
+                    
+                    doc.y = dayY + 25;
                     
                     if (day.activities && Array.isArray(day.activities) && day.activities.length > 0) {
                         day.activities.forEach((activity, actIndex) => {
@@ -1018,37 +1089,48 @@ class AITravelController {
                             const cost = parseFloat(activity.cost || 0).toFixed(2);
                             const location = activity.location ? ` at ${activity.location}` : '';
                             
-                            doc.fontSize(10).text(`  ${time}: ${cleanActivity}${location} - €${cost}`);
+                            // Compact activity layout on one line
+                            doc.fillColor('#1f2937').fontSize(9).font('Helvetica-Bold');
+                            doc.text(`${time}:`, 100, doc.y);
+                            
+                            doc.fillColor('#374151').fontSize(9).font('Helvetica');
+                            doc.text(`${cleanActivity}${location}`, 140, doc.y, { width: 260, ellipsis: true });
+                            
+                            doc.fillColor('#059669').fontSize(9).font('Helvetica-Bold');
+                            doc.text(`${cost} EUR`, 450, doc.y);
+                            
+                            doc.moveDown(0.35);
                         });
                     } else {
-                        doc.fontSize(10).text('  Free time / Rest day');
+                        doc.fillColor('#6b7280').fontSize(9).font('Helvetica-Oblique');
+                        doc.text('Free time / Rest day', 100, doc.y);
+                        doc.moveDown(0.35);
                     }
                     doc.moveDown(0.3);
                 });
 
-                // Total cost
+                // Compact total cost box
                 const tripTotal = req.body.dailyPlan.reduce((sum, day) => {
                     const dayTotal = parseFloat(day.totalCost) || 0;
                     return sum + dayTotal;
                 }, 0);
                 
-                doc.fontSize(12).text(`Total Trip Cost: €${tripTotal.toFixed(2)}`);
-                doc.moveDown();
+                const totalY = doc.y;
+                doc.fillColor('#1e40af').rect(300, totalY, 220, 25).fill();
+                doc.fillColor('#ffffff').fontSize(11).font('Helvetica-Bold');
+                doc.text('Total Trip Cost:', 320, totalY + 8);
+                doc.fontSize(12).text(`${tripTotal.toFixed(2)} EUR`, 420, totalY + 6);
+                
+                doc.y = totalY + 35;
             }
 
-            // Simple detailed description
-            doc.fontSize(14).fillColor('black').text('Detailed Description:');
-            doc.moveDown(0.5);
-            
-            const descriptionText = detailed_itinerary || 'This personalized itinerary has been crafted based on your travel preferences and personality profile. Each activity and location has been carefully selected to match your interests and travel style.';
-            
-            doc.fontSize(10).text(descriptionText, {
-                width: 500,
-                align: 'left'
+            // Simple footer after schedule
+            doc.moveDown(1);
+            doc.fillColor('#6b7280').fontSize(9).font('Helvetica');
+            doc.text('Generated by TravelPlanner AI - Have an amazing journey!', 80, doc.y, { 
+                align: 'center',
+                width: 440
             });
-            
-            doc.moveDown();
-            doc.fontSize(8).text('Generated by TravelPlanner AI', { align: 'center' });
 
             // Finalize PDF
             doc.end();
