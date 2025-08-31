@@ -1,5 +1,6 @@
 import React from 'react';
 
+// A simple test component for development and debugging
 const TestComponent = () => {
   return (
     <div style={{ 

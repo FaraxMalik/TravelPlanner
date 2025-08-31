@@ -18,7 +18,8 @@ class GeminiTravelService {
      * @param {Object} params - Comprehensive travel plan parameters
      * @returns {Object} Detailed travel plan with weather, hotels, restaurants, activities
      */
-    async generateComprehensiveTravelPlan(params) {
+  // Generates a comprehensive travel plan using Gemini LLM
+  async generateComprehensiveTravelPlan(params) {
         try {
             if (!this.model) {
                 console.error('❌ Gemini model not initialized - API key missing');
@@ -98,7 +99,8 @@ class GeminiTravelService {
      * @param {Object} params - Travel plan parameters
      * @returns {Object} Personalized travel plan
      */
-    async generatePersonalizedTravelPlan(params) {
+  // Generates a personalized travel plan using Gemini LLM
+  async generatePersonalizedTravelPlan(params) {
         try {
             const {
                 destination,
@@ -152,7 +154,8 @@ class GeminiTravelService {
      * @param {Object} params - Trip data parameters
      * @returns {Object} Personalized itinerary
      */
-    async generatePersonalizedItinerary(params) {
+  // Generates a personalized itinerary using Gemini LLM
+  async generatePersonalizedItinerary(params) {
         try {
             // Check if Gemini service is properly initialized
             if (!this.model) {

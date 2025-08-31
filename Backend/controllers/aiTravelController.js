@@ -32,6 +32,7 @@ class AITravelController {
      * @route POST /api/ai/generate-comprehensive-plan
      * @access Private
      */
+    // Generates a personalized travel plan using stored personality analysis and ML model
     async generateComprehensivePlan(req, res) {
         try {
             const {
@@ -204,6 +205,7 @@ class AITravelController {
      * @route POST /api/ai/generate-enhanced-plan
      * @access Private
      */
+    // Creates an enhanced travel plan with weather and personality integration via Python
     async generateEnhancedPlan(req, res) {
         try {
             const {
@@ -307,6 +309,7 @@ class AITravelController {
      * @route GET /api/ai/personality-status
      * @access Private
      */
+    // Checks if the user has completed personality analysis and preferences
     async checkPersonalityStatus(req, res) {
         try {
             const user = await User.findById(req.user._id).select('personalityAnalysis personalityAnalyzedAt preferencesCompleted readyForPersonalizedPlanning');
@@ -351,6 +354,7 @@ class AITravelController {
      * @route GET /api/ai/personality
      * @access Private
      */
+    // Retrieves the user's personality analysis and preferences status
     async getUserPersonality(req, res) {
         try {
             const user = await User.findById(req.user._id).select('personalityAnalysis personalityAnalyzedAt preferencesCompleted preferences');
@@ -391,6 +395,7 @@ class AITravelController {
      * @route POST /api/ai/test-personality
      * @access Private
      */
+    // Tests Big Five personality prediction with sample responses
     async testPersonalityPrediction(req, res) {
         try {
             const { testResponses } = req.body;
@@ -455,6 +460,7 @@ class AITravelController {
      * @route POST /api/ai/test-gemini
      * @access Private
      */
+    // Tests Gemini LLM travel plan generation with mock data
     async testGeminiGeneration(req, res) {
         try {
             const {
@@ -555,6 +561,7 @@ class AITravelController {
      * @route POST /api/ai/generate-itinerary
      * @access Private
      */
+    // Generates a travel itinerary using the enhanced ML pipeline and LLM
     async generateItinerary(req, res) {
         try {
             const {
@@ -770,6 +777,7 @@ class AITravelController {
      * @route POST /api/ai/analyze-personality
      * @access Private
      */
+    // Analyzes personality from user preferences using the trained ML model
     async analyzePersonality(req, res) {
         try {
             const preferences = req.body;
@@ -927,6 +935,7 @@ class AITravelController {
      * @route POST /api/ai/generate-pdf
      * @access Private
      */
+    // Generates a PDF document from itinerary and trip details
     async generatePDF(req, res) {
         try {
             const { 
@@ -1161,6 +1170,7 @@ class AITravelController {
     }
 
     // Helper function to format detailed itinerary text
+    // Formats the detailed itinerary text for frontend display
     formatDetailedItinerary(itineraryData) {
         if (!itineraryData || !itineraryData.daily_plans) {
             return "Detailed itinerary not available";
@@ -1200,6 +1210,7 @@ class AITravelController {
     }
 
     // Helper function to format weather forecast for frontend
+    // Formats weather forecast data for frontend consumption
     formatWeatherForFrontend(weatherData) {
         if (!weatherData || !Array.isArray(weatherData)) {
             return [];
@@ -1220,6 +1231,7 @@ class AITravelController {
     }
 
     // Helper function to format daily plan for basic frontend component
+    // Formats the daily plan for basic frontend itinerary component
     formatDailyPlan(itineraryData) {
         if (!itineraryData || !itineraryData.daily_plans) {
             return [
@@ -1288,6 +1300,7 @@ class AITravelController {
     }
 
     // Helper function to extract recommendations
+    // Extracts travel recommendations from itinerary data
     extractRecommendations(itineraryData) {
         const defaultRecommendations = [
             "Pack comfortable walking shoes",

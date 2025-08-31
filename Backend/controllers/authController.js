@@ -4,12 +4,14 @@ const { generateToken } = require('../utils/generateJWT');
 
 // Google OAuth controller stub
 // TODO: Implement with passport-google-oauth20 or similar
+// Handles Google authentication for users
 const googleAuth = async (req, res) => {
   res.status(501).json({ success: false, message: 'Google OAuth not implemented yet.' });
 };
 
 // Facebook OAuth controller stub
 // TODO: Implement with passport-facebook or similar
+// Handles Facebook authentication for users
 const facebookAuth = async (req, res) => {
   res.status(501).json({ success: false, message: 'Facebook OAuth not implemented yet.' });
 };
@@ -17,6 +19,7 @@ const facebookAuth = async (req, res) => {
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
+// Registers a new user in the system
 const registerUser = async (req, res) => {
   try {
     const { name, firstName, lastName, email, password, preferences } = req.body;
@@ -88,6 +91,7 @@ const registerUser = async (req, res) => {
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
+// Logs in a user and returns authentication token
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -164,6 +168,7 @@ const loginUser = async (req, res) => {
 // @desc    Get user profile
 // @route   GET /api/user/me
 // @access  Private
+// Retrieves the profile information of a user
 const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password').populate('tours');
@@ -197,6 +202,7 @@ const getUserProfile = async (req, res) => {
 // @desc    Get logged-in user's preferences
 // @route   GET /api/user/preferences
 // @access  Private
+// Gets the saved travel preferences for a user
 const getUserPreferences = async (req, res) => {
   try {
     res.json({ preferences: req.user.preferences });
@@ -209,6 +215,7 @@ const getUserPreferences = async (req, res) => {
 // @desc    Update logged-in user's preferences
 // @route   PUT /api/user/preferences
 // @access  Private
+// Updates the travel preferences for a user
 const updateUserPreferences = async (req, res) => {
   try {
     const allowedFields = [
@@ -254,6 +261,7 @@ const updateUserPreferences = async (req, res) => {
 // @desc    Logout user
 // @route   POST /api/auth/logout
 // @access  Public
+// Logs out the user and clears session/token
 const logoutUser = async (req, res) => {
   try {
     // Since we're using JWT without server-side sessions,
@@ -274,11 +282,11 @@ const logoutUser = async (req, res) => {
 // @desc    Verify JWT token
 // @route   GET /api/auth/verify
 // @access  Private
+// Verifies the user's authentication token
 const verifyToken = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
     
-    // Check if user has completed all 12 preferences
     // Check if user has completed all 12 personality questions
     const hasAllPreferences = user.preferencesCompleted && 
       user.preferences && 
@@ -314,6 +322,7 @@ const verifyToken = async (req, res) => {
 // @desc    Get user's personality analysis
 // @route   GET /api/auth/user/personality
 // @access  Private
+// Retrieves the personality analysis for a user
 const getUserPersonality = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('personalityAnalysis preferencesCompleted');
