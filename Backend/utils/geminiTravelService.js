@@ -894,7 +894,7 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
 1. Include ALL ${duration} days in daily_plans
 2. Each day MUST have morning, noon, and evening sections
 3. All costs must be realistic and add up correctly
-4. Every recommendation must explain the personality connection
+4. Every recommendation must explain the personality connection and additional preferences
 5. Use specific place names, addresses, and realistic pricing
 6. Weather should cover all days
 7. Response must be ONLY valid JSON - no extra text before or after`;

@@ -3,7 +3,7 @@ const path = require('path');
 
 class BigFiveService {
     constructor() {
-        this.pythonScriptPath = 'scripts/predict_personality_trained.py'; // Updated to use trained model
+        this.pythonScriptPath = 'scripts/predict_personality_trained.py'; 
         this.modelPath = path.join(__dirname, '../ml_models/models/travel_personality_classifier.pkl');
     }
 
