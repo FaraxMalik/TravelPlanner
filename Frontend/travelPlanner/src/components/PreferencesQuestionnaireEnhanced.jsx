@@ -15,6 +15,7 @@ const PreferencesQuestionnaire = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [personalityResult, setPersonalityResult] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const [direction, setDirection] = useState(1); // 1 for forward, -1 for backward
   
   const QUESTIONS_PER_PAGE = 3;
   const TOTAL_PAGES = 4;
@@ -24,6 +25,11 @@ const PreferencesQuestionnaire = () => {
   useEffect(() => {
     fetchQuestions();
   }, []);
+
+  // Scroll to top whenever page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
 
   const fetchQuestions = async () => {
     try {
@@ -84,6 +90,7 @@ const PreferencesQuestionnaire = () => {
     }
 
     if (currentPage < TOTAL_PAGES - 1) {
+      setDirection(1); // Going forward
       setCurrentPage(currentPage + 1);
     } else {
       handleSubmit();
@@ -92,6 +99,7 @@ const PreferencesQuestionnaire = () => {
 
   const handlePrevious = () => {
     if (currentPage > 0) {
+      setDirection(-1); // Going backward
       setCurrentPage(currentPage - 1);
     }
   };
@@ -322,9 +330,9 @@ const PreferencesQuestionnaire = () => {
         <motion.div
           key={currentPage}
           className="questions-page"
-          initial={{ opacity: 0, x: 100 }}
+          initial={{ opacity: 0, x: direction * 100 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -100 }}
+          exit={{ opacity: 0, x: direction * -100 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
         >
           <div className="page-header">
