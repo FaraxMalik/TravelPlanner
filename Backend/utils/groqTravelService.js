@@ -19,7 +19,6 @@ class GroqTravelService {
     /**
      * Generate personalized travel itinerary using Groq
      */
-    // Generates a personalized itinerary using Groq LLM
     async generatePersonalizedItinerary(params) {
         try {
             // Check if Groq service is properly initialized

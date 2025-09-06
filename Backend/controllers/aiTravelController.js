@@ -12,8 +12,8 @@ class AITravelController {
         this.groqService = new GroqTravelService();
         
         // 🔄 EASY LLM SWITCHING - Comment/Uncomment the lines below:
-       this.activeService = this.geminiService;  // ✅ UNCOMMENT to use Gemini
-     //  this.activeService = this.groqService;     // ✅ UNCOMMENT to use Groq (comment Gemini line above)
+     //  this.activeService = this.geminiService;  // ✅ UNCOMMENT to use Gemini
+       this.activeService = this.groqService;     // ✅ UNCOMMENT to use Groq (comment Gemini line above)
         
         // Bind methods to preserve 'this' context
         this.generateComprehensivePlan = this.generateComprehensivePlan.bind(this);
@@ -32,7 +32,6 @@ class AITravelController {
      * @route POST /api/ai/generate-comprehensive-plan
      * @access Private
      */
-    // Generates a personalized travel plan using stored personality analysis and ML model
     async generateComprehensivePlan(req, res) {
         try {
             const {
@@ -205,7 +204,6 @@ class AITravelController {
      * @route POST /api/ai/generate-enhanced-plan
      * @access Private
      */
-    // Creates an enhanced travel plan with weather and personality integration via Python
     async generateEnhancedPlan(req, res) {
         try {
             const {
@@ -309,7 +307,6 @@ class AITravelController {
      * @route GET /api/ai/personality-status
      * @access Private
      */
-    // Checks if the user has completed personality analysis and preferences
     async checkPersonalityStatus(req, res) {
         try {
             const user = await User.findById(req.user._id).select('personalityAnalysis personalityAnalyzedAt preferencesCompleted readyForPersonalizedPlanning');
@@ -354,7 +351,6 @@ class AITravelController {
      * @route GET /api/ai/personality
      * @access Private
      */
-    // Retrieves the user's personality analysis and preferences status
     async getUserPersonality(req, res) {
         try {
             const user = await User.findById(req.user._id).select('personalityAnalysis personalityAnalyzedAt preferencesCompleted preferences');
@@ -395,7 +391,6 @@ class AITravelController {
      * @route POST /api/ai/test-personality
      * @access Private
      */
-    // Tests Big Five personality prediction with sample responses
     async testPersonalityPrediction(req, res) {
         try {
             const { testResponses } = req.body;
@@ -460,7 +455,6 @@ class AITravelController {
      * @route POST /api/ai/test-gemini
      * @access Private
      */
-    // Tests Gemini LLM travel plan generation with mock data
     async testGeminiGeneration(req, res) {
         try {
             const {
@@ -561,7 +555,6 @@ class AITravelController {
      * @route POST /api/ai/generate-itinerary
      * @access Private
      */
-    // Generates a travel itinerary using the enhanced ML pipeline and LLM
     async generateItinerary(req, res) {
         try {
             const {
@@ -777,7 +770,6 @@ class AITravelController {
      * @route POST /api/ai/analyze-personality
      * @access Private
      */
-    // Analyzes personality from user preferences using the trained ML model
     async analyzePersonality(req, res) {
         try {
             const preferences = req.body;
@@ -935,7 +927,6 @@ class AITravelController {
      * @route POST /api/ai/generate-pdf
      * @access Private
      */
-    // Generates a PDF document from itinerary and trip details
     async generatePDF(req, res) {
         try {
             const { 
@@ -975,161 +966,121 @@ class AITravelController {
             // Pipe PDF to file
             doc.pipe(fs.createWriteStream(filepath));
 
-            // Beautiful header with gradient-like effect
-            doc.fillColor('#1e3a8a').fontSize(24).font('Helvetica-Bold');
-            doc.text('TRAVEL ITINERARY', { align: 'center' });
-            
-            doc.fillColor('#3b82f6').fontSize(18).font('Helvetica');
-            doc.text(destination.toUpperCase(), { align: 'center' });
-            
-            // Decorative line
-            doc.moveTo(100, doc.y + 10).lineTo(500, doc.y + 10).strokeColor('#3b82f6').lineWidth(2).stroke();
-            doc.moveDown(1.5);
-            
-            // Trip details in an elegant box
-            const detailsY = doc.y;
-            const detailsHeight = 85;
-            
-            // Light background box
-            doc.fillColor('#f8fafc').rect(80, detailsY, 440, detailsHeight).fill();
-            doc.strokeColor('#e2e8f0').lineWidth(1).rect(80, detailsY, 440, detailsHeight).stroke();
-            
-            // Trip details with clear text positioning
-            doc.fillColor('#1e40af').fontSize(11).font('Helvetica-Bold');
-            
-            // Left column - Travel Dates
-            doc.text('Travel Dates:', 100, detailsY + 15);
-            doc.fillColor('#475569').font('Helvetica');
-            doc.text(travel_dates || 'Not specified', 100, detailsY + 28);
-            
-            // Left column - Duration  
-            doc.fillColor('#1e40af').font('Helvetica-Bold');
-            doc.text('Duration:', 100, detailsY + 45);
-            doc.fillColor('#475569').font('Helvetica');
-            doc.text(`${duration || 'N/A'} days`, 100, detailsY + 58);
-            
-            // Right column - Budget
-            doc.fillColor('#1e40af').font('Helvetica-Bold');
-            doc.text('Budget:', 320, detailsY + 15);
-            doc.fillColor('#475569').font('Helvetica');
-            doc.text(`${total_budget || '0'} EUR`, 320, detailsY + 28);
-            
-            // Right column - Generated
-            doc.fillColor('#1e40af').font('Helvetica-Bold');
-            doc.text('Generated:', 320, detailsY + 45);
-            doc.fillColor('#475569').font('Helvetica');
-            doc.text(new Date().toLocaleDateString(), 320, detailsY + 58);
-            
-            doc.y = detailsY + detailsHeight + 20;
+            // Add content to PDF
+            doc.fontSize(24).text('Travel Itinerary', { align: 'center' });
+            doc.fontSize(18).text(destination, { align: 'center' });
+            doc.moveDown();
 
-            // Clean weather section
+            // Trip details
+            doc.fontSize(14).text(`Travel Dates: ${travel_dates}`);
+            doc.text(`Duration: ${duration} days`);
+            doc.text(`Budget: €${total_budget}`);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`);
+            doc.moveDown();
+
+            // Weather section
             if (weather_forecast && weather_forecast.length > 0) {
-                doc.fillColor('#0f766e').fontSize(15).font('Helvetica-Bold');
-                doc.text('Weather Forecast', 80, doc.y);
-                doc.moveDown(1);
+                doc.fontSize(16).text('Weather Information', { underline: true });
                 
-                // Weather box
-                const weatherY = doc.y;
-                const weatherHeight = (weather_forecast.length * 20) + 20;
-                doc.fillColor('#ecfdf5').rect(80, weatherY, 440, weatherHeight).fill();
-                doc.strokeColor('#10b981').lineWidth(1).rect(80, weatherY, 440, weatherHeight).stroke();
-                
+                // Add weather forecast for each day
                 weather_forecast.forEach((dayWeather, index) => {
-                    const itemY = weatherY + 15 + (index * 20);
-                    doc.fillColor('#065f46').fontSize(11).font('Helvetica-Bold');
-                    doc.text(`Day ${dayWeather.day || index + 1}:`, 100, itemY);
-                    doc.fillColor('#374151').fontSize(10).font('Helvetica');
-                    doc.text(`${dayWeather.condition || 'Pleasant'} - ${dayWeather.temperature || '20-25C'}`, 150, itemY);
+                    doc.fontSize(12)
+                       .text(`Day ${dayWeather.day || index + 1}: ${dayWeather.condition || 'Pleasant'} - ${dayWeather.temperature || '20-25°C'}`);
+                    if (dayWeather.precautions) {
+                        doc.fontSize(10).text(`   Tips: ${dayWeather.precautions}`);
+                    }
                 });
-                
-                doc.y = weatherY + weatherHeight + 20;
+                doc.moveDown();
             } else if (weather_forecast && weather_forecast.overall_summary) {
-                doc.fillColor('#0f766e').fontSize(15).font('Helvetica-Bold');
-                doc.text('Weather Forecast', 80, doc.y);
-                doc.moveDown(1);
-                doc.fillColor('#374151').fontSize(11).font('Helvetica');
-                doc.text(weather_forecast.overall_summary, 80, doc.y, { width: 440 });
-                doc.moveDown(1);
+                doc.fontSize(16).text('Weather Forecast', { underline: true });
+                doc.fontSize(12).text(weather_forecast.overall_summary);
+                doc.moveDown();
             }
 
-            // Compact daily itinerary with page management
+            // Daily itinerary in table format
             if (req.body.dailyPlan && req.body.dailyPlan.length > 0) {
-                doc.fillColor('#7c2d12').fontSize(15).font('Helvetica-Bold');
-                doc.text('Daily Itinerary', 80, doc.y);
+                doc.fontSize(16).text('Daily Itinerary', { underline: true });
+                doc.moveDown();
+
+                // Table column headers
+                const tableTop = doc.y;
+                const colWidths = [40, 70, 70, 180, 50, 70];
+                const startX = doc.page.margins.left;
+                const headers = ['Day', 'Period', 'Time', 'Activity', 'Cost', 'Location'];
+                let x = startX;
+                headers.forEach((header, i) => {
+                    doc.fontSize(11).fillColor('#333').text(header, x, tableTop, { width: colWidths[i], align: 'center', continued: i < headers.length - 1 });
+                    x += colWidths[i];
+                });
                 doc.moveDown(0.5);
-                
-                req.body.dailyPlan.forEach((day, dayIndex) => {
-                    // Check if we need a new page
-                    const estimatedDayHeight = 60 + (day.activities ? day.activities.length * 15 : 15);
-                    if (doc.y + estimatedDayHeight > doc.page.height - 100) {
-                        doc.addPage();
-                    }
-                    
-                    // Compact day header
-                    const dayY = doc.y;
-                    doc.fillColor('#fef3c7').rect(80, dayY, 440, 20).fill();
-                    doc.strokeColor('#f59e0b').lineWidth(1).rect(80, dayY, 440, 20).stroke();
-                    
-                    doc.fillColor('#92400e').fontSize(11).font('Helvetica-Bold');
-                    doc.text(`Day ${day.day || (dayIndex + 1)}`, 100, dayY + 6);
-                    
-                    // Day total cost on the right
-                    const dayTotal = parseFloat(day.totalCost) || 0;
-                    doc.fillColor('#059669').fontSize(10).font('Helvetica-Bold');
-                    doc.text(`${dayTotal.toFixed(2)} EUR`, 450, dayY + 6);
-                    
-                    doc.y = dayY + 25;
-                    
+                doc.moveTo(startX, doc.y).lineTo(startX + colWidths.reduce((a,b)=>a+b,0), doc.y).stroke();
+
+                // Table rows
+                req.body.dailyPlan.forEach((day, index) => {
                     if (day.activities && Array.isArray(day.activities) && day.activities.length > 0) {
                         day.activities.forEach((activity, actIndex) => {
+                            let period = 'All Day';
                             let cleanActivity = activity.activity || activity.name || 'Activity';
-                            cleanActivity = cleanActivity.replace(/^(Morning|Afternoon|Evening|Night):\s*/, '');
-                            
-                            const time = activity.time || 'All day';
-                            const cost = parseFloat(activity.cost || 0).toFixed(2);
-                            const location = activity.location ? ` at ${activity.location}` : '';
-                            
-                            // Compact activity layout on one line
-                            doc.fillColor('#1f2937').fontSize(9).font('Helvetica-Bold');
-                            doc.text(`${time}:`, 100, doc.y);
-                            
-                            doc.fillColor('#374151').fontSize(9).font('Helvetica');
-                            doc.text(`${cleanActivity}${location}`, 140, doc.y, { width: 260, ellipsis: true });
-                            
-                            doc.fillColor('#059669').fontSize(9).font('Helvetica-Bold');
-                            doc.text(`${cost} EUR`, 450, doc.y);
-                            
-                            doc.moveDown(0.35);
+                            if (cleanActivity.includes('Morning:')) {
+                                period = 'Morning';
+                                cleanActivity = cleanActivity.replace(/^Morning:\s*/, '');
+                            } else if (cleanActivity.includes('Afternoon:')) {
+                                period = 'Afternoon';
+                                cleanActivity = cleanActivity.replace(/^Afternoon:\s*/, '');
+                            } else if (cleanActivity.includes('Evening:')) {
+                                period = 'Evening';
+                                cleanActivity = cleanActivity.replace(/^Evening:\s*/, '');
+                            }
+                            const row = [
+                                day.day || (index + 1),
+                                period,
+                                activity.time || 'All day',
+                                cleanActivity,
+                                `€${parseFloat(activity.cost || 0).toFixed(2)}`,
+                                activity.location || ''
+                            ];
+                            x = startX;
+                            row.forEach((cell, i) => {
+                                let align = 'center';
+                                let cellOptions = { width: colWidths[i], align, continued: i < row.length - 1 };
+                                // For activity and location columns, use left alignment and increase width
+                                if (i === 3 || i === 5) {
+                                    cellOptions.align = 'left';
+                                    cellOptions.width = colWidths[i] + 40;
+                                }
+                                // For time column, use center and increase width a bit
+                                if (i === 2) {
+                                    cellOptions.width = colWidths[i] + 20;
+                                }
+                                doc.fontSize(10).fillColor('#222').text(cell, x, doc.y, cellOptions);
+                                x += colWidths[i];
+                            });
+                            doc.moveDown(0.2);
+                            doc.moveTo(startX, doc.y).lineTo(startX + colWidths.reduce((a,b)=>a+b,0), doc.y).strokeColor('#eee').stroke();
                         });
                     } else {
-                        doc.fillColor('#6b7280').fontSize(9).font('Helvetica-Oblique');
-                        doc.text('Free time / Rest day', 100, doc.y);
-                        doc.moveDown(0.35);
+                        x = startX;
+                        doc.fontSize(10).fillColor('#666').text(`Day ${day.day || (index + 1)}: No activities planned`, x, doc.y, { width: colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5], align: 'left' });
+                        doc.moveDown(0.2);
+                        doc.moveTo(startX, doc.y).lineTo(startX + colWidths.reduce((a,b)=>a+b,0), doc.y).strokeColor('#eee').stroke();
                     }
-                    doc.moveDown(0.3);
                 });
 
-                // Compact total cost box
+                // Trip total
                 const tripTotal = req.body.dailyPlan.reduce((sum, day) => {
                     const dayTotal = parseFloat(day.totalCost) || 0;
                     return sum + dayTotal;
                 }, 0);
-                
-                const totalY = doc.y;
-                doc.fillColor('#1e40af').rect(300, totalY, 220, 25).fill();
-                doc.fillColor('#ffffff').fontSize(11).font('Helvetica-Bold');
-                doc.text('Total Trip Cost:', 320, totalY + 8);
-                doc.fontSize(12).text(`${tripTotal.toFixed(2)} EUR`, 420, totalY + 6);
-                
-                doc.y = totalY + 35;
+                doc.moveDown(1);
+                doc.fontSize(14).fillColor('#d32f2f').text(`Total Trip Cost: €${tripTotal.toFixed(2)}`, { align: 'right', underline: true });
+                doc.moveDown();
             }
 
-            // Simple footer after schedule
-            doc.moveDown(1);
-            doc.fillColor('#6b7280').fontSize(9).font('Helvetica');
-            doc.text('Generated by TravelPlanner AI - Have an amazing journey!', 80, doc.y, { 
-                align: 'center',
-                width: 440
+            // Detailed itinerary text
+            doc.fontSize(16).fillColor('#000000').text('Detailed Description', { underline: true });
+            doc.fontSize(10).text(detailed_itinerary || 'Detailed itinerary not available', {
+                width: 410,
+                align: 'left'
             });
 
             // Finalize PDF
@@ -1210,7 +1161,6 @@ class AITravelController {
     }
 
     // Helper function to format detailed itinerary text
-    // Formats the detailed itinerary text for frontend display
     formatDetailedItinerary(itineraryData) {
         if (!itineraryData || !itineraryData.daily_plans) {
             return "Detailed itinerary not available";
@@ -1250,7 +1200,6 @@ class AITravelController {
     }
 
     // Helper function to format weather forecast for frontend
-    // Formats weather forecast data for frontend consumption
     formatWeatherForFrontend(weatherData) {
         if (!weatherData || !Array.isArray(weatherData)) {
             return [];
@@ -1271,7 +1220,6 @@ class AITravelController {
     }
 
     // Helper function to format daily plan for basic frontend component
-    // Formats the daily plan for basic frontend itinerary component
     formatDailyPlan(itineraryData) {
         if (!itineraryData || !itineraryData.daily_plans) {
             return [
@@ -1340,7 +1288,6 @@ class AITravelController {
     }
 
     // Helper function to extract recommendations
-    // Extracts travel recommendations from itinerary data
     extractRecommendations(itineraryData) {
         const defaultRecommendations = [
             "Pack comfortable walking shoes",

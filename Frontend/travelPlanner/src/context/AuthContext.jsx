@@ -1,10 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/api';
 
-// Context for authentication state
 const AuthContext = createContext();
 
-// Custom hook to access authentication context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -13,7 +11,6 @@ export const useAuth = () => {
   return context;
 };
 
-// Provides authentication state to child components
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,8 +19,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Check if user is logged in and verify token
-  // Initializes authentication from local storage or API
-  const initializeAuth = async () => {
+    const initializeAuth = async () => {
       const savedToken = localStorage.getItem('token');
       const savedUser = localStorage.getItem('user');
       
@@ -51,7 +47,6 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
-  // Handles user login
   const login = async (email, password) => {
     setLoading(true);
     setError(null);
@@ -77,7 +72,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Handles user registration
   const register = async (userData) => {
     setLoading(true);
     setError(null);
@@ -98,7 +92,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Handles user logout
   const logout = async () => {
     try {
       await authAPI.logout();
@@ -114,7 +107,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Refreshes user data from the server
   const refreshUser = async () => {
     try {
       if (!token) return;

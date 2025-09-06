@@ -2,7 +2,18 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-// Homepage component for the TravelPlanner app
+// Import images
+import travelImage1 from '../img/1.jpg';
+import travelImage2 from '../img/2.jpg';
+import travelImage3 from '../img/3.jpg';
+import travelImage4 from '../img/4.jpg';
+import travelImage5 from '../img/5.jpg';
+import travelImage6 from '../img/6.jpg';
+import travelImage7 from '../img/7.png';
+import travelImage8 from '../img/8.png';
+import travelImage9 from '../img/9.png';
+import travelImage10 from '../img/10.jpg';
+
 const Homepage = () => {
   const { isAuthenticated, user } = useAuth();
 
@@ -151,6 +162,98 @@ const Homepage = () => {
               </div>
               <h3 className="feature-title">Real-time Updates</h3>
               <p className="feature-desc">Stay informed with live weather updates, local events, and travel advisories for your destinations.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Travel Gallery Section */}
+      <section className="travel-gallery-section">
+        <div className="container">
+          <div className="section-header">
+            <h2>Discover Amazing Destinations</h2>
+            <p>From breathtaking landscapes to vibrant cultures, explore the world with us</p>
+          </div>
+          
+          <div className="travel-gallery">
+            <div className="gallery-item large animate-fade-scale">
+              <img src={travelImage1} alt="Beautiful mountain landscape" />
+              <div className="gallery-overlay">
+                <div className="overlay-content">
+                  <h3>Mountain Adventures</h3>
+                  <p>Discover breathtaking peaks and pristine wilderness</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="gallery-item animate-fade-scale" style={{animationDelay: '0.2s'}}>
+              <img src={travelImage2} alt="Coastal paradise" />
+              <div className="gallery-overlay">
+                <div className="overlay-content">
+                  <h3>Coastal Escapes</h3>
+                  <p>Relax by crystal clear waters</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="gallery-item animate-fade-scale" style={{animationDelay: '0.4s'}}>
+              <img src={travelImage3} alt="Cultural experiences" />
+              <div className="gallery-overlay">
+                <div className="overlay-content">
+                  <h3>Cultural Journeys</h3>
+                  <p>Immerse in local traditions</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="gallery-item animate-fade-scale" style={{animationDelay: '0.6s'}}>
+              <img src={travelImage4} alt="Urban exploration" />
+              <div className="gallery-overlay">
+                <div className="overlay-content">
+                  <h3>City Adventures</h3>
+                  <p>Explore vibrant urban landscapes</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="gallery-item animate-fade-scale" style={{animationDelay: '0.8s'}}>
+              <img src={travelImage5} alt="Scenic landscapes" />
+              <div className="gallery-overlay">
+                <div className="overlay-content">
+                  <h3>Natural Wonders</h3>
+                  <p>Experience stunning landscapes</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="gallery-item animate-fade-scale" style={{animationDelay: '1.0s'}}>
+              <img src={travelImage6} alt="Historic destinations" />
+              <div className="gallery-overlay">
+                <div className="overlay-content">
+                  <h3>Historic Sites</h3>
+                  <p>Step back in time and explore history</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="gallery-item animate-fade-scale" style={{animationDelay: '1.2s'}}>
+              <img src={travelImage7} alt="Luxury experiences" />
+              <div className="gallery-overlay">
+                <div className="overlay-content">
+                  <h3>Luxury Getaways</h3>
+                  <p>Indulge in premium travel experiences</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="gallery-item animate-fade-scale" style={{animationDelay: '1.4s'}}>
+              <img src={travelImage8} alt="Adventure activities" />
+              <div className="gallery-overlay">
+                <div className="overlay-content">
+                  <h3>Thrilling Adventures</h3>
+                  <p>Get your adrenaline pumping</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

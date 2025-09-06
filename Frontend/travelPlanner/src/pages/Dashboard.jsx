@@ -30,6 +30,12 @@ import { userAPI, travelAPI } from '../services/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Dashboard.css';
 
+// Import dashboard images
+import dashboardImage1 from '../img/6.jpg';
+import dashboardImage2 from '../img/7.png';
+import dashboardImage3 from '../img/8.png';
+import './Dashboard.css';
+
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -305,6 +311,71 @@ const Dashboard = () => {
               Start Planning
               <Navigation size={18} />
             </motion.button>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Travel Inspiration Gallery */}
+      <motion.section 
+        className="dashboard-gallery-section"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
+      >
+        <div className="container">
+          <div className="gallery-header">
+            <h2>Travel Inspiration</h2>
+            <p>Discover your next dream destination</p>
+          </div>
+          
+          <div className="dashboard-gallery">
+            <motion.div
+              className="dashboard-gallery-item"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              whileHover={{ y: -5 }}
+            >
+              <img src={dashboardImage1} alt="Exotic destinations" />
+              <div className="dashboard-gallery-overlay">
+                <div className="dashboard-overlay-content">
+                  <h4>Exotic Getaways</h4>
+                  <p>Discover hidden paradises</p>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              className="dashboard-gallery-item"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.7, duration: 0.5 }}
+              whileHover={{ y: -5 }}
+            >
+              <img src={dashboardImage2} alt="Adventure travel" />
+              <div className="dashboard-gallery-overlay">
+                <div className="dashboard-overlay-content">
+                  <h4>Adventure Awaits</h4>
+                  <p>Thrilling experiences ahead</p>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              className="dashboard-gallery-item"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+              whileHover={{ y: -5 }}
+            >
+              <img src={dashboardImage3} alt="Luxury travel" />
+              <div className="dashboard-gallery-overlay">
+                <div className="dashboard-overlay-content">
+                  <h4>Luxury Escapes</h4>
+                  <p>Indulge in premium experiences</p>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </motion.section>

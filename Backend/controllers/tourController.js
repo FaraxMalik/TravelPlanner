@@ -4,7 +4,6 @@ const User = require('../models/user');
 // @desc    Create a new tour plan
 // @route   POST /api/tours/create
 // @access  Private
-// Creates a new tour plan for the user
 const createTour = async (req, res) => {
   try {
     const {
@@ -96,7 +95,6 @@ const createTour = async (req, res) => {
 // @desc    Get all tour plans for logged-in user
 // @route   GET /api/tours/myplans
 // @access  Private
-// Retrieves all tour plans created by the user
 const getUserTours = async (req, res) => {
   try {
     const tours = await TourPlan.find({ userId: req.user._id })

@@ -11,9 +11,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-# This class predicts travel personality using fallback and Big Five logic
 class TravelPersonalityPredictor:
-    # Initializes the predictor and loads models
     def __init__(self):
         self.models_dir = Path(__file__).parent.parent / 'models'
         self.load_models()
@@ -72,7 +70,6 @@ class TravelPersonalityPredictor:
             }
         }
 
-    # Loads trained ML models from disk
     def load_models(self):
         """Load trained models and metadata"""
         try:
@@ -94,7 +91,6 @@ class TravelPersonalityPredictor:
             print(f"❌ Error loading models: {e}", file=sys.stderr)
             raise
 
-    # Predicts personality from user preferences
     def predict_personality(self, preferences):
         """
         Predict travel personality from user preferences
@@ -196,7 +192,6 @@ class TravelPersonalityPredictor:
                 'error_handled': str(e)
             }
 
-    # Calculates fallback personality if ML model is unavailable
     def calculate_fallback_personality(self, preferences):
         """
         Simple but reliable personality calculation that always works
@@ -222,7 +217,6 @@ class TravelPersonalityPredictor:
             # Ultimate fallback - return balanced scores
             return {'EXT': 60, 'CSN': 55, 'OPN': 65, 'AGR': 50, 'EST': 50}
 
-    # Calculates Big Five scores from travel preferences
     def calculate_big_five_scores(self, preferences):
         """
         Calculate approximate Big Five scores from preferences
@@ -272,7 +266,6 @@ class TravelPersonalityPredictor:
         
         return big_five
 
-# Main entry point for running the predictor
 def main():
     """Main function called from Node.js"""
     try:

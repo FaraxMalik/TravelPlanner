@@ -94,7 +94,6 @@ class OptimizedTravelPersonalityTrainer:
             }
         }
     
-    # Loads and samples the dataset for memory efficiency
     def load_and_sample_data(self, sample_size=100000):
         """Load and sample the dataset for memory efficiency"""
         logger.info(f"Loading and sampling dataset to {sample_size} rows...")
@@ -170,13 +169,11 @@ class OptimizedTravelPersonalityTrainer:
             logger.error(f"Error processing data: {e}")
             return None
     
-    # Assigns a travel personality type based on Big Five scores
     def assign_travel_personality(self, big_five_scores):
         """Assign travel personality based on Big Five scores"""
         ext, est, agr, csn, opn = big_five_scores
         
         # Use percentile-based thresholds instead of fixed 3.0
-            """Assign travel personality based on Big Five scores"""
         high_ext = ext >= 3.0
         high_est = est >= 3.0
         high_agr = agr >= 3.0
@@ -205,12 +202,10 @@ class OptimizedTravelPersonalityTrainer:
         else:
             return 'History_Buff'
     
-    # Creates travel personality labels for each row in the dataset
     def create_travel_personality_labels(self, df, score_cols):
         """Create travel personality labels"""
         logger.info("Creating travel personality labels...")
         
-            """Create travel personality labels"""
         travel_types = []
         for idx, row in df.iterrows():
             big_five_scores = [row[col] for col in score_cols]
@@ -227,11 +222,9 @@ class OptimizedTravelPersonalityTrainer:
         
         return df
     
-    # Maps 12 travel preference questions to estimated Big Five scores
     def map_12_questions_to_big_five(self, preferences):
         """
         Map 12 travel preference questions to 50 Big Five questions
-            """Map 12 travel preference questions to 50 Big Five questions"""
         This creates a simplified mapping for the travel questionnaire
         """
         # Create a mapping from 12 travel questions to estimated Big Five responses
@@ -271,11 +264,9 @@ class OptimizedTravelPersonalityTrainer:
         
         return [ext_score, est_score, agr_score, csn_score, opn_score]
     
-    # Trains a lightweight classifier for travel personality prediction
     def train_lightweight_classifier(self, df, question_cols):
         """Train a lightweight classifier with memory optimization"""
         logger.info("Training lightweight travel personality classifier...")
-            """Train a lightweight classifier with memory optimization"""
         
         X = df[question_cols].values.astype(np.float32)  # Use float32 to save memory
         y = df['travel_personality'].values
@@ -316,10 +307,8 @@ class OptimizedTravelPersonalityTrainer:
         
         return rf_classifier, scaler, label_encoder
     
-    # Creates a simple predictor that works with the 12 travel questions
     def create_travel_question_predictor(self):
         """
-            """Create a simple predictor that works with the 12 travel questions"""
         Create a simple predictor that works with the 12 travel questions
         This is the main predictor the system will use
         """
@@ -373,10 +362,8 @@ class OptimizedTravelPersonalityTrainer:
         
         return predict_from_12_questions
     
-    # Saves all trained models and metadata to disk
     def save_models(self, classifier, scaler, label_encoder, predictor_func):
         """Save all models and create prediction script"""
-            """Save all models and create prediction script"""
         logger.info("Saving trained models...")
         
         # Save sklearn models
@@ -407,9 +394,7 @@ class OptimizedTravelPersonalityTrainer:
         
         logger.info("All models saved successfully!")
     
-    # Trains the optimized ML pipeline for travel personality prediction
     def train_complete_pipeline(self):
-            """Train the optimized ML pipeline"""
         """Train the optimized ML pipeline"""
         logger.info("Starting optimized ML training pipeline...")
         
@@ -436,8 +421,6 @@ class OptimizedTravelPersonalityTrainer:
         logger.info("✅ Optimized ML training pipeline finished successfully!")
         return True
 
-            """Main function to run the optimized training pipeline"""
- # Main function to run the optimized training pipeline
 def main():
     """Main function to run the optimized training pipeline"""
     print("🚀 Starting Optimized Travel Personality ML Training Pipeline")

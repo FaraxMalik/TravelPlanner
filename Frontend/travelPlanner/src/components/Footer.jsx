@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import './Footer.css';
 
-// Footer component for the app
 const Footer = () => {
   const [showPolicy, setShowPolicy] = useState(false);
 

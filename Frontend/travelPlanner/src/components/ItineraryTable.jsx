@@ -2,13 +2,11 @@ import React from 'react';
 import { Clock, MapPin, DollarSign, Star, Calendar, CloudSun } from 'lucide-react';
 import './ItineraryTable.css';
 
-// Displays the travel itinerary in a table format
 const ItineraryTable = ({ itinerary, tripData }) => {
   if (!itinerary || !itinerary.dailyPlan) {
     return <div>No itinerary data available</div>;
   }
 
-  // Calculates the total cost of the trip
   const calculateTotalCost = () => {
     return itinerary.dailyPlan.reduce((total, day) => total + (day.totalCost || 0), 0);
   };

@@ -15,9 +15,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# This class predicts travel personality using trained ML models and rule-based logic
 class TrainedTravelPersonalityPredictor:
-    # Initializes the predictor and loads models
     def __init__(self):
         self.models_dir = Path(__file__).parent.parent / 'models'
         self.load_models()
@@ -76,7 +74,6 @@ class TrainedTravelPersonalityPredictor:
             }
         }
     
-    # Loads trained ML models from disk
     def load_models(self):
         """Load the trained models"""
         try:
@@ -109,7 +106,6 @@ class TrainedTravelPersonalityPredictor:
             logger.error(f"❌ Error loading models: {e}")
             self.use_trained_model = False
     
-    # Maps 12 travel questions to Big Five scores
     def map_12_questions_to_big_five(self, preferences):
         """Map 12 travel preference questions to Big Five scores"""
         # Extract the 12 preference values
@@ -145,7 +141,6 @@ class TrainedTravelPersonalityPredictor:
         
         return [ext_score, est_score, agr_score, csn_score, opn_score]
     
-    # Assigns travel personality using rule-based logic
     def assign_travel_personality_rule_based(self, big_five_scores):
         """Rule-based personality assignment"""
         ext, est, agr, csn, opn = big_five_scores
@@ -179,7 +174,6 @@ class TrainedTravelPersonalityPredictor:
         else:
             return 'History_Buff'
     
-    # Predicts personality using the trained ML model
     def predict_with_trained_model(self, preferences):
         """Use trained ML model for prediction"""
         try:
@@ -218,7 +212,6 @@ class TrainedTravelPersonalityPredictor:
             # Fall back to rule-based
             return self.predict_with_rule_based(preferences)
     
-    # Predicts personality using rule-based logic
     def predict_with_rule_based(self, preferences):
         """Use rule-based approach for prediction"""
         big_five_scores = self.map_12_questions_to_big_five(preferences)
@@ -227,7 +220,6 @@ class TrainedTravelPersonalityPredictor:
         
         return travel_type, confidence, big_five_scores
     
-    # Main function to predict personality from preferences
     def predict_personality(self, preferences):
         """
         Main prediction function that chooses between trained model and rule-based approach
@@ -292,7 +284,6 @@ class TrainedTravelPersonalityPredictor:
                 'error': str(e)
             }
 
-# Main entry point for running the predictor
 def main():
     """Main function called from Node.js"""
     try:

@@ -3,7 +3,6 @@ const Feedback = require('../models/feedback');
 // @desc    Create feedback for an activity
 // @route   POST /api/feedback
 // @access  Private
-// Creates a new feedback entry from the user
 const createFeedback = async (req, res) => {
   try {
     const { tourPlanId, activityId, rating, comment } = req.body;
@@ -32,7 +31,6 @@ const createFeedback = async (req, res) => {
 // @desc    Get all feedback by logged-in user
 // @route   GET /api/feedback/user
 // @access  Private
-// Retrieves feedback entries submitted by a specific user
 const getFeedbackByUser = async (req, res) => {
   try {
     const feedbacks = await Feedback.find({ userId: req.user._id });
@@ -46,7 +44,6 @@ const getFeedbackByUser = async (req, res) => {
 // @desc    Get all feedback for a tour plan
 // @route   GET /api/feedback/tour/:tourPlanId
 // @access  Private
-// Gets feedback related to a specific tour plan
 const getFeedbackByTourPlan = async (req, res) => {
   try {
     const { tourPlanId } = req.params;

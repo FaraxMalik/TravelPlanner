@@ -9,7 +9,6 @@ const travelQuestions = JSON.parse(fs.readFileSync(questionsPath, 'utf8'));
 // @desc    Get all preference questions (new format)
 // @route   GET /api/preferences/questions
 // @access  Public
-// Returns the list of travel preference questions for the questionnaire
 const getPreferenceQuestions = async (req, res) => {
   try {
     res.json({
@@ -28,7 +27,6 @@ const getPreferenceQuestions = async (req, res) => {
 // @desc    Submit user preferences and save to user profile
 // @route   POST /api/preferences/submit
 // @access  Private
-// Submits and saves user travel preferences
 const submitPreferences = async (req, res) => {
   try {
     const preferences = req.body;
@@ -86,7 +84,6 @@ const submitPreferences = async (req, res) => {
 // @desc    Get user preferences
 // @route   GET /api/preferences/user
 // @access  Private
-// Retrieves the saved travel preferences for a user
 const getUserPreferences = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('preferences preferencesCompleted');
