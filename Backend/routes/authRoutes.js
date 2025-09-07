@@ -4,6 +4,7 @@ const {
   registerUser,
   loginUser,
   getUserProfile,
+  updateUserProfile,
   getUserPreferences,
   updateUserPreferences,
   getUserPersonality,
@@ -25,6 +26,7 @@ router.get('/facebook', facebookAuth);
 // Protected routes
 router.get('/verify', protect, verifyToken);
 router.get('/user/me', protect, getUserProfile);
+router.put('/user/profile', protect, updateUserProfile);
 router.get('/user/preferences', protect, getUserPreferences);
 router.get('/user/personality', protect, getUserPersonality);
 router.put('/user/preferences', protect, updateUserPreferences);

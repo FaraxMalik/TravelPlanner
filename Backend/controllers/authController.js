@@ -165,6 +165,139 @@ const loginUser = async (req, res) => {
   }
 };
 
+// @desc    Update user profile
+// @route   PUT /api/auth/user/profile
+// @access  Private
+// Updates user profile information including name, email, and password
+const updateUserProfile = async (req, res) => {
+  try {
+    const { name, email, currentPassword, newPassword } = req.body;
+    
+    // Get current user
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    
+    const updates = {};
+    
+    // Validate and update name
+    if (name !== undefined) {
+      if (!name || name.trim() === '') {
+        return res.status(400).json({
+          success: false,
+          message: 'Name cannot be empty'
+        });
+      }
+      updates.name = name.trim();
+    }
+    
+    // Validate and update email
+    if (email !== undefined) {
+      if (!email || email.trim() === '') {
+        return res.status(400).json({
+          success: false,
+          message: 'Email cannot be empty'
+        });
+      }
+      
+      // Check email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please provide a valid email address'
+        });
+      }
+      
+      // Check if email is already taken by another user
+      if (email !== user.email) {
+        const existingUser = await User.findOne({ email: email.toLowerCase() });
+        if (existingUser) {
+          return res.status(400).json({
+            success: false,
+            message: 'Email is already taken by another user'
+          });
+        }
+        updates.email = email.toLowerCase();
+      }
+    }
+    
+    // Validate and update password
+    if (newPassword !== undefined) {
+      if (!currentPassword) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current password is required to change password'
+        });
+      }
+      
+      // Verify current password
+      const isCurrentPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+      if (!isCurrentPasswordCorrect) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current password is incorrect'
+        });
+      }
+      
+      // Validate new password
+      if (newPassword.length < 6) {
+        return res.status(400).json({
+          success: false,
+          message: 'New password must be at least 6 characters long'
+        });
+      }
+      
+      // Hash new password
+      const salt = await bcrypt.genSalt(10);
+      updates.password = await bcrypt.hash(newPassword, salt);
+    }
+    
+    // If no updates provided
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No valid updates provided'
+      });
+    }
+    
+    // Update user profile
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id, 
+      { $set: updates }, 
+      { new: true }
+    ).select('-password');
+    
+    // Prepare response message
+    const updatedFields = [];
+    if (updates.name) updatedFields.push('name');
+    if (updates.email) updatedFields.push('email');
+    if (updates.password) updatedFields.push('password');
+    
+    res.json({
+      success: true,
+      message: `Profile updated successfully (${updatedFields.join(', ')})`,
+      user: {
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        firstName: updatedUser.name.split(' ')[0],
+        lastName: updatedUser.name.split(' ').slice(1).join(' '),
+        email: updatedUser.email
+      }
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    });
+  }
+};
+
 // @desc    Get user profile
 // @route   GET /api/user/me
 // @access  Private
@@ -352,6 +485,7 @@ module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
+  updateUserProfile,
   getUserPreferences,
   updateUserPreferences,
   getUserPersonality,

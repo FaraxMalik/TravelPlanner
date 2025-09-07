@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #7f53ac 0%, #647dee 100%);
+  padding: 2rem 1rem;
 }
 
 .profile-card {
@@ -11,7 +12,7 @@
   border-radius: 1.5rem;
   box-shadow: 0 8px 32px rgba(100, 125, 222, 0.15);
   padding: 2.5rem 2rem;
-  max-width: 400px;
+  max-width: 500px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -106,4 +107,85 @@
   padding: 0.5rem 1rem;
   margin-top: 0.5rem;
   text-align: center;
+}
+
+/* New styles for enhanced profile form */
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.form-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.password-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.toggle-password-btn {
+  background: none;
+  border: 1px solid #647dee;
+  color: #647dee;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-password-btn:hover {
+  background: #647dee;
+  color: white;
+}
+
+.profile-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .profile-card {
+    margin: 1rem;
+    padding: 2rem 1.5rem;
+  }
+  
+  .password-section-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .toggle-password-btn {
+    align-self: flex-end;
+  }
 }
