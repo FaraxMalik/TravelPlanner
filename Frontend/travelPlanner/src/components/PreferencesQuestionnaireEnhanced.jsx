@@ -394,28 +394,7 @@ const PreferencesQuestionnaire = () => {
         </motion.div>
       </AnimatePresence>
 
-      <div className="navigation-section">
-        <button 
-          className="nav-button prev"
-          onClick={handlePrevious}
-          disabled={currentPage === 0}
-        >
-          <span className="nav-icon">←</span>
-          Previous Page
-        </button>
-        
-        <div className="page-info">
-          <span className="current-page">Page {currentPage + 1}</span>
-          <div className="page-dots">
-            {[...Array(TOTAL_PAGES)].map((_, index) => (
-              <div
-                key={index}
-                className={`mini-dot ${index === currentPage ? 'active' : ''}`}
-              />
-            ))}
-          </div>
-        </div>
-        
+      <div className="navigation-section">        
         <button 
           className="nav-button next"
           onClick={handleNext}

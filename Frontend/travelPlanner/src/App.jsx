@@ -23,6 +23,7 @@ import './pages/Dashboard.css';
 import './pages/PlanTrip.css';
 
 // Protected Route Component
+// Protects routes that require authentication
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   
@@ -39,6 +40,7 @@ const ProtectedRoute = ({ children }) => {
 };
 
 // Route that checks if user needs preferences
+// Protects routes that require completed preferences
 const PreferenceAwareRoute = ({ children }) => {
   const { user, isAuthenticated, loading } = useAuth();
   
@@ -64,6 +66,7 @@ const PreferenceAwareRoute = ({ children }) => {
 };
 
 // Public Route Component (redirect if authenticated)
+// Handles routes accessible to all users
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, loading, user } = useAuth();
   
@@ -87,6 +90,7 @@ const PublicRoute = ({ children }) => {
   return children;
 };
 
+// Main application component
 function App() {
   return (
     <AuthProvider>
@@ -99,6 +103,7 @@ function App() {
   );
 }
 
+// Renders the main content of the app based on authentication
 const AppContent = () => {
   const { isAuthenticated, loading, user } = useAuth();
 

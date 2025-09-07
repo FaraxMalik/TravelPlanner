@@ -7,6 +7,7 @@ class BigFiveService {
         this.modelPath = path.join(__dirname, '../ml_models/models/travel_personality_classifier.pkl');
     }
 
+    // Predicts Big Five personality traits from user preferences
     async predictBigFivePersonality(userPreferences) {
         try {
             console.log('🔮 Calling trained ML model with user preferences:', userPreferences);
@@ -39,6 +40,7 @@ class BigFiveService {
         }
     }
 
+    // Calls the trained ML model to get personality prediction
     async callTrainedModel(userPreferences) {
         return new Promise((resolve, reject) => {
             // Pass preferences as JSON string to Python script

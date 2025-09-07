@@ -19,7 +19,7 @@ import {
   Sparkles,
   Award,
   Clock,
-  DollarSign,
+  PoundSterling,
   Map,
   Calendar as CalendarIcon,
   Eye,
@@ -250,9 +250,9 @@ const Dashboard = () => {
               whileHover={{ scale: 1.03 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <DollarSign className="mini-icon" />
+              <PoundSterling className="mini-icon" />
               <div className="mini-stat">
-                <h3>€{userStats?.totalSpent || 0}</h3>
+                <h3>£{userStats?.totalSpent || 0}</h3>
                 <p>Spent</p>
               </div>
             </motion.div>
@@ -437,36 +437,122 @@ const Dashboard = () => {
           </div>
         ) : (
           <motion.div 
-            className="empty-state"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
+            className="empty-state-modern"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
           >
-            <div className="empty-visual">
-              <motion.div
-                className="empty-icon-container"
-                animate={{ rotate: [0, 10, 0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-              >
-                <Sunset size={48} />
-              </motion.div>
-              <div className="empty-particles">
-                <motion.div className="particle" animate={{ y: [-20, 20, -20] }} transition={{ duration: 2, repeat: Infinity }} />
-                <motion.div className="particle" animate={{ y: [20, -20, 20] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }} />
-                <motion.div className="particle" animate={{ y: [-10, 30, -10] }} transition={{ duration: 2, repeat: Infinity, delay: 1 }} />
+            <div className="empty-hero">
+              <div className="empty-icon-wrapper">
+                <motion.div
+                  className="empty-icon-bg"
+                  animate={{ 
+                    rotate: [0, 360],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{ 
+                    rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+                    scale: { duration: 3, repeat: Infinity }
+                  }}
+                />
+                <motion.div
+                  className="empty-main-icon"
+                  animate={{ 
+                    y: [0, -10, 0],
+                    rotate: [0, 5, 0, -5, 0]
+                  }}
+                  transition={{ 
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Plane size={40} className="plane-icon" />
+                </motion.div>
+                <motion.div 
+                  className="floating-element element-1"
+                  animate={{ 
+                    x: [0, 20, 0],
+                    y: [0, -15, 0],
+                    rotate: [0, 180, 360]
+                  }}
+                  transition={{ duration: 6, repeat: Infinity }}
+                >
+                  <Sparkles size={16} />
+                </motion.div>
+                <motion.div 
+                  className="floating-element element-2"
+                  animate={{ 
+                    x: [0, -25, 0],
+                    y: [0, 20, 0],
+                    rotate: [0, -180, -360]
+                  }}
+                  transition={{ duration: 8, repeat: Infinity, delay: 1 }}
+                >
+                  <MapPin size={18} />
+                </motion.div>
+                <motion.div 
+                  className="floating-element element-3"
+                  animate={{ 
+                    x: [0, 15, 0],
+                    y: [0, -25, 0],
+                    rotate: [0, 90, 180, 270, 360]
+                  }}
+                  transition={{ duration: 10, repeat: Infinity, delay: 2 }}
+                >
+                  <Navigation size={14} />
+                </motion.div>
               </div>
             </div>
-            <div className="empty-content">
-              <h3>Your Adventure Awaits</h3>
-              <p>Ready to create some incredible memories? Let's plan your first unforgettable journey.</p>
+            <div className="empty-content-modern">
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2, duration: 0.6 }}
+              >
+                Your Travel Story
+              </motion.h2>
+              <motion.p
+                className="empty-subtitle"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.4, duration: 0.6 }}
+              >
+                Every journey begins with a single step
+              </motion.p>
+              <motion.div
+                className="adventure-card"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.6, duration: 0.8 }}
+              >
+                <div className="adventure-icon">
+                  <Sunset size={24} />
+                </div>
+                <div className="adventure-text">
+                  <h3>Your Adventure Awaits</h3>
+                  <p>Ready to create some incredible memories? Let's plan your first unforgettable journey.</p>
+                </div>
+              </motion.div>
               <motion.button
-                className="empty-cta"
+                className="cta-button-modern"
                 onClick={planNewTrip}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.8, duration: 0.6 }}
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: "0 10px 40px rgba(255, 107, 53, 0.4)"
+                }}
+                whileTap={{ scale: 0.98 }}
               >
                 <Sparkles size={20} />
-                Begin Your Journey
+                <span>Begin Your Journey</span>
+                <motion.div
+                  className="button-shine"
+                  animate={{ x: [-100, 200] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 3 }}
+                />
               </motion.button>
             </div>
           </motion.div>

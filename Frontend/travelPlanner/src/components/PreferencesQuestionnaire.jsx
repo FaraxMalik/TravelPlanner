@@ -20,6 +20,7 @@ import { preferencesAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+// Questionnaire component for collecting user travel preferences
 const PreferencesQuestionnaire = () => {
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();

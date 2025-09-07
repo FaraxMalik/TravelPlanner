@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, MapPin, DollarSign, Star, Calendar, CloudSun } from 'lucide-react';
+import { Clock, MapPin, PoundSterling, Star, Calendar, CloudSun } from 'lucide-react';
 import './ItineraryTable.css';
 
 const ItineraryTable = ({ itinerary, tripData }) => {
@@ -22,8 +22,8 @@ const ItineraryTable = ({ itinerary, tripData }) => {
             <span>{itinerary.duration} Days</span>
           </div>
           <div className="stat-item">
-            <DollarSign className="stat-icon" />
-            <span>€{itinerary.budget} Budget</span>
+            <PoundSterling className="stat-icon" />
+            <span>£{itinerary.budget} Budget</span>
           </div>
           <div className="stat-item">
             <Star className="stat-icon" />
@@ -63,8 +63,8 @@ const ItineraryTable = ({ itinerary, tripData }) => {
                 <span className="day-theme">{day.title}</span>
               </div>
               <div className="day-cost">
-                <DollarSign size={16} />
-                <span className="day-cost">€{day.totalCost}</span>
+                <PoundSterling size={16} />
+                <span className="day-cost">£{day.totalCost}</span>
               </div>
             </div>
 
@@ -79,7 +79,7 @@ const ItineraryTable = ({ itinerary, tripData }) => {
                     </th>
                     <th className="activity-col">Activity</th>
                     <th className="cost-col">
-                      <DollarSign size={14} />
+                      <PoundSterling size={14} />
                       Cost
                     </th>
                   </tr>
@@ -127,7 +127,7 @@ const ItineraryTable = ({ itinerary, tripData }) => {
                           </div>
                         </td>
                         <td className="cost-cell">
-                          <span className="cost-amount">€{activity.cost}</span>
+                          <span className="cost-amount">£{activity.cost}</span>
                         </td>
                       </tr>
                     );
@@ -137,7 +137,7 @@ const ItineraryTable = ({ itinerary, tripData }) => {
                   <tr className="day-total-row">
                     <td colSpan="3" className="total-label">Day {day.day} Total</td>
                     <td className="total-amount">
-                      <strong>€{day.totalCost}</strong>
+                      <strong>£{day.totalCost}</strong>
                     </td>
                   </tr>
                 </tfoot>
@@ -161,7 +161,7 @@ const ItineraryTable = ({ itinerary, tripData }) => {
             </div>
             <div className="summary-item total-cost">
               <span className="summary-label">Estimated Total Cost:</span>
-              <span className="summary-value">€{calculateTotalCost()}</span>
+              <span className="summary-value">£{calculateTotalCost()}</span>
             </div>
           </div>
         </div>

@@ -19,6 +19,7 @@ class GroqTravelService {
     /**
      * Generate personalized travel itinerary using Groq
      */
+    // Generates a personalized itinerary using Groq LLM
     async generatePersonalizedItinerary(params) {
         try {
             // Check if Groq service is properly initialized
@@ -78,7 +79,7 @@ class GroqTravelService {
                 ],
                 model: "llama-3.3-70b-versatile", // Latest Llama 3.3 model for complex tasks
                 temperature: 0.7,
-                max_tokens: 4000,
+                max_tokens: Math.min(4000, Math.max(1500, duration * 150)), // Adjust tokens based on trip length
                 top_p: 1,
                 stop: null
             });
@@ -129,8 +130,8 @@ class GroqTravelService {
 - Destination: ${destination}
 - Dates: ${startDate} to ${endDate}
 - Duration: ${duration} days
-- Daily Budget: $${daily_budget}
-- Total Budget: $${total_budget}
+- Daily Budget: £${daily_budget}
+- Total Budget: £${total_budget}
 - Number of Travelers: ${travelers}
 - Additional Preferences: ${additional_preferences}
 
@@ -223,10 +224,10 @@ You MUST respond with ONLY valid JSON in this EXACT structure:
 3. All costs must be realistic and add up correctly
 4. Weather forecast must include daily information for ALL ${duration} days
 5. Use specific place names and realistic pricing
-6. Keep activity descriptions concise (max 100 characters each)
+6. Keep activity descriptions concise (max ${duration > 10 ? '50' : '100'} characters each)
 7. Weather should account for seasonal patterns of ${destination}
 8. Response must be ONLY valid JSON - no extra text before or after
-9. Keep total response under 8000 characters to prevent truncation
+9. Keep total response under ${Math.min(8000, Math.max(3000, duration * 300))} characters to prevent truncation
 10. DO NOT include personality reasoning in activities - focus on practical travel information`;
     }
 

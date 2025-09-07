@@ -54,7 +54,7 @@ const MyTrips = () => {
               <div className="trip-details">
                 <div><strong>Dates:</strong> {trip.startDate || 'TBD'} - {trip.endDate || 'TBD'}</div>
                 <div><strong>Duration:</strong> {trip.numberOfDays || trip.duration || 'N/A'} days</div>
-                <div><strong>Budget:</strong> €{trip.budget || 'N/A'}</div>
+                <div><strong>Budget:</strong> £{trip.budget || 'N/A'}</div>
                 <div><strong>Description:</strong> {trip.details || trip.description || 'No details available.'}</div>
                 <div><strong>Travelers:</strong> {trip.travelers ? trip.travelers.join(', ') : 'N/A'}</div>
                 <div><strong>Created:</strong> {trip.createdAt ? new Date(trip.createdAt).toLocaleDateString() : 'N/A'}</div>

@@ -2,22 +2,26 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+// Navigation bar component for the app
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Handles user logout from the navbar
   const handleLogout = () => {
     logout();
     navigate('/');
     setIsMenuOpen(false);
   };
 
+  // Toggles the navigation menu
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Handles blur event for the user menu
   const handleMenuBlur = (e) => {
     // Only close if focus moves outside the menu and button
     if (!e.currentTarget.contains(e.relatedTarget)) {

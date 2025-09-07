@@ -269,7 +269,7 @@
 /* Navigation Section */
 .navigation-section {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   max-width: 800px;
   margin: 0 auto;
@@ -291,17 +291,6 @@
   justify-content: center;
 }
 
-.nav-button.prev {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.nav-button.prev:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-}
 
 .nav-button.next {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
@@ -324,36 +313,6 @@
   font-size: 1.1rem;
 }
 
-.page-info {
-  text-align: center;
-  color: white;
-}
-
-.current-page {
-  font-size: 1.1rem;
-  font-weight: 600;
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.page-dots {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.mini-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transition: all 0.3s ease;
-}
-
-.mini-dot.active {
-  background: white;
-  transform: scale(1.2);
-}
 
 .spinner {
   display: inline-block;

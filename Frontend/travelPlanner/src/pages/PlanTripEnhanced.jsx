@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MapPin, 
   Calendar, 
-  DollarSign, 
+  PoundSterling, 
   Users, 
   Plane, 
   Clock,
@@ -205,8 +205,8 @@ const PlanTrip = () => {
         <div className="form-row">
           <div className="form-group">
             <label>
-              <DollarSign className="input-icon" />
-              Total Budget (EUR)
+              <PoundSterling className="input-icon" />
+              Total Budget (GBP)
             </label>
             <input
               type="number"
@@ -259,8 +259,8 @@ const PlanTrip = () => {
             </div>
             {tripData.budget && (
               <div className="summary-item">
-                <DollarSign className="summary-icon" />
-                <span>€{Math.floor(tripData.budget / calculateDuration())}/day</span>
+                <PoundSterling className="summary-icon" />
+                <span>£{Math.floor(tripData.budget / calculateDuration())}/day</span>
               </div>
             )}
           </div>
@@ -311,7 +311,7 @@ const PlanTrip = () => {
               <span>Finding personalized recommendations</span>
             </div>
             <div className="step active">
-              <DollarSign className="step-icon" />
+              <PoundSterling className="step-icon" />
               <span>Optimizing your budget</span>
             </div>
             <div className="step active">
@@ -337,7 +337,7 @@ const PlanTrip = () => {
         <div className="trip-info">
           <span><MapPin className="info-icon" />{tripData.destination}</span>
           <span><Calendar className="info-icon" />{calculateDuration()} days</span>
-          <span><DollarSign className="info-icon" />€{tripData.budget}</span>
+          <span><PoundSterling className="info-icon" />£{tripData.budget}</span>
         </div>
       </div>
 
