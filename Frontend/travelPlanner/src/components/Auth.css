@@ -229,11 +229,13 @@
 
 .checkbox-wrapper {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  gap: 0.75rem;
   cursor: pointer;
   font-size: 0.9rem;
   color: var(--text-medium);
+  line-height: 1.4;
+  user-select: none;
 }
 
 .checkbox-input {
@@ -241,12 +243,23 @@
 }
 
 .checkbox-custom {
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--text-light);
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  border: 2px solid #d1d5db;
   border-radius: 4px;
   position: relative;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.checkbox-custom:hover {
+  border-color: var(--primary-orange);
 }
 
 .checkbox-input:checked + .checkbox-custom {
@@ -261,8 +274,9 @@
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
+  line-height: 1;
 }
 
 .forgot-link {

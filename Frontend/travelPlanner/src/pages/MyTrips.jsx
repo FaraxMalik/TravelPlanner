@@ -15,19 +15,43 @@ const MyTrips = () => {
     const fetchTrips = async () => {
       try {
         setLoading(true);
+        setError(null);
+        
+        console.log('🔄 Fetching trips...');
         const res = await travelAPI.getItineraries();
-        setTrips(res.data.itineraries || []);
+        console.log('📦 API Response:', res.data);
+        
+        if (res.data.success) {
+          const trips = res.data.itineraries || [];
+          setTrips(trips);
+          console.log(`✅ Loaded ${trips.length} trips`);
+          
         // Fetch feedback for all trips
         const feedbackMap = {};
-        for (const trip of res.data.itineraries || []) {
+          for (const trip of trips) {
           try {
             const fbRes = await feedbackAPI.getTourFeedback(trip._id || trip.id);
             feedbackMap[trip._id || trip.id] = fbRes.data.feedbacks || [];
-          } catch {}
+            } catch (fbErr) {
+              console.log(`⚠️ Could not load feedback for trip ${trip._id || trip.id}`);
+            }
         }
         setFeedbacks(feedbackMap);
+        } else {
+          console.log('❌ API returned success: false');
+          setError('Failed to load trips - API returned error');
+        }
       } catch (err) {
-        setError('Failed to load trips');
+        console.error('🚨 Error loading trips:', err);
+        if (err.response?.status === 401) {
+          setError('Authentication failed. Please sign in again.');
+        } else if (err.response?.status === 500) {
+          setError('Server error. Please try again later.');
+        } else if (err.code === 'NETWORK_ERROR' || !err.response) {
+          setError('Network error. Please check your connection and ensure the server is running.');
+        } else {
+          setError(`Failed to load trips: ${err.response?.data?.message || err.message}`);
+        }
       } finally {
         setLoading(false);
       }
@@ -35,14 +59,113 @@ const MyTrips = () => {
     fetchTrips();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div className="error">{error}</div>;
+  const retryFetch = () => {
+    setError(null);
+    const fetchTrips = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        console.log('🔄 Retrying fetch trips...');
+        const res = await travelAPI.getItineraries();
+        console.log('📦 API Response:', res.data);
+        
+        if (res.data.success) {
+          const trips = res.data.itineraries || [];
+          setTrips(trips);
+          console.log(`✅ Loaded ${trips.length} trips`);
+          
+          // Fetch feedback for all trips
+          const feedbackMap = {};
+          for (const trip of trips) {
+            try {
+              const fbRes = await feedbackAPI.getTourFeedback(trip._id || trip.id);
+              feedbackMap[trip._id || trip.id] = fbRes.data.feedbacks || [];
+            } catch (fbErr) {
+              console.log(`⚠️ Could not load feedback for trip ${trip._id || trip.id}`);
+            }
+          }
+          setFeedbacks(feedbackMap);
+        } else {
+          console.log('❌ API returned success: false');
+          setError('Failed to load trips - API returned error');
+        }
+      } catch (err) {
+        console.error('🚨 Error loading trips:', err);
+        if (err.response?.status === 401) {
+          setError('Authentication failed. Please sign in again.');
+        } else if (err.response?.status === 500) {
+          setError('Server error. Please try again later.');
+        } else if (err.code === 'NETWORK_ERROR' || !err.response) {
+          setError('Network error. Please check your connection and ensure the server is running.');
+        } else {
+          setError(`Failed to load trips: ${err.response?.data?.message || err.message}`);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTrips();
+  };
+
+  if (loading) return (
+    <div className="my-trips-page">
+      <div style={{ textAlign: 'center', color: 'white', padding: '2rem' }}>
+        <h2>Loading your trips...</h2>
+        <div style={{ marginTop: '1rem' }}>Please wait...</div>
+      </div>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="my-trips-page">
+      <div style={{ textAlign: 'center', color: 'white', padding: '2rem' }}>
+        <h2>⚠️ Error Loading Trips</h2>
+        <div style={{ 
+          background: 'rgba(255, 255, 255, 0.1)', 
+          padding: '1rem', 
+          borderRadius: '0.5rem', 
+          margin: '1rem auto',
+          maxWidth: '600px'
+        }}>
+          {error}
+        </div>
+        <button 
+          onClick={retryFetch}
+          style={{
+            background: 'linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)',
+            color: 'white',
+            border: 'none',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '0.5rem',
+            cursor: 'pointer',
+            fontSize: '1rem',
+            fontWeight: '600'
+          }}
+        >
+          🔄 Retry
+        </button>
+        <div style={{ marginTop: '1rem', fontSize: '0.9rem', opacity: '0.8' }}>
+          💡 Tips:
+          <br />• Make sure the backend server is running on port 5000
+          <br />• Check the browser console (F12) for detailed error messages
+          <br />• Ensure you're signed in properly
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="my-trips-page">
       <h2>My Trips</h2>
       {trips.length === 0 ? (
-        <p>No trips found.</p>
+        <div style={{ textAlign: 'center', color: 'white', padding: '2rem' }}>
+          <h3>✈️ No trips found</h3>
+          <p>You haven't created any travel plans yet!</p>
+          <p style={{ fontSize: '0.9rem', opacity: '0.8' }}>
+            Start planning your next adventure by visiting the "Plan Trip" page.
+          </p>
+        </div>
       ) : (
         <div className="trips-grid">
           {trips.map(trip => (
